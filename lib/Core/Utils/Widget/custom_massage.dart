@@ -1,0 +1,14 @@
+import 'package:flutter/material.dart';
+
+class CustomMassage extends StatelessWidget {
+  final String massage;
+  const CustomMassage({super.key, required this.massage});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(massage),
+      ),
+    );
+  }
+}
