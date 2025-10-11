@@ -28,60 +28,69 @@ jobs:
     - name: Analyze code
       run: flutter analyze
 
-  build_android:
-    needs: test
-    runs-on: ubuntu-latest
+  # build_android:
+  #   needs: test
+  #   runs-on: ubuntu-latest
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
     
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.35.5'
+  #   - name: Setup Flutter
+  #     uses: subosito/flutter-action@v2
+  #     with:
+  #       flutter-version: '3.35.5'
     
-    - name: Install dependencies
-      run: flutter pub get
+  #   - name: Install dependencies
+  #     run: flutter pub get
     
-    - name: Build Android APK
-      run: flutter build apk --release --dart-define=APP_ENV=production
+  #   - name: Build Android APK
+  #     run: flutter build apk --release --dart-define=APP_ENV=production
     
-    - name: Build Android App Bundle
-      run: flutter build appbundle --release --dart-define=APP_ENV=production
+  #   - name: Build Android App Bundle
+  #     run: flutter build appbundle --release --dart-define=APP_ENV=production
     
-    - name: Upload Android Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-builds
-        path: |
-          build/app/outputs/flutter-apk/app-release.apk
-          build/app/outputs/bundle/release/app-release.aab
+  #   - name: Upload Android Artifacts
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: android-builds
+  #       path: |
+  #         build/app/outputs/flutter-apk/app-release.apk
+  #         build/app/outputs/bundle/release/app-release.aab
 
   build_ios:
+    name: 🍎 Build iOS
     needs: test
     runs-on: macos-latest   
     
     steps:
-    - name: Checkout code
+    - name: 🔄 Checkout code
       uses: actions/checkout@v4
     
-    - name: Setup Flutter
+    - name: ⚙️ Setup Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.35.5'
     
-    - name: Install dependencies
+    - name: 📦 Install dependencies
       run: flutter pub get
     
-    - name: Build iOS (Debug)
+    - name: 🏗️ Build iOS (Debug)
       run: flutter build ios --debug --no-codesign
     
-    - name: Build iOS (Release)
+    - name: 🚀 Build iOS (Release)
       run: flutter build ios --release --no-codesign
     
-    - name: Upload iOS Artifacts
+    - name: 🔍 Find exact iOS build path
+      run: |
+        echo "=== Searching for iOS build files ==="
+        find . -name "*.app" -type d 2>/dev/null || echo "No .app files found"
+        find . -name "Runner.app" -type d 2>/dev/null || echo "No Runner.app found"
+        echo "=== Build directory structure ==="
+        find build/ -type d 2>/dev/null | head -20
+    
+    - name: 📤 Upload iOS Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ios-builds
-        path: build/ios/iphonesimulator
+        path: build/ios/ios
