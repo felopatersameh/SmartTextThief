@@ -80,7 +80,7 @@ jobs:
         curl "https://api.appetize.io/v1/apps" \
           -F "file=@build/app/outputs/flutter-apk/app-release.apk" \
           -F "platform=android" \
-          -F "token=${{ secrets.APPETIZE_TOKEN }}"
+          -F "token=tok_7ucic4hz3p4ubtnufyjc6t6mzm"
     
     - name: 🔗 Get App URL
       run: |
