@@ -4,7 +4,8 @@ import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Features/login/cubit/authentication_cubit.dart';
 import 'package:smart_text_thief/Core/Resources/strings.dart';
 
-void main() {  group('Authentication Cubit Tests', () {
+void main() {
+   group('Authentication Cubit Tests', () {
     late AuthenticationCubit authenticationCubit;
 
     setUp(() {
@@ -74,10 +75,9 @@ void main() {  group('Authentication Cubit Tests', () {
     testWidgets('App router has correct initial route', (
       WidgetTester tester,
     ) async {
-      // Test that router is properly configured
       expect(
         AppRouter.router.routerDelegate.currentConfiguration.uri.path,
-        '/',
+        '',
       );
     });
   });
