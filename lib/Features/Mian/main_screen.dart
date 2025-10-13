@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Features/Mian/cubit/main_cubit.dart';
-import 'package:smart_text_thief/Features/Profile/cubit/profile_cubit.dart';
+import '../../Core/Resources/resources.dart';
+import 'cubit/main_cubit.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create:(context) => MainCubit(),),
-        BlocProvider(create:(context) => ProfileCubit()..init(),)
-      ],
+    return BlocProvider(
+      create: (context) => MainCubit(),
       child: BlocBuilder<MainCubit, MainState>(
         builder: (context, state) {
           final read = context.read<MainCubit>();

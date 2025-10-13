@@ -1,15 +1,15 @@
-import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Core/Storage/Firebase/firebase_service.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/enum_user.dart';
-import 'package:smart_text_thief/Core/Utils/Models/user_model.dart';
 
 import '../../../Core/Storage/Firebase/failure_model.dart';
+import '../../../Core/Storage/Firebase/firebase_service.dart';
 import '../../../Core/Storage/Local/local_storage_keys.dart';
 import '../../../Core/Storage/Local/local_storage_service.dart';
+import '../../../Core/Utils/Enums/collection_key.dart';
+import '../../../Core/Utils/Enums/data_key.dart';
+import '../../../Core/Utils/Enums/enum_user.dart';
+import '../../../Core/Utils/Models/user_model.dart';
 
 class AuthenticationSource {
   static Future<bool> checkIsHave(String email) async {
@@ -24,13 +24,13 @@ class AuthenticationSource {
   static Future<Either<FailureModel, bool>> loginWithGoogle() async {
     try {
       final account = await FirebaseServices.instance.google();
-      log(account.toString());
       final isExist = await checkIsHave(account.email);
-      if (isExist == false) {
-        final fcm = await LocalStorageService.getValue(
+       final fcm = await LocalStorageService.getValue(
           LocalStorageKeys.tokenFCM,
           defaultValue: "",
         );
+      if (isExist == false) {
+       
         final UserModel model = UserModel(
           userId: account.id,
           userTokensFcm: [fcm],
@@ -39,7 +39,7 @@ class AuthenticationSource {
           photo: account.photoUrl??"",
           userPassword: '',
           userPhone: '',
-          userType: UserType.st,
+          userType: UserType.te,
           userNotifications: [],
           userCreatedAt: DateTime.now()
         );
@@ -50,6 +50,13 @@ class AuthenticationSource {
         );
         if (response.data == null) return Left(response.failure!);
       }
+          await FirebaseServices.instance.updateData(
+      CollectionKey.users.key,
+      account.id,
+      {
+        DataKey.userTokensFCM.key: FieldValue.arrayUnion([fcm]),
+      },
+    );
       await LocalStorageService.setValue(LocalStorageKeys.id, account.id);
       await LocalStorageService.setValue(LocalStorageKeys.isLoggedIn, true);
       return Right(true);

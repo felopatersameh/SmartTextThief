@@ -19,7 +19,7 @@ enum MessageType {
 
 Future<void> showMessageSnackBar(
   BuildContext context, {
-  required String title,  
+  required String title,
   required MessageType type,
   Future<void> Function()? onLoading,
 }) async {
@@ -29,7 +29,7 @@ Future<void> showMessageSnackBar(
     final snackBar = SnackBar(
       content: Row(
         children: [
-           SizedBox(
+          SizedBox(
             height: 20.h,
             width: 20.w,
             child: CircularProgressIndicator(
@@ -37,7 +37,7 @@ Future<void> showMessageSnackBar(
               strokeWidth: 2,
             ),
           ),
-           SizedBox(width: 12.w),
+          SizedBox(width: 12.w),
           Expanded(child: Text(title)),
         ],
       ),
@@ -45,7 +45,7 @@ Future<void> showMessageSnackBar(
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(10).r,
-      duration: const Duration(hours: 1),
+      duration: const Duration(seconds: 30),
     );
 
     messenger
@@ -53,7 +53,7 @@ Future<void> showMessageSnackBar(
       ..showSnackBar(snackBar);
 
     try {
-      await onLoading(); 
+      await onLoading();
     } finally {
       messenger.hideCurrentSnackBar();
     }
@@ -62,11 +62,11 @@ Future<void> showMessageSnackBar(
   }
 
   // حالات غير loading
-  final snackBar = SnackBar(  
+  final snackBar = SnackBar(
     content: Row(
       children: [
         Icon(type.icon, color: Colors.white),
-         SizedBox(width: 12.w),
+        SizedBox(width: 12.w),
         Expanded(child: Text(title)),
       ],
     ),

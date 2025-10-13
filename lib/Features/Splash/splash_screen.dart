@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_text_thief/Core/Storage/Local/local_storage_keys.dart';
+import 'package:smart_text_thief/Core/Storage/Local/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
 import '../../Config/Routes/name_routes.dart';
 
+import '../Profile/cubit/profile_cubit.dart';
 import 'loading_indicator.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,13 +31,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _navigateToMainScreen() async {
     _controller.value = 0.1;
-    await Future.delayed(const Duration(milliseconds: 300));
+ final bool isLoggedIn =   await LocalStorageService.getValue(
+      LocalStorageKeys.isLoggedIn,
+      defaultValue: false,
+    );
     _controller.value = 0.2;
 
-    await Future.delayed(const Duration(milliseconds: 300));
+   final String id =     await LocalStorageService.getValue(LocalStorageKeys.id, defaultValue: "");
     _controller.value = 0.3;
-
-    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
+     context.read<ProfileCubit>().init();
     _controller.value = 0.4;
 
     await Future.delayed(const Duration(milliseconds: 300));
@@ -49,8 +56,12 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.value = 1.0;
 
     await Future.delayed(const Duration(milliseconds: 300));
-    if (mounted) {
-      AppRouter.goNamedByPath(context, NameRoutes.login);
+    if (mounted ) {
+      if (isLoggedIn && id.isNotEmpty) {
+         AppRouter.goNamedByPath(context, NameRoutes.main);
+      } else {
+        AppRouter.goNamedByPath(context, NameRoutes.login);
+      }
     }
   }
 

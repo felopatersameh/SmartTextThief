@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../Core/Resources/app_colors.dart';
-import '../../Core/Resources/app_fonts.dart';
-import '../../Core/Utils/Widget/custom_text_app.dart';
+import '../../../../Core/Resources/app_colors.dart';
+import '../../../../Core/Resources/app_fonts.dart';
+import '../../../../Core/Resources/app_icons.dart';
+import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class ExamCard extends StatelessWidget {
   final String title;
@@ -86,7 +87,7 @@ class ExamCard extends StatelessWidget {
                     ),
                   ),
                   icon: Icon(
-                    Icons.quiz,
+                    AppIcons.showQuestions,
                     size: 18.sp,
                     color: primary.withValues(alpha: .8),
                   ),
@@ -109,7 +110,7 @@ class ExamCard extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: pdf,
-                  icon: Icon(Icons.download, color: primary, size: 18.sp),
+                  icon: Icon(AppIcons.download, color: primary, size: 18.sp),
                   label: AppCustomtext(
                     text: 'Download PDF',
                     textStyle: AppTextStyles.bodyMediumMedium.copyWith(
@@ -131,7 +132,11 @@ class ExamCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: againTest,
-                  icon: Icon(Icons.refresh, size: 18.sp, color: Colors.white),
+                  icon: Icon(
+                    AppIcons.refresh,
+                    size: 18.sp,
+                    color: Colors.white,
+                  ),
                   label: AppCustomtext(
                     text: 'Retake Test',
                     textStyle: AppTextStyles.bodyMediumMedium.copyWith(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../Core/Resources/app_colors.dart';
-import '../../Core/Resources/app_fonts.dart';
-import '../../Core/Utils/Widget/custom_text_app.dart';
+import '../../../../Core/Resources/app_colors.dart';
+import '../../../../Core/Resources/app_fonts.dart';
+import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class ExamsHeaderCard extends StatelessWidget {
   const ExamsHeaderCard({super.key});

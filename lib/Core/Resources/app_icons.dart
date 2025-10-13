@@ -5,9 +5,6 @@ import 'package:icons_plus/icons_plus.dart';
 
 import 'app_colors.dart';
 
-
-
-
 class AppIcons {
   static const Icon arrowBack = Icon(IconBroken.Arrow___Left);
 
@@ -18,10 +15,16 @@ class AppIcons {
   );
 
   //******************************************************** for Login && SingUp
-  static  Icon google = Icon(FontAwesome.google_brand, size: 24.sp,
-                      color: Colors.white);
-  static  Icon facebook = Icon(FontAwesome.facebook_brand,size: 24.sp,
-                      color: Colors.white);
+  static Icon google = Icon(
+    FontAwesome.google_brand,
+    size: 24.sp,
+    color: Colors.white,
+  );
+  static Icon facebook = Icon(
+    FontAwesome.facebook_brand,
+    size: 24.sp,
+    color: Colors.white,
+  );
   static const IconData email = EvaIcons.email_outline;
   static const IconData name = IconBroken.Profile;
   static const IconData phone = IconBroken.Call;
@@ -63,7 +66,7 @@ class AppIcons {
       size: 27.w,
     ),
   );
-  static const IconData calendarPage = IconBroken.Calendar;
+  // static const IconData add = EvaIcons.plus;
   static const IconData notificationPage = IconBroken.Notification;
 
   //******************************************************** for Home Page
@@ -94,10 +97,17 @@ class AppIcons {
   static const Icon adduser = Icon(IconBroken.User);
   static const Icon add = Icon(
     FontAwesome.plus_solid,
-    color: AppColors.colorPrimary,
+    color: AppColors.textWhite,
   );
-  static const Icon remove = Icon(
-    Icons.remove,
-    color: AppColors.colorIcons,
-  );
+  static const Icon remove = Icon(Icons.remove, color: AppColors.colorIcons);
+
+  //******************************************************** for Subjects and Exams Cards
+  static const IconData school = IconBroken.Bookmark;
+  static const IconData people = IconBroken.Profile;
+  static const IconData quiz = IconBroken.Document;
+  static const IconData calendar = IconBroken.Calendar;
+  static const IconData arrowForward = IconBroken.Arrow___Right_2;
+  static const IconData download = IconBroken.Download;
+  static const IconData refresh = EvaIcons.refresh;
+  static const IconData showQuestions = IconBroken.Show;
 }

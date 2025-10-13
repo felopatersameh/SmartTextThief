@@ -9,6 +9,7 @@ import 'Config/setting.dart';
 import 'Core/Resources/Services/Notifications/notification_services.dart';
 import 'Core/Storage/Firebase/firebase_service.dart';
 import 'Core/Storage/Local/local_storage_service.dart';
+import 'Features/Profile/cubit/profile_cubit.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -62,8 +63,12 @@ class _MyAppState extends State<MyApp> {
       enableScaleText: () => true,
       builder: (_, child) {
         ScreenUtil.init(context);
-        return BlocProvider(
-          create: (context) => SettingsCubit(),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => SettingsCubit(),),
+             BlocProvider(create:(context) => ProfileCubit()),
+          ],
+          
           child: BlocBuilder<SettingsCubit, SettingsState>(
             builder: (context, state) {
               return MaterialApp.router(
