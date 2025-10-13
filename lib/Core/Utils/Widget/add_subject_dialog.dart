@@ -8,15 +8,20 @@ import 'TextField/build_text_field.dart';
 import '../show_message_snack_bar.dart';
 
 class AddSubjectDialog extends StatefulWidget {
-  final Function(String name)? onSubmit;
+  final Future<void> Function(String name)? onSubmit;
   final String? title;
+  final String? nameField;
+  final String? messageLoading;
+  final String? nameFieldHint;
+  final IconData? icon;
   final String? submitButtonText;
 
   const AddSubjectDialog({
     super.key,
     this.onSubmit,
+    this.icon,
     this.title,
-    this.submitButtonText,
+    this.submitButtonText, this.nameField, this.messageLoading, this.nameFieldHint,
   });
 
   @override
@@ -40,13 +45,12 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
       // Show loading message
       await showMessageSnackBar(
         context,
-        title: 'Creating subject...',
+        title: widget.messageLoading ?? 'Creating subject...',
         type: MessageType.loading,
         onLoading: () async {
           if (widget.onSubmit != null) {
-          await widget.onSubmit!(name);
+            await widget.onSubmit!(name);
           }
-
         },
       );
     }
@@ -122,7 +126,12 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
                           ),
                         ],
                       ),
-                      child: Icon(AppIcons.school, color: primary, size: 24.sp),
+                      child: Icon(
+                        widget.icon??
+                        AppIcons.subject,
+                        color: primary,
+                        size: 24.sp,
+                      ),
                     ),
                     SizedBox(width: 16.w),
                     Expanded(
@@ -164,7 +173,7 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
 
               // Subject Name Field
               AppCustomtext(
-                text: 'Subject Name',
+                text: widget.nameField ?? 'Subject Name',
                 textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
                   color: AppColors.textWhite,
                 ),
@@ -172,11 +181,10 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
               SizedBox(height: 12.h),
               AppTextField(
                 controller: _nameController,
-                hint: 'Enter subject name',
-                prefixIcon: Icon(AppIcons.school, color: primary),
+                hint: widget.nameFieldHint ?? 'Enter subject name',
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter subject name';
+                    return 'Please enter ${widget.nameField ?? 'subject name'}';
                   }
                   return null;
                 },

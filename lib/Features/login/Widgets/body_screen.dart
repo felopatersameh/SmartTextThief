@@ -146,7 +146,7 @@ class _BodyScreenState extends State<BodyScreen> {
                       type: MessageType.loading,
                       onLoading: () async => await context
                           .read<AuthenticationCubit>()
-                          .loginByGoogle(),
+                          .loginByGoogle(context),
                     ),
                     iconErrorBuilder:AppIcons.google,
                     text: AppStrings.orSignInWithGoogle,

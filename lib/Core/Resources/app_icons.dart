@@ -102,7 +102,7 @@ class AppIcons {
   static const Icon remove = Icon(Icons.remove, color: AppColors.colorIcons);
 
   //******************************************************** for Subjects and Exams Cards
-  static const IconData school = IconBroken.Bookmark;
+  static const IconData subject = IconBroken.Bookmark;
   static const IconData people = IconBroken.Profile;
   static const IconData quiz = IconBroken.Document;
   static const IconData calendar = IconBroken.Calendar;

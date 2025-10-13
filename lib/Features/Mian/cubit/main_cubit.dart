@@ -7,8 +7,8 @@ import '../../Profile/profile_screen.dart';
 
 part 'main_state.dart';
 
-class MainCubit extends Cubit<MainState> {
-  MainCubit() : super(MainState(index: 0));
+class MainCubit extends Cubit<MainState> {  
+  MainCubit() : super(MainState(index: 1));
   List<String> nameScreens = ["Home", "Exams", "Profile"];
   List<Widget> screens = [Container(), MainExamsPage(), ProfileScreen()];
 

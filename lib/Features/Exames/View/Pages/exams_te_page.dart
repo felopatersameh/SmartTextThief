@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Features/Exames/View/Widgets/exams_header_card.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/add_subject_dialog.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../Core/Utils/show_message_snack_bar.dart';
+import '../../../../Config/setting.dart';
+import '../../../../Core/Resources/app_colors.dart';
+import '../../../../Core/Resources/app_icons.dart';
+import '../../../../Core/Utils/Models/subject_model.dart';
+import '../../../../Core/Utils/Models/subject_teacher.dart';
+import '../../../../Core/Utils/Models/user_model.dart';
+import '../../../../Core/Utils/Widget/add_subject_dialog.dart';
+import '../../../../Core/Utils/generate_secure_code.dart';
+import '../../Controllers/cubit/exams_cubit.dart';
+import '../Widgets/empty_list_subjects.dart';
+import '../Widgets/exams_header_card.dart';
 import '../Widgets/subjects_card.dart';
 
 class ExamsTeachertPage extends StatelessWidget {
-  const ExamsTeachertPage({super.key});
+  final UserModel user;
+  const ExamsTeachertPage({super.key, required this.user});
 
   void _showAddSubjectDialog(BuildContext context) {
     showDialog(
@@ -19,17 +26,22 @@ class ExamsTeachertPage extends StatelessWidget {
         title: 'Add New Subject',
         submitButtonText: 'Add Subject',
         onSubmit: (String name) async {
-          await Future.delayed(Duration(seconds: 1));
-          debugPrint('Subject Name: $name');
-          if (!context.mounted) return;
-          await showMessageSnackBar(
-            context,
-            title: 'Subject "$name" created successfully!',
-            type: MessageType.success,
+          final String subjectId = generateSubjectId();
+          final String joinCode = generateSubjectJoinCode();
+          final SubjectModel model = SubjectModel(
+            subjectId: subjectId,
+            subjectCode: joinCode,
+            subjectName: name,
+            subjectTeacher: SubjectTeacher(
+              teacherEmail: user.userEmail,
+              teacherName: user.userName,
+            ),
+            subjectEmailSts: [],
+            subjectCreatedAt: DateTime.now(),
           );
-          if (!context.mounted) return;
-          Navigator.of(context).pop();
 
+          if (!context.mounted) return;
+          await context.read<SubjectCubit>().addSubject(context, model);
         },
       ),
     );
@@ -37,39 +49,47 @@ class ExamsTeachertPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        physics: AppConfig.physicsCustomScrollView,
-        shrinkWrap: true,
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: ExamsHeaderCard(),
-            ),
+    return BlocBuilder<SubjectCubit, SubjectState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: state.listData.isEmpty
+              ? EmptyListSubjects()
+              : CustomScrollView(
+                  physics: AppConfig.physicsCustomScrollView,
+                  shrinkWrap: true,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ExamsHeaderCard(),
+                      ),
+                    ),
+                    SliverAnimatedList(
+                      itemBuilder: (context, index, animation) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        child: SubjectsCard(
+                          title: state.listData[index].subjectName,
+                          date: state.listData[index].createdAt,
+                          examsStudent:
+                              state.listData[index].subjectEmailSts.length,
+                          lengthStudent:
+                              state.listData[index].subjectEmailSts.length,
+                          openSubjectDetails: () {
+                            // Handle subject details navigation
+                          },
+                        ),
+                      ),
+                      initialItemCount: state.listData.length,
+                    ),
+                  ],
+                ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showAddSubjectDialog(context),
+            backgroundColor: AppColors.colorPrimary,
+            child: AppIcons.add,
           ),
-          SliverAnimatedList(
-            itemBuilder: (context, index, animation) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: SubjectsCard(
-                title: 'General Exam',
-                date: '2023-11-20',
-                examsStudent: 10,
-                lengthStudent: 20,
-                openSubjectDetails: () {
-                  // Handle subject details navigation
-                },
-              ),
-            ),
-            initialItemCount: 5,
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddSubjectDialog(context),
-        backgroundColor: AppColors.colorPrimary,
-        child: AppIcons.add,
-      ),
+        );
+      },
     );
   }
 }

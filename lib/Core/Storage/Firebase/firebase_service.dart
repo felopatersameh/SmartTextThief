@@ -100,6 +100,11 @@ class FirebaseServices {
     await FirebaseAuth.instance.signInWithCredential(credential);
     return googleAccount;
   }
+
+  Future<void> logOut() async {
+    await _auth?.signOut();
+    await _googleSignIn.signOut();
+  }
   //================================================================================================
   //* Add / Get / Update / Delete Data
 
@@ -224,6 +229,71 @@ class FirebaseServices {
       final failure = FailureModel(message: 'Error getting data', error: e);
       log(
         'TestFIrebaseServices::: Error getting all data: ${failure.toString()}',
+      );
+      return ResponseModel.error(message: failure.message, failure: failure);
+    }
+  }
+
+  /// Generic query helpers by email field for any collection
+  Future<ResponseModel> findDocsByField(
+    String collectionName,
+    String field, {
+    String nameField = 'id',
+    int? limit,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore!
+          .collection(collectionName)
+          .where(nameField, isEqualTo: field);
+      if (limit != null && limit > 0) {
+        query = query.limit(limit);
+      }
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+      final List<Map<String, dynamic>> results = snapshot.docs
+          .map((d) => d.data())
+          .toList();
+      return ResponseModel.success(
+        message: results.isEmpty
+            ? 'No documents found for $field in $collectionName'
+            : 'Found ${results.length} documents',
+        data: results,
+      );
+    } catch (e) {
+      final failure = FailureModel(
+        message: 'Error querying $collectionName by $nameField',
+        error: e,
+      );
+      return ResponseModel.error(message: failure.message, failure: failure);
+    }
+  }
+
+  Future<ResponseModel> findDocsInList(
+    String collectionName,
+    String field, {
+    String nameField = '',
+    int? limit,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore!
+          .collection(collectionName)
+          .where(nameField, arrayContains: field);
+      if (limit != null && limit > 0) {
+        query = query.limit(limit);
+      }
+      final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+      final List<Map<String, dynamic>> results = snapshot.docs
+          .map((d) => d.data())
+          .toList();
+      return ResponseModel.success(
+        message: results.isEmpty
+            ? 'No documents found for $field in $collectionName'
+            : 'Found ${results.length} documents',
+        data: results,
+      );
+    } catch (e) {
+      final failure = FailureModel(
+        message: 'Error querying $collectionName by $nameField',
+        error: e,
       );
       return ResponseModel.error(message: failure.message, failure: failure);
     }

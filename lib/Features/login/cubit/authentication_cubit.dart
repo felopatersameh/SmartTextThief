@@ -1,7 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../Exames/Controllers/cubit/exams_cubit.dart';
+import '../../Profile/cubit/profile_cubit.dart';
 import '../Data/authentication_source.dart';
 part 'authentication_state.dart';
 
@@ -16,20 +20,23 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> loginByGoogle() async {
+  Future<void> loginByGoogle(BuildContext context) async {
     emit(state.copyWith(loading: true, message: "", sucess: null));
     final response = await AuthenticationSource.loginWithGoogle();
     response.fold(
       (err) => emit(
-          state.copyWith(message: err.message, sucess: false, loading: false),
-        ),
-      (su) => emit(
+        state.copyWith(message: err.message, sucess: false, loading: false),
+      ),
+      (su) async {
+        await getDataWhenLogin(context);
+        emit(
           state.copyWith(
             message: "sucssed Login By Google",
             sucess: su,
             loading: false,
           ),
-        ),
+        );
+      },
     );
   }
 
@@ -43,5 +50,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         loading: false,
       ),
     );
+  }
+
+  Future<void> getDataWhenLogin(BuildContext context) async {
+    final user = await context.read<ProfileCubit>().init();
+    if (!context.mounted) return;
+    await context.read<SubjectCubit>().init(user.userEmail, user.isStu);
   }
 }

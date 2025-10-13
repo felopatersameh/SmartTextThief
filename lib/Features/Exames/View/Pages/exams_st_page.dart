@@ -1,208 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Features/Exames/View/Widgets/exam_card.dart';
-import 'package:smart_text_thief/Features/Exames/View/Widgets/exams_header_card.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/TextField/build_text_field.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
-import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_text_thief/Features/Exames/Controllers/cubit/exams_cubit.dart';
 
-class ExamsStudentPage extends StatefulWidget {
-  const ExamsStudentPage({super.key});
+import '../../../../Config/setting.dart';
+import '../../../../Core/Resources/app_colors.dart';
+import '../../../../Core/Resources/app_icons.dart';
+import '../../../../Core/Utils/Models/user_model.dart';
+import '../../../../Core/Utils/Widget/add_subject_dialog.dart';
+import '../Widgets/empty_list_exams.dart';
+import '../Widgets/exam_card.dart';
+import '../Widgets/exams_header_card.dart';
 
-  @override
-  State<ExamsStudentPage> createState() => _ExamsStudentPageState();
-}
+class ExamsStudentPage extends StatelessWidget {
+  final UserModel user;
+  const ExamsStudentPage({super.key, required this.user});
 
-class _ExamsStudentPageState extends State<ExamsStudentPage> {
-  final _codeController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  void _showJoinSubjectDialog() {
+  void _showJoinSubjectDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: EdgeInsets.all(20.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: AppColors.colorPrimary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Icon(
-                        AppIcons.school,
-                        color: AppColors.colorPrimary,
-                        size: 20.sp,
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: AppCustomtext(
-                        text: 'Join Subject',
-                        textStyle: AppTextStyles.bodyLargeBold.copyWith(
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        padding: EdgeInsets.all(4.w),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(6.r),
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          size: 16.sp,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
+      builder: (context) => AddSubjectDialog(
+        title: 'Join Subject',
+        submitButtonText: 'Join',
+        icon: AppIcons.quiz,
+        messageLoading: "Joining....",
+        nameField: "Code",
+        nameFieldHint: "Enter Code",
+        onSubmit: (String code) async {
+          // await context.read<ExamsCubit>().addSubject(context, model);
 
-                // Subject Code Field
-                AppCustomtext(
-                  text: 'Subject Code',
-                  textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                AppTextField(
-                  controller: _codeController,
-                  hint: 'Enter subject code',
-                  prefixIcon: Icon(AppIcons.quiz),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter subject code';
-                    }
-                    return null;
-                  },
-                  keyboard: TextInputType.text,
-                ),
-                SizedBox(height: 24.h),
+          // showMessageSnackBar(
+          //     context,
+          //     title: 'Invalid subject code. Please try again.',
+          //     type: MessageType.error,
+          //   );
 
-                // Join Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _joinSubject,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.colorPrimary,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: AppCustomtext(
-                      text: 'Join Subject',
-                      textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+          // if (!context.mounted) return;
+        },
       ),
     );
   }
 
-  void _joinSubject() async {
-    if (_formKey.currentState!.validate()) {
-      final code = _codeController.text.trim();
-
-      // Show loading message
-      await showMessageSnackBar(
-        context,
-        title: 'Joining subject...',
-        type: MessageType.loading,
-        onLoading: () async {
-
-          if (code == 'TEST123') {
-            if (!mounted) return;
-            showMessageSnackBar(
-              context,
-              title: 'Successfully joined the subject!',
-              type: MessageType.success,
-            );
-            Navigator.of(context).pop();
-          } else {
-            if (!mounted) return;
-            showMessageSnackBar(
-              context,
-              title: 'Invalid subject code. Please try again.',
-              type: MessageType.error,
-            );
-          }
-        },
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _codeController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        physics: AppConfig.physicsCustomScrollView,
-        shrinkWrap: true,
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: ExamsHeaderCard(),
-            ),
+    return BlocBuilder<SubjectCubit, SubjectState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: state.listData.isEmpty
+              ? EmptyListExams()
+              : CustomScrollView(
+                  physics: AppConfig.physicsCustomScrollView,
+                  shrinkWrap: true,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ExamsHeaderCard(),
+                      ),
+                    ),
+
+                    SliverAnimatedList(
+                      itemBuilder: (context, index, animation) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22),
+                        child: ExamCard(
+                          title: 'General Exam',
+                          date: '2023-11-20',
+                          type: 'Essay Questions',
+                        ),
+                      ),
+                      initialItemCount: 5,
+                    ),
+                  ],
+                ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showJoinSubjectDialog(context),
+            backgroundColor: AppColors.colorPrimary,
+            child: AppIcons.add,
           ),
-          SliverAnimatedList(
-            itemBuilder: (context, index, animation) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: ExamCard(
-                title: 'General Exam',
-                date: '2023-11-20',
-                type: 'Essay Questions',
-              ),
-            ),
-            initialItemCount: 5,
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showJoinSubjectDialog,
-        backgroundColor: AppColors.colorPrimary,
-        child: AppIcons.add,
-      ),
+        );
+      },
     );
   }
 }

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Core/Storage/Firebase/firebase_service.dart';
+import 'package:smart_text_thief/Core/Storage/Local/local_storage_service.dart';
+import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 
+import '../../Config/Routes/app_router.dart';
+import '../../Config/Routes/name_routes.dart';
 import '../../Core/Resources/resources.dart';
 import '../../Core/Utils/Widget/custom_text_app.dart';
 import 'Widgets/info_card.dart';
@@ -55,6 +60,23 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 12.h),
               OptionTile(title: 'Settings'),
               OptionTile(title: 'Help'),
+              OptionTile(
+                title: 'logOut',
+                color: Colors.redAccent.withValues(alpha: .3),
+                onTap: () async {
+                  await showMessageSnackBar(
+                    context,
+                    title: "Wating...",
+                    type: MessageType.loading,
+                    onLoading: () async {
+                      await LocalStorageService.clear();
+                      await FirebaseServices.instance.logOut();
+                      if (!context.mounted) return;
+                      AppRouter.goNamedByPath(context, NameRoutes.login);
+                    },
+                  );
+                },
+              ),
             ],
           ),
         );

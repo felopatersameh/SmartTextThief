@@ -5,10 +5,16 @@ import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class OptionTile extends StatelessWidget {
-  const OptionTile({super.key, required this.title, this.onTap});
+  const OptionTile({
+    super.key,
+    required this.title,
+    this.onTap,
+    this.color,
+  });
 
   final String title;
   final VoidCallback? onTap;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -16,18 +22,28 @@ class OptionTile extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.h),
       margin: EdgeInsets.symmetric(vertical: 5.h),
       decoration: BoxDecoration(
-        color: AppColors.colorsBackGround2,
+        color: color ?? AppColors.colorsBackGround2,
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: AppCustomtext(text: title, textStyle: AppTextStyles.h6Bold),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 18.sp,
-          color: Colors.white,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
         ),
-        onTap: onTap,
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: AppCustomtext(
+            text: title,
+            textStyle: AppTextStyles.h6Bold,
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: 18.sp,
+            color: Colors.white,
+          ),
+          onTap: onTap,
+        ),
       ),
     );
   }

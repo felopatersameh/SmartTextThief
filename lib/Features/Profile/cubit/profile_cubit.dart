@@ -11,8 +11,8 @@ part 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit() : super(ProfileState());
-  Future<void> init() async {
-    emit(state.copyWith(loading:true));
+  Future<UserModel> init() async {
+    emit(state.copyWith(loading: true));
 
     final String userId = await LocalStorageService.getValue(
       LocalStorageKeys.id,
@@ -20,10 +20,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     final resonse = await FirebaseServices.instance.getUserData(
       userId,
       CollectionKey.users.key,
-    );
+    );  
     final Map<String, dynamic> data = resonse.data;
     final model = UserModel.fromJson(data);
-    emit(state.copyWith(model: model,loading: false));
+    emit(state.copyWith(model: model, loading: false));
+    return model;
   }
-
 }

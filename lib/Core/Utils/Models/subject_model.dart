@@ -1,36 +1,36 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_teacher.dart';
+import '../Extensions/date_time_extension.dart';
+import 'subject_teacher.dart';
 import '../Enums/data_key.dart';
-
 class SubjectModel extends Equatable {
   const SubjectModel({
-    required this.subjectIdSubject,
-    required this.subjectCodeSub,
-    required this.subjectNameSubject,
+    required this.subjectId,
+    required this.subjectCode,
+    required this.subjectName,
     required this.subjectTeacher,
     required this.subjectEmailSts,
     required this.subjectCreatedAt,
   });
 
-  final String subjectIdSubject;
-  final String subjectCodeSub;
-  final String subjectNameSubject;
-  final SubjectTeacher? subjectTeacher;
+  final String subjectId;
+  final String subjectCode;
+  final String subjectName;
+  final SubjectTeacher subjectTeacher;
   final List<String> subjectEmailSts;
-  final DateTime? subjectCreatedAt;
+  final DateTime subjectCreatedAt;
 
   SubjectModel copyWith({
-    String? subjectIdSubject,
-    String? subjectCodeSub,
-    String? subjectNameSubject,
+    String? subjectId,
+    String? subjectCode,
+    String? subjectName,
     SubjectTeacher? subjectTeacher,
     List<String>? subjectEmailSts,
     DateTime? subjectCreatedAt,
   }) {
     return SubjectModel(
-      subjectIdSubject: subjectIdSubject ?? this.subjectIdSubject,
-      subjectCodeSub: subjectCodeSub ?? this.subjectCodeSub,
-      subjectNameSubject: subjectNameSubject ?? this.subjectNameSubject,
+      subjectId: subjectId ?? this.subjectId,
+      subjectCode: subjectCode ?? this.subjectCode,
+      subjectName: subjectName ?? this.subjectName,
       subjectTeacher: subjectTeacher ?? this.subjectTeacher,
       subjectEmailSts: subjectEmailSts ?? this.subjectEmailSts,
       subjectCreatedAt: subjectCreatedAt ?? this.subjectCreatedAt,
@@ -39,40 +39,36 @@ class SubjectModel extends Equatable {
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
     return SubjectModel(
-      subjectIdSubject: json[DataKey.subjectIdSubject.key] ?? "",
-      subjectCodeSub: json[DataKey.subjectCodeSub.key] ?? "",
-      subjectNameSubject: json[DataKey.subjectNameSubject.key] ?? "",
-      subjectTeacher: json[DataKey.subjectTeacher.key] == null
-          ? null
-          : SubjectTeacher.fromJson(json[DataKey.subjectTeacher.key]),
+      subjectId: json[DataKey.subjectIdSubject.key] ?? "",
+      subjectCode: json[DataKey.subjectCodeSub.key] ?? "",
+      subjectName: json[DataKey.subjectNameSubject.key] ?? "",
+      subjectTeacher: 
+           SubjectTeacher.fromJson(json[DataKey.subjectTeacher.key]),
       subjectEmailSts: json[DataKey.subjectEmailSts.key] == null
           ? []
-          : List<String>.from(
-              json[DataKey.subjectEmailSts.key]!.map((x) => x)),
-      subjectCreatedAt:
-          DateTime.tryParse(json[DataKey.subjectCreatedAt.key] ?? ""),
+          : List<String>.from(json[DataKey.subjectEmailSts.key]!.map((x) => x)),
+      subjectCreatedAt: DateTime.fromMillisecondsSinceEpoch(json[DataKey.subjectCreatedAt.key] ?? 0),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        DataKey.subjectIdSubject.key: subjectIdSubject,
-        DataKey.subjectCodeSub.key: subjectCodeSub,
-        DataKey.subjectNameSubject.key: subjectNameSubject,
-        DataKey.subjectTeacher.key: subjectTeacher?.toJson(),
-        DataKey.subjectEmailSts.key:
-            subjectEmailSts.map((x) => x).toList(),
-        DataKey.subjectCreatedAt.key: subjectCreatedAt == null
-            ? null
-            : "${subjectCreatedAt!.year.toString().padLeft(4, '0')}-${subjectCreatedAt!.month.toString().padLeft(2, '0')}-${subjectCreatedAt!.day.toString().padLeft(2, '0')}",
-      };
+    DataKey.subjectIdSubject.key: subjectId,
+    DataKey.subjectCodeSub.key: subjectCode,
+    DataKey.subjectNameSubject.key: subjectName,
+    DataKey.subjectTeacher.key: subjectTeacher.toJson(),
+    DataKey.subjectEmailSts.key: subjectEmailSts.map((x) => x).toList(),
+    DataKey.subjectCreatedAt.key: subjectCreatedAt.millisecondsSinceEpoch,
+  };
 
   @override
   List<Object?> get props => [
-        subjectIdSubject,
-        subjectCodeSub,
-        subjectNameSubject,
-        subjectTeacher,
-        subjectEmailSts,
-        subjectCreatedAt,
-      ];
+    subjectId,
+    subjectCode,
+    subjectName,
+    subjectTeacher,
+    subjectEmailSts,
+    subjectCreatedAt,
+  ];
+
+  get createdAt => subjectCreatedAt.shortMonthYear ;
 }
