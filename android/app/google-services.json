@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "231951979413",
+    "project_id": "smarttextthief",
+    "storage_bucket": "smarttextthief.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231951979413:android:f21639d0e0d0f0e1ec5c9c",
+        "android_client_info": {
+          "package_name": "com.example.smart_text_thief"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "231951979413-anlihbi9s6do3h4rm078g54o3u44e5nh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDElFn76oYbwWMe_aspmb0d_KUbkM0JUZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "231951979413-anlihbi9s6do3h4rm078g54o3u44e5nh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

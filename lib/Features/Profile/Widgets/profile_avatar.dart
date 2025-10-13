@@ -47,7 +47,7 @@ class ProfileAvatar extends StatelessWidget {
                           ),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(16.r),
-                            child: Image.asset(
+                            child: Image.network(
                               imageUrl!,
                               width: 250.w,
                               fit: BoxFit.contain,
@@ -63,7 +63,7 @@ class ProfileAvatar extends StatelessWidget {
                 }
               },
               child: ClipOval(
-                child: Image.asset(
+                child: Image.network(
                   imageUrl ?? '',
                   width: 100.r,
                   height: 100.r,

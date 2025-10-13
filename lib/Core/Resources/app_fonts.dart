@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTextStyles {
   static TextStyle _getTextStyle(double fontSize, FontWeight fontWeight) {
-    return GoogleFonts.inter(
+    return GoogleFonts.cairo(
       fontSize: fontSize.sp,
       fontWeight: fontWeight,
     ).copyWith(
@@ -54,7 +54,7 @@ class AppTextStyles {
   static final bodyXtraSmallMedium = _getTextStyle(12, FontWeight.bold);
 
   static TextStyle getTextStyleSpecial({Color? color, double? fontSize}) {
-    return GoogleFonts.plusJakartaSans(
+    return GoogleFonts.changa(
       fontSize: (fontSize ?? 50).sp,
       fontWeight: FontWeight.bold,
     ).copyWith(

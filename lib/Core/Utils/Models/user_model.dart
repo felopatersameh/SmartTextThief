@@ -1,0 +1,107 @@
+import 'package:equatable/equatable.dart';
+import '../Enums/enum_user.dart';
+import '../Enums/data_key.dart';
+
+class UserModel extends Equatable {
+  const UserModel({
+    required this.userId,
+    required this.photo,
+    required this.userTokensFcm,
+    required this.userName,
+    required this.userEmail,
+    required this.userPassword,
+    required this.userPhone,
+    required this.userType,
+    required this.userCreatedAt,
+    required this.userNotifications,
+  });
+
+  final String userId;
+  final List<dynamic> userTokensFcm;
+  final String photo;
+  final String userName;
+  final String userEmail;
+  final String userPassword;
+  final String userPhone;
+  final UserType userType;
+  final DateTime userCreatedAt;
+  final List<dynamic> userNotifications;
+
+  UserModel copyWith({
+    String? userId,
+    List<dynamic>? userTokensFcm,
+    String? userName,
+    String? userEmail,
+    String? userPassword,
+    String? userPhone,
+    String? photo,
+    UserType? userType,
+    DateTime? userCreatedAt,
+    List<dynamic>? userNotifications,
+  }) {
+    return UserModel(
+      userId: userId ?? this.userId,
+      userTokensFcm: userTokensFcm ?? this.userTokensFcm,
+      userName: userName ?? this.userName,
+      userEmail: userEmail ?? this.userEmail,
+      userPassword: userPassword ?? this.userPassword,
+      userPhone: userPhone ?? this.userPhone,
+      photo: photo ?? this.photo,
+      userType: userType ?? this.userType,
+      userCreatedAt: userCreatedAt ?? this.userCreatedAt,
+      userNotifications: userNotifications ?? this.userNotifications,
+    );
+  }
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      userId: json[DataKey.userId.key] ?? "",
+      userTokensFcm: json[DataKey.userTokensFCM.key] == null
+          ? []
+          : List<dynamic>.from(json[DataKey.userTokensFCM.key]!.map((x) => x)),
+      userName: json[DataKey.userName.key] ?? "",
+      photo: json[DataKey.photo.key] ?? "",
+      userEmail: json[DataKey.userEmail.key] ?? "",
+      userPassword: json[DataKey.userPassword.key] ?? "",
+      userPhone: json[DataKey.userPhone.key] ?? "",
+      userType: UserType.fromString(json[DataKey.userType.key] ?? "non"),
+      userCreatedAt: json[DataKey.userCreatedAt.key] is String
+          ? DateTime.tryParse(json[DataKey.userCreatedAt.key]) ?? DateTime.now()
+          : (json[DataKey.userCreatedAt.key] is DateTime 
+              ? json[DataKey.userCreatedAt.key] 
+              : DateTime.now()),
+      userNotifications: json[DataKey.userNotifications.key] == null
+          ? []
+          : List<dynamic>.from(
+              json[DataKey.userNotifications.key]!.map((x) => x)),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        DataKey.userId.key: userId,
+        DataKey.userTokensFCM.key: userTokensFcm.map((x) => x).toList(),
+        DataKey.userName.key: userName,
+        DataKey.userEmail.key: userEmail,
+        DataKey.userPassword.key: userPassword,
+        DataKey.photo.key: photo,
+        DataKey.userPhone.key: userPhone,
+        DataKey.userType.key: userType.value,
+        DataKey.userCreatedAt.key: userCreatedAt ,
+        DataKey.userNotifications.key:
+            userNotifications.map((x) => x).toList(),
+      };
+
+  @override
+  List<Object?> get props => [
+        userId,
+        userTokensFcm,
+        userName,
+        userEmail,
+        photo,
+        userPassword,
+        userPhone,
+        userType.value,
+        userCreatedAt,
+        userNotifications,
+      ];
+}

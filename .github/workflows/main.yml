@@ -5,8 +5,8 @@ on:
     branches: main
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
     
   #   steps:
   #   - name: Checkout code
@@ -56,41 +56,41 @@ jobs:
   #         build/app/outputs/flutter-apk/app-release.apk
   #         build/app/outputs/bundle/release/app-release.aab
 
-  build_ios_appetize:
-    name: 🍎 Build iOS for Appetize
-    runs-on: macos-latest
+  # build_ios_appetize:
+  #   name: 🍎 Build iOS for Appetize
+  #   runs-on: macos-latest
     
-    steps:
-    - name: 🔄 Checkout code
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: 🔄 Checkout code
+  #     uses: actions/checkout@v4
     
-    - name: ⚙️ Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.35.5'
+  #   - name: ⚙️ Setup Flutter
+  #     uses: subosito/flutter-action@v2
+  #     with:
+  #       flutter-version: '3.35.5'
     
-    - name: 📦 Install dependencies
-      run: |
-        flutter pub get
-        cd ios
-        pod install
+  #   - name: 📦 Install dependencies
+  #     run: |
+  #       flutter pub get
+  #       cd ios
+  #       pod install
     
-    - name: 🏗️ Build iOS for Simulator
-      run: flutter build ios --simulator --debug --no-codesign
+  #   - name: 🏗️ Build iOS for Simulator
+  #     run: flutter build ios --simulator --debug --no-codesign
     
-    - name: 📦 Create iOS App Zip
-      run: |
-        cd build/ios/iphonesimulator
-        zip -r app.zip Runner.app
+  #   - name: 📦 Create iOS App Zip
+  #     run: |
+  #       cd build/ios/iphonesimulator
+  #       zip -r app.zip Runner.app
     
-    - name: 📤 Upload to Appetize
-      run: |
-        curl "https://api.appetize.io/v1/apps" \
-          -F "file=@build/ios/iphonesimulator/app.zip" \
-          -F "platform=ios" \
-          -F "token=tok_7ucic4hz3p4ubtnufyjc6t6mzm"
+  #   - name: 📤 Upload to Appetize
+  #     run: |
+  #       curl "https://api.appetize.io/v1/apps" \
+  #         -F "file=@build/ios/iphonesimulator/app.zip" \
+  #         -F "platform=ios" \
+  #         -F "token=tok_7ucic4hz3p4ubtnufyjc6t6mzm"
     
-    - name: 🔗 Get App URL
-      run: |
-        echo "✅ iOS App uploaded to Appetize!"
-        echo "🌐 Check your dashboard: https://appetize.io/dashboard"
+  #   - name: 🔗 Get App URL
+  #     run: |
+  #       echo "✅ iOS App uploaded to Appetize!"
+  #       echo "🌐 Check your dashboard: https://appetize.io/dashboard"

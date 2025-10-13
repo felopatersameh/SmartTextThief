@@ -48,6 +48,14 @@ dependencies:
   sahih_validator: ^0.0.6
   meta: ^1.16.0
   equatable: ^2.0.7
+  firebase_core: ^4.1.1
+  google_sign_in: ^7.2.0
+  firebase_auth: ^6.1.0
+  cloud_firestore: ^6.0.2
+  dartz: ^0.10.1
+  firebase_messaging: ^16.0.2
+  dio: ^5.9.0
+  googleapis_auth: ^2.0.0
   
 
 dev_dependencies:
