@@ -8,6 +8,7 @@ class ExamModel extends Equatable {
     required this.examIdSubject,
     required this.examIdTeacher,
     required this.examExamResult,
+    required this.examQandA,
     required this.examCreatedAt,
     required this.examFinishAt,
   });
@@ -15,15 +16,17 @@ class ExamModel extends Equatable {
   final String examId;
   final String examIdSubject;
   final String examIdTeacher;
-  final List<ExamExamResult> examExamResult;
-  final DateTime? examCreatedAt;
-  final DateTime? examFinishAt;
+  final List<ExamResult> examExamResult;
+  final List<ExamResult> examQandA;
+  final DateTime examCreatedAt;
+  final DateTime examFinishAt;
 
   ExamModel copyWith({
     String? examId,
     String? examIdSubject,
     String? examIdTeacher,
-    List<ExamExamResult>? examExamResult,
+    List<ExamResult>? examExamResult,
+    List<ExamResult>? examQandA,
     DateTime? examCreatedAt,
     DateTime? examFinishAt,
   }) {
@@ -32,6 +35,7 @@ class ExamModel extends Equatable {
       examIdSubject: examIdSubject ?? this.examIdSubject,
       examIdTeacher: examIdTeacher ?? this.examIdTeacher,
       examExamResult: examExamResult ?? this.examExamResult,
+      examQandA: examQandA ?? this.examQandA,
       examCreatedAt: examCreatedAt ?? this.examCreatedAt,
       examFinishAt: examFinishAt ?? this.examFinishAt,
     );
@@ -44,11 +48,22 @@ class ExamModel extends Equatable {
       examIdTeacher: json[DataKey.examIdTeacher.key] ?? "",
       examExamResult: json[DataKey.examExamResult.key] == null
           ? []
-          : List<ExamExamResult>.from(
-              json[DataKey.examExamResult.key]!
-                  .map((x) => ExamExamResult.fromJson(x))),
-      examCreatedAt: DateTime.tryParse(json[DataKey.examCreatedAt.key] ?? ""),
-      examFinishAt: DateTime.tryParse(json[DataKey.examFinishAt.key] ?? ""),
+          : List<ExamResult>.from(
+              (json[DataKey.examExamResult.key] as List<dynamic>).map(
+                (x) => ExamResult.fromJson(x),
+              ),
+            ),
+      examQandA: json['exam_Q&A'] == null
+          ? []
+          : List<ExamResult>.from(
+              (json['exam_Q&A'] as List<dynamic>).map(
+                (x) => ExamResult.fromJson(x),
+              ),
+            ),
+      examCreatedAt:
+          DateTime.fromMillisecondsSinceEpoch(json[DataKey.examCreatedAt.key]),
+      examFinishAt:
+          DateTime.fromMillisecondsSinceEpoch(json[DataKey.examFinishAt.key]),
     );
   }
 
@@ -58,12 +73,9 @@ class ExamModel extends Equatable {
         DataKey.examIdTeacher.key: examIdTeacher,
         DataKey.examExamResult.key:
             examExamResult.map((x) => x.toJson()).toList(),
-        DataKey.examCreatedAt.key: examCreatedAt == null
-            ? null
-            : "${examCreatedAt!.year.toString().padLeft(4, '0')}-${examCreatedAt!.month.toString().padLeft(2, '0')}-${examCreatedAt!.day.toString().padLeft(2, '0')}",
-        DataKey.examFinishAt.key: examFinishAt == null
-            ? null
-            : "${examFinishAt!.year.toString().padLeft(4, '0')}-${examFinishAt!.month.toString().padLeft(2, '0')}-${examFinishAt!.day.toString().padLeft(2, '0')}",
+        'exam_Q&A': examQandA.map((x) => x.toJson()).toList(),
+        DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
+        DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
       };
 
   @override
@@ -72,6 +84,7 @@ class ExamModel extends Equatable {
         examIdSubject,
         examIdTeacher,
         examExamResult,
+        examQandA,
         examCreatedAt,
         examFinishAt,
       ];

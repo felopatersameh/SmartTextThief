@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -23,13 +24,13 @@ class NotificationServices {
       await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
     }
     FirebaseMessaging.onMessageOpenedApp.listen((message)async {
-      // debugPrint(
-      //   "📲 onMessageOpenedAppData:: ${message.notification?.toMap()}",
-      // );
+      debugPrint(
+        "📲 onMessageOpenedAppData:: ${message.notification?.toMap()}",
+      );
     });
 
     FirebaseMessaging.onMessage.listen((message)async {
-      // debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
+      debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
       // final notification = message.notification;
 
       // if (notification != null) {

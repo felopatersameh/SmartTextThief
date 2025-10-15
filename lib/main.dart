@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:smart_text_thief/Features/Exames/Controllers/cubit/exams_cubit.dart';
+import 'package:smart_text_thief/Features/Subjects/cubit/subjects_cubit.dart';
 
 import 'Config/setting.dart';
 import 'Core/Resources/Services/Notifications/notification_services.dart';
@@ -26,7 +26,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-// @pragma('vm:entry-point')
+@pragma('vm:entry-point')
 Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
   // debugPrint("onMessage:: ${onData.notification?.toMap()}");
   //  final notification = onData.notification;

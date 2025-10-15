@@ -5,7 +5,7 @@ import 'package:smart_text_thief/Core/Storage/Local/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
 import '../../Config/Routes/name_routes.dart';
 
-import '../Exames/Controllers/cubit/exams_cubit.dart';
+import '../Subjects/cubit/subjects_cubit.dart';
 import '../Profile/cubit/profile_cubit.dart';
 import 'loading_indicator.dart';
 

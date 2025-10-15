@@ -23,6 +23,10 @@ enum DataKey {
   examResultEmailSt('examResult_emailSt'),
   examResultDegree('examResult_degree'),
   examResultQandA('examResult_Q&A'),
+  typeExam('typeExam'),
+  randomQuestions('randomQuestions'),
+  numberOfQuestions('numberOfQuestions'),
+  levelExam('levelExam'),
 
   // 🔹 Subject fields
   subjectIdSubject('subject_idSubject'),

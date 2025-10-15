@@ -17,10 +17,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     final String userId = await LocalStorageService.getValue(
       LocalStorageKeys.id,
     );
-    final resonse = await FirebaseServices.instance.getUserData(
+    final resonse = await FirebaseServices.instance.getData(
       userId,
       CollectionKey.users.key,
-    );  
+    );
     final Map<String, dynamic> data = resonse.data;
     final model = UserModel.fromJson(data);
     emit(state.copyWith(model: model, loading: false));

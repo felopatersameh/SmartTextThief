@@ -1,51 +1,86 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
+import '../Enums/data_key.dart';
+import '../Enums/level_exam.dart';
 
-class ExamExamResult extends Equatable {
-  const ExamExamResult({
+import 'exam_result_q_a.dart';
+
+class ExamResult extends Equatable {
+  const ExamResult({
     required this.examResultEmailSt,
     required this.examResultDegree,
     required this.examResultQA,
+    required this.levelExam,
+    required this.numberOfQuestions,
+    this.randomQuestions = false,
+    required this.typeExam,
   });
 
   final String examResultEmailSt;
   final String examResultDegree;
-  final List<dynamic> examResultQA;
+  final List<ExamResultQA> examResultQA;
+  final LevelExam levelExam;
+  final int numberOfQuestions;
+  final bool randomQuestions;
+  final String typeExam;
 
-  ExamExamResult copyWith({
+  ExamResult copyWith({
     String? examResultEmailSt,
     String? examResultDegree,
-    List<dynamic>? examResultQA,
+    List<ExamResultQA>? examResultQA,
+    LevelExam? levelExam,
+    int? numberOfQuestions,
+    bool? randomQuestions,
+    String? typeExam,
   }) {
-    return ExamExamResult(
+    return ExamResult(
       examResultEmailSt: examResultEmailSt ?? this.examResultEmailSt,
       examResultDegree: examResultDegree ?? this.examResultDegree,
       examResultQA: examResultQA ?? this.examResultQA,
+      levelExam: levelExam ?? this.levelExam,
+      numberOfQuestions: numberOfQuestions ?? this.numberOfQuestions,
+      randomQuestions: randomQuestions ?? this.randomQuestions,
+      typeExam: typeExam ?? this.typeExam,
     );
   }
 
-  factory ExamExamResult.fromJson(Map<String, dynamic> json) {
-    return ExamExamResult(
+  factory ExamResult.fromJson(Map<String, dynamic> json) {
+    return ExamResult(
       examResultEmailSt: json[DataKey.examResultEmailSt.key] ?? "",
       examResultDegree: json[DataKey.examResultDegree.key] ?? "",
       examResultQA: json[DataKey.examResultQandA.key] == null
           ? []
-          : List<dynamic>.from(
-              json[DataKey.examResultQandA.key]!.map((x) => x)),
+          : List<ExamResultQA>.from(
+              (json[DataKey.examResultQandA.key] as List<dynamic>).map(
+                (x) => ExamResultQA.fromJson(x as Map<String, dynamic>),
+              ),
+            ),
+      levelExam: LevelExam.fromString(json[DataKey.levelExam.key]),
+      numberOfQuestions:
+          int.tryParse(json[DataKey.numberOfQuestions.key]?.toString() ?? '') ??
+          0,
+      randomQuestions: json[DataKey.randomQuestions.key] ?? false,
+      typeExam: json[DataKey.typeExam.key] ?? "Quiz",
     );
   }
 
   Map<String, dynamic> toJson() => {
-        DataKey.examResultEmailSt.key: examResultEmailSt,
-        DataKey.examResultDegree.key: examResultDegree,
-        DataKey.examResultQandA.key:
-            examResultQA.map((x) => x).toList(),
-      };
+    DataKey.examResultEmailSt.key: examResultEmailSt,
+    DataKey.examResultDegree.key: examResultDegree,
+    DataKey.examResultQandA.key: examResultQA.map((x) => x.toJson()).toList(),
+    DataKey.levelExam.key: levelExam.name,
+    DataKey.numberOfQuestions.key: numberOfQuestions,
+    DataKey.randomQuestions.key: randomQuestions,
+    DataKey.typeExam.key: typeExam,
+  };
 
   @override
   List<Object?> get props => [
-        examResultEmailSt,
-        examResultDegree,
-        examResultQA,
-      ];
+    examResultEmailSt,
+    examResultDegree,
+    examResultQA,
+    levelExam,
+    numberOfQuestions,
+    randomQuestions,
+    typeExam,
+  ];
 }

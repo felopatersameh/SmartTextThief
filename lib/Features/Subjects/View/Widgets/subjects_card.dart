@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import '../../../../Core/Resources/app_colors.dart';
 import '../../../../Core/Resources/app_fonts.dart';
 import '../../../../Core/Resources/app_icons.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class SubjectsCard extends StatelessWidget {
-  final String title;
-  final String date;
-  final int lengthStudent;
-  final int examsStudent;
+  final SubjectModel model ;
   final VoidCallback? openSubjectDetails;
 
   const SubjectsCard({
     super.key,
-    required this.title,
-    required this.date,
-    required this.lengthStudent,
-    required this.examsStudent,
-    this.openSubjectDetails,
+  
+    this.openSubjectDetails, required this.model,
   });
 
   @override
@@ -27,7 +22,10 @@ class SubjectsCard extends StatelessWidget {
     final Color background = primary.withValues(alpha: 0.13);
     final Color titleColor = Colors.white;
     final Color subtitleColor = Colors.grey.shade600;
-
+    final String title =model.subjectName;
+    final String date =model.createdAt;
+    final int lengthStudent =model.subjectEmailSts.length;
+    final int examsStudent = model.subjectEmailSts.length;
     return GestureDetector(
       onTap: openSubjectDetails,
       child: Container(

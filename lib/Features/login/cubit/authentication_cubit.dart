@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../Exames/Controllers/cubit/exams_cubit.dart';
+import '../../Subjects/cubit/subjects_cubit.dart';
 import '../../Profile/cubit/profile_cubit.dart';
 import '../Data/authentication_source.dart';
 part 'authentication_state.dart';

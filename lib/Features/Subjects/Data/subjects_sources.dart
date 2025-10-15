@@ -1,13 +1,39 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
+import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Storage/Firebase/firebase_service.dart';
 import '../../../Core/Storage/Firebase/response_model.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
+import '../../../Core/Utils/Models/exam_model.dart';
 import '../../../Core/Utils/Models/subject_model.dart';
 
 import '../../../Core/Storage/Firebase/failure_model.dart';
 
-class ExamTeSources {
+class SubjectsSources {
+ 
+ static Future<Either<String, List<ExamModel>>> getExam(String idSubject) async {
+    try {
+      final response = await FirebaseServices.instance.findDocsInList(
+        CollectionKey.subjects.key,
+        idSubject,
+        subCollections: [ CollectionKey.exams.key],
+        nameField: DataKey.examIdSubject.key,
+      );
+      final List<ExamModel> model = [];
+      if (response.status) {
+        for (var element in response.data as List) {
+          model.add(element);
+        }
+
+        return right(model);
+      } else {
+        return left(response.message);
+      }
+    } catch (e) {
+      return left(e.toString());
+    }
+  }
+
   static Future<Either<FailureModel, List<SubjectModel>>> getSubjects(
     String email,
     bool array,
@@ -28,13 +54,14 @@ class ExamTeSources {
               "${DataKey.subjectTeacher.key}.${DataKey.teacherEmail.key}",
         );
       }
-      
+
       final List<SubjectModel> model = [];
       if (response.status == true) {
         final data = response.data as List;
         for (var element in data) {
           model.add(SubjectModel.fromJson(element));
         }
+        model.reversed;
         return right(model);
       }
 
@@ -125,4 +152,63 @@ class ExamTeSources {
       return Left(model);
     }
   }
+
+  static Future<Either<FailureModel, SubjectModel>> joinSubject(
+    String code,
+    String email,
+  ) async {
+    try {
+      final isExists = await FirebaseServices.instance.checkIsExists(
+        DataKey.subjectCodeSub.key,
+        CollectionKey.subjects.key,
+        code,
+      );
+      if (!isExists.status) {
+        final FailureModel model = FailureModel(
+          error: isExists.failure?.error.toString(),
+          message: "Invalid subject code. Please try again.",
+        );
+        return Left(model);
+      }
+      final updateData = await FirebaseServices.instance.updateData(
+        CollectionKey.subjects.key,
+        isExists.data.toString(),
+        {
+          DataKey.subjectEmailSts.key: FieldValue.arrayUnion([email]),
+        },
+      );
+      if (!updateData.status) {
+        if (!isExists.status) {
+          final FailureModel model = FailureModel(
+            error: isExists.failure?.error.toString(),
+            message: isExists.message,
+          );
+          return Left(model);
+        }
+      }
+      final response = await FirebaseServices.instance.getData(
+        isExists.data.toString(),
+        CollectionKey.subjects.key,
+      );
+      if (response.status == true) {
+        final data = SubjectModel.fromJson(
+          response.data as Map<String, dynamic>,
+        );
+        return right(data);
+      } else {
+        final FailureModel model = FailureModel(
+          error: response.failure?.error.toString(),
+          message: response.message,
+        );
+        return Left(model);
+      }
+    } catch (error) {
+      final FailureModel model = FailureModel(
+        error: error.toString(),
+        message: "",
+      );
+      return Left(model);
+    }
+  }
+
 }

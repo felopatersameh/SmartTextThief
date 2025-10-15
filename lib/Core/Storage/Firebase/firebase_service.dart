@@ -120,82 +120,99 @@ class FirebaseServices {
     log('checkUserExists::: ${querySnapshot.docs.length}');
     if (querySnapshot.docs.isNotEmpty) {
       return ResponseModel.success(
-        message: 'User exists',
+        message: 'exists',
         data: querySnapshot.docs.first.id,
       );
     } else {
-      return ResponseModel.error(message: 'User does not exist');
+      return ResponseModel.error(message: 'does not exist');
     }
   }
 
-  Future<ResponseModel> addData(
-    String collectionName,
-    String documentId,
-    Map<String, dynamic> data,
-  ) async {
-    try {
-      await firestore!.collection(collectionName).doc(documentId).set(data);
-      return ResponseModel.success(
-        message: 'Added successfully',
-        data: documentId,
-      );
-    } catch (e) {
-      final failure = FailureModel(message: 'Error adding data', error: e);
-      return ResponseModel.error(message: failure.message, failure: failure);
+Future<ResponseModel> addData(
+  String collectionName,
+  String documentId,
+  Map<String, dynamic> data, {
+  List<String>? subCollections,
+  List<String>? subIds,
+}) async {
+  try {
+    CollectionReference ref = firestore!.collection(collectionName);
+    if (subCollections != null && subCollections.isNotEmpty) {
+      for (int i = 0; i < subCollections.length; i++) {
+        final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
+        ref = id != null ? ref.doc(id).collection(subCollections[i]) : ref.doc(subCollections[i]).collection(subCollections[i]);
+      }
     }
+    await ref.doc(documentId).set(data);
+    return ResponseModel.success(message: 'Added successfully', data: documentId);
+  } catch (e) {
+    final failure = FailureModel(message: 'Error adding data', error: e);
+    return ResponseModel.error(message: failure.message, failure: failure);
   }
+}
 
-  Future<ResponseModel> removeData(
-    String collectionName,
-    String documentId,
-  ) async {
-    try {
-      await firestore!.collection(collectionName).doc(documentId).delete();
-      log(
-        'TestFIrebaseServices:::Document $documentId removed from $collectionName',
-      );
-      return ResponseModel.success(message: 'Data removed successfully');
-    } catch (e) {
-      final failure = FailureModel(message: 'Error removing data', error: e);
-      log('TestFIrebaseServices:::Error removing data: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
+Future<ResponseModel> removeData(
+  String collectionName,
+  String documentId, {
+  List<String>? subCollections,
+  List<String>? subIds,
+}) async {
+  try {
+    CollectionReference ref = firestore!.collection(collectionName);
+    if (subCollections != null && subCollections.isNotEmpty) {
+      for (int i = 0; i < subCollections.length; i++) {
+        final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
+        ref = id != null ? ref.doc(id).collection(subCollections[i]) : ref.doc(subCollections[i]).collection(subCollections[i]);
+      }
     }
+    await ref.doc(documentId).delete();
+    log('TestFIrebaseServices:::Document $documentId removed from $collectionName');
+    return ResponseModel.success(message: 'Data removed successfully');
+  } catch (e) {
+    final failure = FailureModel(message: 'Error removing data', error: e);
+    log('TestFIrebaseServices:::Error removing data: ${failure.toString()}');
+    return ResponseModel.error(message: failure.message, failure: failure);
   }
+}
 
-  Future<ResponseModel> updateData(
-    String collectionName,
-    String documentId,
-    dynamic data,
-  ) async {
-    try {
-      await firestore!.collection(collectionName).doc(documentId).update(data);
-      log(
-        'TestFIrebaseServices:::Document $documentId in $collectionName updated with $data',
-      );
-      return ResponseModel.success(message: 'updated successfully');
-    } catch (e) {
-      final failure = FailureModel(message: 'Error updating data', error: e);
-      log('TestFIrebaseServices:::Error updating data: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
+Future<ResponseModel> updateData(
+  String collectionName,
+  String documentId,
+  dynamic data, {
+  List<String>? subCollections,
+  List<String>? subIds,
+}) async {
+  try {
+    CollectionReference ref = firestore!.collection(collectionName);
+    if (subCollections != null && subCollections.isNotEmpty) {
+      for (int i = 0; i < subCollections.length; i++) {
+        final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
+        ref = id != null ? ref.doc(id).collection(subCollections[i]) : ref.doc(subCollections[i]).collection(subCollections[i]);
+      }
     }
+    await ref.doc(documentId).update(data);
+    log('TestFIrebaseServices:::Document $documentId in $collectionName updated with $data');
+    return ResponseModel.success(message: 'updated successfully');
+  } catch (e) {
+    final failure = FailureModel(message: 'Error updating data', error: e);
+    log('TestFIrebaseServices:::Error updating data: ${failure.toString()}');
+    return ResponseModel.error(message: failure.message, failure: failure);
   }
+}
 
-  Future<ResponseModel> getUserData(
-    String userId,
-    String collectionName,
-  ) async {
+  Future<ResponseModel> getData(String id, String collectionName) async {
     try {
       final DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await firestore!.collection(collectionName).doc(userId).get();
+          await firestore!.collection(collectionName).doc(id).get();
 
       if (documentSnapshot.exists) {
         return ResponseModel.success(
-          message: 'User data retrieved successfully',
+          message: 'data retrieved successfully',
           data: documentSnapshot.data(),
         );
       } else {
         return ResponseModel.error(
-          message: 'No data found for this user',
+          message: 'No data found ',
           data: null,
         );
       }
@@ -235,69 +252,79 @@ class FirebaseServices {
   }
 
   /// Generic query helpers by email field for any collection
-  Future<ResponseModel> findDocsByField(
-    String collectionName,
-    String field, {
-    String nameField = 'id',
-    int? limit,
-  }) async {
-    try {
-      Query<Map<String, dynamic>> query = firestore!
-          .collection(collectionName)
-          .where(nameField, isEqualTo: field);
-      if (limit != null && limit > 0) {
-        query = query.limit(limit);
+Future<ResponseModel> findDocsByField(
+  String collectionName,
+  String field, {
+  String nameField = 'id',
+  int? limit,
+  List<String>? subCollections,
+  List<String>? subIds,
+}) async {
+  try {
+    CollectionReference<Map<String, dynamic>> ref = firestore!.collection(collectionName);
+    if (subCollections != null && subCollections.isNotEmpty) {
+      for (int i = 0; i < subCollections.length; i++) {
+        final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
+        ref = id != null ? ref.doc(id).collection(subCollections[i]) : ref.doc(subCollections[i]).collection(subCollections[i]);
       }
-      final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-      final List<Map<String, dynamic>> results = snapshot.docs
-          .map((d) => d.data())
-          .toList();
-      return ResponseModel.success(
-        message: results.isEmpty
-            ? 'No documents found for $field in $collectionName'
-            : 'Found ${results.length} documents',
-        data: results,
-      );
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error querying $collectionName by $nameField',
-        error: e,
-      );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
+    Query<Map<String, dynamic>> query = ref.where(nameField, isEqualTo: field);
+    if (limit != null && limit > 0) {
+      query = query.limit(limit);
+    }
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+    final List<Map<String, dynamic>> results = snapshot.docs.map((d) => d.data()).toList();
+    return ResponseModel.success(
+      message: results.isEmpty
+          ? 'No documents found for $field in $collectionName'
+          : 'Found ${results.length} documents',
+      data: results,
+    );
+  } catch (e) {
+    final failure = FailureModel(
+      message: 'Error querying $collectionName by $nameField',
+      error: e,
+    );
+    return ResponseModel.error(message: failure.message, failure: failure);
   }
+}
 
-  Future<ResponseModel> findDocsInList(
-    String collectionName,
-    String field, {
-    String nameField = '',
-    int? limit,
-  }) async {
-    try {
-      Query<Map<String, dynamic>> query = firestore!
-          .collection(collectionName)
-          .where(nameField, arrayContains: field);
-      if (limit != null && limit > 0) {
-        query = query.limit(limit);
+Future<ResponseModel> findDocsInList(
+  String collectionName,
+  String field, {
+  String nameField = '',
+  int? limit,
+  List<String>? subCollections,
+  List<String>? subIds,
+}) async {
+  try {
+    CollectionReference<Map<String, dynamic>> ref = firestore!.collection(collectionName);
+    if (subCollections != null && subCollections.isNotEmpty) {
+      for (int i = 0; i < subCollections.length; i++) {
+        final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
+        ref = id != null ? ref.doc(id).collection(subCollections[i]) : ref.doc(subCollections[i]).collection(subCollections[i]);
       }
-      final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-      final List<Map<String, dynamic>> results = snapshot.docs
-          .map((d) => d.data())
-          .toList();
-      return ResponseModel.success(
-        message: results.isEmpty
-            ? 'No documents found for $field in $collectionName'
-            : 'Found ${results.length} documents',
-        data: results,
-      );
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error querying $collectionName by $nameField',
-        error: e,
-      );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
+    Query<Map<String, dynamic>> query = ref.where(nameField, arrayContains: field);
+    if (limit != null && limit > 0) {
+      query = query.limit(limit);
+    }
+    final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
+    final List<Map<String, dynamic>> results = snapshot.docs.map((d) => d.data()).toList();
+    return ResponseModel.success(
+      message: results.isEmpty
+          ? 'No documents found for $field in $collectionName'
+          : 'Found ${results.length} documents',
+      data: results,
+    );
+  } catch (e) {
+    final failure = FailureModel(
+      message: 'Error querying $collectionName by $nameField',
+      error: e,
+    );
+    return ResponseModel.error(message: failure.message, failure: failure);
   }
+}
 
   //================================================================================================
   //* Verification
