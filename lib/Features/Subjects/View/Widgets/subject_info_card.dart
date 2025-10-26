@@ -63,13 +63,13 @@ class SubjectInfoCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: InfoRow(
-                    icon: AppIcons.studenst,
+                    icon: AppIcons.students,
                     label: 'Students: ${subjectModel.subjectEmailSts.length}',
                   ),
                 ),
                 Expanded(
                   child: InfoRow(
-                    icon: AppIcons.exame,
+                    icon: AppIcons.exam,
                     label: 'Exams: $examLength',
                   ),
                 ),

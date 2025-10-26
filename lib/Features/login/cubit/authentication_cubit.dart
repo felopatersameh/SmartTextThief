@@ -11,26 +11,26 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit() : super(AuthenticationState());
 
   Future<void> loginByEmail() async {
-    emit(state.copyWith(loading: true, message: "", sucess: null));
+    emit(state.copyWith(loading: true, message: "", success: null));
     await Future.delayed(Duration(seconds: 2));
     emit(
-      state.copyWith(message: "sucssed Login ", sucess: true, loading: false),
+      state.copyWith(message: "success Login ", success: true, loading: false),
     );
   }
 
   Future<void> loginByGoogle(BuildContext context) async {
-    emit(state.copyWith(loading: true, message: "", sucess: null));
+    emit(state.copyWith(loading: true, message: "", success: null));
     final response = await AuthenticationSource.loginWithGoogle();
     response.fold(
       (err) => emit(
-        state.copyWith(message: err.message, sucess: false, loading: false),
+        state.copyWith(message: err.message, success: false, loading: false),
       ),
       (su) async {
         await getDataWhenLogin(context);
         emit(
           state.copyWith(
-            message: "sucssed Login By Google",
-            sucess: su,
+            message: "success Login By Google",
+            success: su,
             loading: false,
           ),
         );
@@ -38,13 +38,13 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     );
   }
 
-  Future<void> loginByfacebook() async {
-    emit(state.copyWith(loading: true, message: "", sucess: null));
+  Future<void> loginByFacebook() async {
+    emit(state.copyWith(loading: true, message: "", success: null));
     await Future.delayed(Duration(seconds: 2));
     emit(
       state.copyWith(
-        message: "sucssed Login By Facebook",
-        sucess: true,
+        message: "success Login By Facebook",
+        success: true,
         loading: false,
       ),
     );

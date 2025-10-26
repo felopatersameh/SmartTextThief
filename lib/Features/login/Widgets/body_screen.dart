@@ -44,10 +44,10 @@ class _BodyScreenState extends State<BodyScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationCubit, AuthenticationState>(
       listener: (context, state) async {
-        if (state.sucess != null &&
+        if (state.success != null &&
             state.message?.isNotEmpty == true &&
             state.message != null) {
-          if (state.sucess == true) {
+          if (state.success == true) {
             await showMessageSnackBar(
               context,
               title: state.message!,
@@ -56,7 +56,7 @@ class _BodyScreenState extends State<BodyScreen> {
             if (!context.mounted) return;
             AppRouter.goNamedByPath(context, NameRoutes.subject);
           }
-          if (state.sucess == false) {
+          if (state.success == false) {
             if (!context.mounted) return;
             await showMessageSnackBar(
               context,
@@ -160,7 +160,7 @@ class _BodyScreenState extends State<BodyScreen> {
                       type: MessageType.loading,
                       onLoading: () async => await context
                           .read<AuthenticationCubit>()
-                          .loginByfacebook(),
+                          .loginByFacebook(),
                     ),
                     iconErrorBuilder: AppIcons.facebook,
                     text: AppStrings.orSignInWithFacebook,

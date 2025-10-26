@@ -13,7 +13,7 @@ class AppColors {
 
   //------------------------------------------------------------- for TextField
   static const Color colorsBackGroundNavBar = Color(0xFF263238);
-  static const Color colorBackgroundCardProjets = Color(0xFF455A64);
+  static const Color colorBackgroundCardProjects = Color(0xFF455A64);
   // static const Color colorTextFieldBorder = Color(0xFFBABABA);
   // static const Color colorsControlTextField = Colors.transparent;
   static const Color colorTextFieldBackGround =  Color(0xFF132F40);

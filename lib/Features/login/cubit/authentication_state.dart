@@ -2,19 +2,19 @@ part of 'authentication_cubit.dart';
 
 @immutable
 class AuthenticationState extends Equatable {
-  final bool ? loading;
+  final bool? loading;
   final String? message;
-  final bool? sucess;
-  const AuthenticationState({this.loading , this.message, this.sucess});
+  final bool? success;
+  const AuthenticationState({this.loading, this.message, this.success});
 
-  AuthenticationState copyWith({bool? loading, String? message, bool? sucess}) {
+  AuthenticationState copyWith({bool? loading, String? message, bool? success}) {
     return AuthenticationState(
       loading: loading ?? this.loading,
       message: message ?? this.message,
-      sucess: sucess ?? this.sucess,
+      success: success ?? this.success,
     );
   }
 
   @override
-  List<Object?> get props => [loading, message, sucess];
+  List<Object?> get props => [loading, message, success];
 }

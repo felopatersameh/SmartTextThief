@@ -14,8 +14,8 @@ class SubjectCubit extends Cubit<SubjectState> {
 
   Future<void> init(String email, bool stu) async {
     emit(state.copyWith(loading: true));
-    final resonse = await SubjectsSources.getSubjects(email, stu);
-    resonse.fold(
+    final response = await SubjectsSources.getSubjects(email, stu);
+    response.fold(
       (error) async => emit(
         state.copyWith(
           error: error.message,
@@ -29,18 +29,22 @@ class SubjectCubit extends Cubit<SubjectState> {
   }
 
   Future<List<ExamModel>> getExams(String idSubject) async {
-    emit(state.copyWith(loadinExams: true));
+    emit(state.copyWith(loadingExams: true));
     List<ExamModel> listDataOfExams = [];
-    final resonse = await SubjectsSources.getExam(idSubject);
-    resonse.fold(
+    final response = await SubjectsSources.getExam(idSubject);
+    response.fold(
       (error) async {
         emit(
-          state.copyWith(error: error, listDataOfExams: [], loadinExams: false),
+          state.copyWith(
+            error: error,
+            listDataOfExams: [],
+            loadingExams: false,
+          ),
         );
         listDataOfExams = [];
       },
       (list) async {
-        emit(state.copyWith(listDataOfExams: list, loadinExams: false));
+        emit(state.copyWith(listDataOfExams: list, loadingExams: false));
         listDataOfExams = list;
       },
     );
@@ -49,8 +53,8 @@ class SubjectCubit extends Cubit<SubjectState> {
 
   Future<void> addSubject(BuildContext context, SubjectModel model) async {
     final oldList = state.listDataOfSubjects;
-    final resonse = await SubjectsSources.addSubject(model);
-    resonse.fold(
+    final response = await SubjectsSources.addSubject(model);
+    response.fold(
       (error) async {
         emit(state.copyWith(error: error.message, listDataOfSubjects: oldList));
         await showMessageSnackBar(
@@ -62,8 +66,8 @@ class SubjectCubit extends Cubit<SubjectState> {
         Navigator.of(context).pop();
       },
       (name) async {
-        final newlistData = [model, ...oldList];
-        emit(state.copyWith(listDataOfSubjects: newlistData));
+        final newListData = [model, ...oldList];
+        emit(state.copyWith(listDataOfSubjects: newListData));
 
         if (!context.mounted) return;
         Navigator.of(context).pop();
@@ -83,8 +87,8 @@ class SubjectCubit extends Cubit<SubjectState> {
     String email,
   ) async {
     final oldList = state.listDataOfSubjects;
-    final resonse = await SubjectsSources.joinSubject(code, email);
-    resonse.fold(
+    final response = await SubjectsSources.joinSubject(code, email);
+    response.fold(
       (error) async {
         emit(state.copyWith(error: error.message, listDataOfSubjects: oldList));
         await showMessageSnackBar(
@@ -94,8 +98,8 @@ class SubjectCubit extends Cubit<SubjectState> {
         );
       },
       (model) async {
-        final newlistData = [model, ...oldList];
-        emit(state.copyWith(listDataOfSubjects: newlistData));
+        final newListData = [model, ...oldList];
+        emit(state.copyWith(listDataOfSubjects: newListData));
 
         if (!context.mounted) return;
         Navigator.of(context).pop();
@@ -111,8 +115,8 @@ class SubjectCubit extends Cubit<SubjectState> {
 
   Future<void> removeSubject(BuildContext context, SubjectModel model) async {
     final list = state.listDataOfSubjects;
-    final resonse = await SubjectsSources.removeSubject(model.subjectId);
-    resonse.fold(
+    final response = await SubjectsSources.removeSubject(model.subjectId);
+    response.fold(
       (error) async {
         emit(state.copyWith(error: error.message, listDataOfSubjects: list));
         await showMessageSnackBar(
@@ -141,8 +145,8 @@ class SubjectCubit extends Cubit<SubjectState> {
 
   Future<void> updateSubject(BuildContext context, SubjectModel model) async {
     final list = state.listDataOfSubjects;
-    final resonse = await SubjectsSources.updateSubject(model);
-    resonse.fold(
+    final response = await SubjectsSources.updateSubject(model);
+    response.fold(
       (error) async {
         emit(state.copyWith(error: error.message, listDataOfSubjects: list));
         await showMessageSnackBar(

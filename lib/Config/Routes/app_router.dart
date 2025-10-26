@@ -6,7 +6,7 @@ import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
 import '../../Features/Exams/View/Pages/create_exam_screen.dart';
 import '../../Features/Exams/View/Pages/view_exam.dart';
-import '../../Features/Mian/main_screen.dart';
+import '../../Features/Main/main_screen.dart';
 import '../../Features/Profile/profile_screen.dart';
 import '../../Features/Subjects/View/Pages/details_screen.dart';
 import '../../Features/Subjects/View/Pages/subject_page.dart';

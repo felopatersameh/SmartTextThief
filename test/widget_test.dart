@@ -5,7 +5,7 @@ import 'package:smart_text_thief/Features/login/cubit/authentication_cubit.dart'
 import 'package:smart_text_thief/Core/Resources/strings.dart';
 
 void main() {
-   group('Authentication Cubit Tests', () {
+  group('Authentication Cubit Tests', () {
     late AuthenticationCubit authenticationCubit;
 
     setUp(() {
@@ -29,8 +29,8 @@ void main() {
 
       // Verify state changes after calling
       expect(authenticationCubit.state.loading, false);
-      expect(authenticationCubit.state.sucess, true);
-      expect(authenticationCubit.state.message, 'sucssed Login ');
+      expect(authenticationCubit.state.success, true);
+      expect(authenticationCubit.state.message, 'success Login ');
     });
 
     // test('loginByGoogle method exists and is callable', () async {
@@ -42,21 +42,21 @@ void main() {
 
     //   // Verify state changes after calling
     //   expect(authenticationCubit.state.loading, false);
-    //   expect(authenticationCubit.state.sucess, true);
-    //   expect(authenticationCubit.state.message, 'sucssed Login By Google');
+    //   expect(authenticationCubit.state.success, true);
+    //   expect(authenticationCubit.state.message, 'succeed Login By Google');
     // });
 
-    test('loginByfacebook method exists and is callable', () async {
+    test('loginByFacebook method exists and is callable', () async {
       // Test that the method exists and can be called
-      expect(authenticationCubit.loginByfacebook, isA<Function>());
+      expect(authenticationCubit.loginByFacebook, isA<Function>());
 
       // Call the method to ensure it doesn't throw
-      await authenticationCubit.loginByfacebook();
+      await authenticationCubit.loginByFacebook();
 
       // Verify state changes after calling
       expect(authenticationCubit.state.loading, false);
-      expect(authenticationCubit.state.sucess, true);
-      expect(authenticationCubit.state.message, 'sucssed Login By Facebook');
+      expect(authenticationCubit.state.success, true);
+      expect(authenticationCubit.state.message, 'succeed Login By Facebook');
     });
   });
 
@@ -75,10 +75,7 @@ void main() {
     testWidgets('App router has correct initial route', (
       WidgetTester tester,
     ) async {
-      expect(
-        AppRouter.router.routerDelegate.currentConfiguration.uri.path,
-        '',
-      );
+      expect(AppRouter.router.routerDelegate.currentConfiguration.uri.path, '');
     });
   });
 

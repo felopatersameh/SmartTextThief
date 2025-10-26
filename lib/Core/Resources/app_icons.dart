@@ -35,8 +35,8 @@ class AppIcons {
   //******************************************************** for navigate
   static const IconData homepage = IconBroken.Home;
   static const IconData profile = IconBroken.Profile;
-  static const IconData studenst = EvaIcons.people;
-  static const IconData exame = IconBroken.Document;
+  static const IconData students = EvaIcons.people;
+  static const IconData exam = IconBroken.Document;
 
   static Widget taskPage = Container(
     clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -118,4 +118,4 @@ class AppIcons {
   static const IconData code = Bootstrap.code;
   static const IconData avarege = Bootstrap.percent;
   static const IconData copy = Bootstrap.copy;
-} 
+}
