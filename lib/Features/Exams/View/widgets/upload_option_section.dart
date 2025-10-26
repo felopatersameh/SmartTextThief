@@ -29,7 +29,7 @@ class UploadOptionSection extends StatelessWidget {
             groupValue: state.uploadOption,
             activeColor: AppColors.colorPrimary,
             contentPadding: EdgeInsets.zero,
-            title: AppCustomtext(
+            title: AppCustomText.generate(
               text: "Upload Files",
               textStyle: AppTextStyles.bodyMediumBold.copyWith(
                 color: AppColors.colorPrimary,
@@ -71,7 +71,7 @@ class UploadOptionSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppCustomtext(
+                    AppCustomText.generate(
                       text: "Uploaded Files (${state.uploadedFiles.length})",
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: AppColors.colorPrimary.withOpacity(0.7),
@@ -96,7 +96,7 @@ class UploadOptionSection extends StatelessWidget {
             groupValue: state.uploadOption,
             activeColor: AppColors.colorPrimary,
             contentPadding: EdgeInsets.zero,
-            title: AppCustomtext(
+            title: AppCustomText.generate(
               text: "Enter Text Manually",
               textStyle: AppTextStyles.bodyMediumBold.copyWith(
                 color: AppColors.colorPrimary,
@@ -217,7 +217,7 @@ class _FileItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppCustomtext(
+                AppCustomText.generate(
                   text: file.name,
                   textStyle: AppTextStyles.bodySmallMedium.copyWith(
                     color: AppColors.colorPrimary,
@@ -237,7 +237,7 @@ class _FileItemCard extends StatelessWidget {
                         color: _getFileColor().withOpacity(0.15),
                         borderRadius: BorderRadius.circular(4.r),
                       ),
-                      child: AppCustomtext(
+                      child: AppCustomText.generate(
                         text: _getFileTypeLabel(),
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
                           color: _getFileColor(),
@@ -246,7 +246,7 @@ class _FileItemCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 8.w),
-                    AppCustomtext(
+                    AppCustomText.generate(
                       text: file.sizeFormatted,
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: Colors.grey,

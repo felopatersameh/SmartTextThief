@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import '/Core/Resources/app_colors.dart';
+import '/Core/Resources/app_fonts.dart';
+import '/Core/Utils/Widget/custom_text_app.dart';
 
 class InfoCard extends StatelessWidget {
   const InfoCard({super.key, required this.title, required this.subtitle});
@@ -21,9 +21,9 @@ class InfoCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          AppCustomtext(text: title, textStyle: AppTextStyles.h6Bold),
+          AppCustomText.generate(text: title, textStyle: AppTextStyles.h6Bold),
           SizedBox(height: 4.h),
-          AppCustomtext(
+          AppCustomText.generate(
             text: subtitle,
             textStyle: AppTextStyles.bodySmallSemiBold.copyWith(
               color: Colors.white60,

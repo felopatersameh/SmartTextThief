@@ -2,8 +2,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../../Core/Storage/Firebase/failure_model.dart';
-import '../../../Core/Storage/Firebase/firebase_service.dart';
+import '../../../Core/Services/Firebase/failure_model.dart';
+import '../../../Core/Services/Firebase/firebase_service.dart';
 import '../../../Core/Storage/Local/local_storage_keys.dart';
 import '../../../Core/Storage/Local/local_storage_service.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';

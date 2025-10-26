@@ -1,10 +1,9 @@
-import 'dart:developer';
-import 'package:smart_text_thief/Core/Storage/Gemini/api_gemini.dart';
-import 'package:smart_text_thief/Core/Storage/Gemini/exam_generation_result_model.dart';
-import 'package:smart_text_thief/Core/Storage/Gemini/exam_prompt_generator.dart';
-import 'package:smart_text_thief/Core/Storage/Gemini/exam_response_parser.dart';
-import 'package:smart_text_thief/Core/Storage/Gemini/file_text_extractor.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
+import 'api_gemini.dart';
+import '../../../Core/Services/Gemini/exam_generation_result_model.dart';
+import '../../../Core/Services/Gemini/exam_prompt_generator.dart';
+import '../../../Core/Services/Gemini/exam_response_parser.dart';
+import '../../../Core/Services/Gemini/file_text_extractor.dart';
+import '../../../Core/Utils/Enums/level_exam.dart';
 
 import '../../../Features/Exams/View/widgets/upload_option_section.dart';
 
@@ -82,7 +81,7 @@ class ExamGeneratorService {
       // Step 6: Return success result
       return ExamGenerationResultModel.success(questions);
     } catch (e) {
-      log('Error in generateExamQuestions: $e');
+      // log('Error in generateExamQuestions: $e');
       return ExamGenerationResultModel.error(
         'Error generating questions: ${e.toString()}',
       );

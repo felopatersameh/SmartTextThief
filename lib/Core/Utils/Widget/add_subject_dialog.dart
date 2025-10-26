@@ -21,7 +21,10 @@ class AddSubjectDialog extends StatefulWidget {
     this.onSubmit,
     this.icon,
     this.title,
-    this.submitButtonText, this.nameField, this.messageLoading, this.nameFieldHint,
+    this.submitButtonText,
+    this.nameField,
+    this.messageLoading,
+    this.nameFieldHint,
   });
 
   @override
@@ -127,15 +130,14 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
                         ],
                       ),
                       child: Icon(
-                        widget.icon??
-                        AppIcons.subject,
+                        widget.icon ?? AppIcons.subject,
                         color: primary,
                         size: 24.sp,
                       ),
                     ),
                     SizedBox(width: 16.w),
                     Expanded(
-                      child: AppCustomtext(
+                      child: AppCustomText.generate(
                         text: widget.title ?? 'Add New Subject',
                         textStyle: AppTextStyles.bodyLargeBold.copyWith(
                           color: AppColors.textWhite,
@@ -172,7 +174,7 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
               SizedBox(height: 24.h),
 
               // Subject Name Field
-              AppCustomtext(
+              AppCustomText.generate(
                 text: widget.nameField ?? 'Subject Name',
                 textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
                   color: AppColors.textWhite,
@@ -222,7 +224,7 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
                     elevation: 0,
                     shadowColor: Colors.transparent,
                   ),
-                  child: AppCustomtext(
+                  child: AppCustomText.generate(
                     text: widget.submitButtonText ?? 'Add Subject',
                     textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
                       color: AppColors.textWhite,

@@ -35,7 +35,6 @@ class ExamDateSection extends StatelessWidget {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            dialogBackgroundColor: AppColors.colorsBackGround2,
             colorScheme: ColorScheme.dark(
               primary: AppColors.colorPrimary,
               onPrimary: Colors.white,
@@ -46,7 +45,7 @@ class ExamDateSection extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.colorPrimary,
               ),
-            ),
+            ), dialogTheme: DialogThemeData(backgroundColor: AppColors.colorsBackGround2),
           ),
           child: child!,
         );
@@ -64,8 +63,18 @@ class ExamDateSection extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return "${date.day} ${months[date.month - 1]} ${date.year}";
   }
@@ -106,11 +115,14 @@ class ExamDateSection extends StatelessWidget {
                   color: AppColors.colorPrimary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Icon(Icons.event_note_rounded,
-                    color: AppColors.colorPrimary, size: 20.sp),
+                child: Icon(
+                  Icons.event_note_rounded,
+                  color: AppColors.colorPrimary,
+                  size: 20.sp,
+                ),
               ),
               SizedBox(width: 12.w),
-              AppCustomtext(
+              AppCustomText.generate(
                 text: "Exam Duration",
                 textStyle: AppTextStyles.h6SemiBold.copyWith(
                   color: AppColors.textWhite,
@@ -138,8 +150,11 @@ class ExamDateSection extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12.w),
-              Icon(Icons.arrow_forward_rounded,
-                  color: AppColors.colorPrimary, size: 18.sp),
+              Icon(
+                Icons.arrow_forward_rounded,
+                color: AppColors.colorPrimary,
+                size: 18.sp,
+              ),
               SizedBox(width: 12.w),
               Expanded(
                 child: GestureDetector(
@@ -173,10 +188,13 @@ class ExamDateSection extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.access_time_rounded,
-                      color: AppColors.colorPrimary, size: 16.sp),
+                  Icon(
+                    Icons.access_time_rounded,
+                    color: AppColors.colorPrimary,
+                    size: 16.sp,
+                  ),
                   SizedBox(width: 6.w),
-                  AppCustomtext(
+                  AppCustomText.generate(
                     text:
                         "Duration: ${endDate!.difference(startDate!).inDays} days",
                     textStyle: AppTextStyles.bodySmallMedium.copyWith(
@@ -242,13 +260,15 @@ class _DateCard extends StatelessWidget {
           /// Label
           Row(
             children: [
-              Icon(icon,
-                  color: hasDate
-                      ? AppColors.colorPrimary
-                      : AppColors.colorPrimary.withValues(alpha: 0.5),
-                  size: 18.sp),
+              Icon(
+                icon,
+                color: hasDate
+                    ? AppColors.colorPrimary
+                    : AppColors.colorPrimary.withValues(alpha: 0.5),
+                size: 18.sp,
+              ),
               SizedBox(width: 6.w),
-              AppCustomtext(
+              AppCustomText.generate(
                 text: label,
                 textStyle: AppTextStyles.bodySmallMedium.copyWith(
                   color: AppColors.textCoolGray,
@@ -258,16 +278,18 @@ class _DateCard extends StatelessWidget {
               if (isEditable)
                 Padding(
                   padding: EdgeInsets.only(left: 4.w),
-                  child: Icon(Icons.edit,
-                      size: 12.sp,
-                      color: AppColors.colorPrimary.withValues(alpha: 0.6)),
+                  child: Icon(
+                    Icons.edit,
+                    size: 12.sp,
+                    color: AppColors.colorPrimary.withValues(alpha: 0.6),
+                  ),
                 ),
             ],
           ),
           SizedBox(height: 8.h),
 
           /// Date Text
-          AppCustomtext(
+          AppCustomText.generate(
             text: hasDate ? formatDate(date!) : "Select Date",
             textStyle: AppTextStyles.bodyMediumMedium.copyWith(
               color: hasDate ? AppColors.textWhite : AppColors.textCoolGray,
@@ -285,7 +307,7 @@ class _DateCard extends StatelessWidget {
                 color: AppColors.colorPrimary.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(4.r),
               ),
-              child: AppCustomtext(
+              child: AppCustomText.generate(
                 text: getWeekDay(date!),
                 textStyle: AppTextStyles.bodySmallMedium.copyWith(
                   color: AppColors.colorPrimary,

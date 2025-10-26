@@ -1,5 +1,5 @@
 
-import 'package:smart_text_thief/Config/app_config.dart';
+import '../../../Config/app_config.dart';
 
 class LocalStorageKeys {
   static const String boxName = "${AppConfig.appName}Box";

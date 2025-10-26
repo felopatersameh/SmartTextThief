@@ -19,7 +19,7 @@ class LevelDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppCustomtext(
+        AppCustomText.generate(
           text: "Level Exam",
           textStyle: AppTextStyles.h6SemiBold.copyWith(
             color: AppColors.colorPrimary,
@@ -28,7 +28,7 @@ class LevelDropdown extends StatelessWidget {
         SizedBox(height: 6.h),
         DropdownButtonHideUnderline(
           child: pa.DropdownButton2<LevelExam>(
-            hint: AppCustomtext(
+            hint: AppCustomText.generate(
               text: 'Select Level',
               textStyle: AppTextStyles.bodyMediumMedium,
             ),
@@ -37,7 +37,7 @@ class LevelDropdown extends StatelessWidget {
                   (item) => DropdownMenuItem<LevelExam>(
                     value: item,
                     child: Center(
-                      child: AppCustomtext(
+                      child: AppCustomText.generate(
                         text: item.name,
                         textStyle: AppTextStyles.bodyMediumMedium,
                       ),

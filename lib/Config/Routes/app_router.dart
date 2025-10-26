@@ -2,14 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
-import 'package:smart_text_thief/Features/Exams/View/Pages/create_exam_screen.dart';
-import 'package:smart_text_thief/Features/Exams/View/Pages/view_exam.dart';
-import 'package:smart_text_thief/Features/Mian/main_screen.dart';
-import 'package:smart_text_thief/Features/Profile/profile_screen.dart';
-import 'package:smart_text_thief/Features/Subjects/View/Pages/details_screen.dart';
-import 'package:smart_text_thief/Features/Subjects/View/Pages/subject_page.dart';
+import '../../Core/Utils/Models/exam_model.dart';
+import '../../Core/Utils/Models/subject_model.dart';
+import '../../Features/Exams/View/Pages/create_exam_screen.dart';
+import '../../Features/Exams/View/Pages/view_exam.dart';
+import '../../Features/Mian/main_screen.dart';
+import '../../Features/Profile/profile_screen.dart';
+import '../../Features/Subjects/View/Pages/details_screen.dart';
+import '../../Features/Subjects/View/Pages/subject_page.dart';
 import 'error_screen.dart';
 import 'name_routes.dart';
 
@@ -117,6 +117,7 @@ class AppRouter {
     errorBuilder: (context, state) => const ErrorScreen(),
     redirect: (context, state) {
       log("location::${state.matchedLocation.toString()}");
+      return null;
     },
   );
 }

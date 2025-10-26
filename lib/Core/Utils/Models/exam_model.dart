@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Utils/Extensions/date_time_extension.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
-import '../../Storage/Local/get_local_storge.dart';
+
+import '../../Storage/Local/get_local_storage.dart';
 import '../Enums/data_key.dart';
+import '../Extensions/date_time_extension.dart';
+import 'exam_exam_result.dart';
 import 'exam_result_static_model.dart';
 
 class ExamModel extends Equatable {
@@ -107,11 +108,11 @@ class ExamModel extends Equatable {
   get started => startedAt.fullDateTime;
   get isStart => startedAt.isBefore(DateTime.now());
   get isEnded => examFinishAt.isBefore(DateTime.now());
-  get eneded => examFinishAt.fullDateTime;
-  bool get isME => (examIdTeacher) == (GetLocalStorge.getidUser());
+  get ended => examFinishAt.fullDateTime;
+  bool get isME => (examIdTeacher) == (GetLocalStorage.getIdUser());
 
   ExamResultModel? get myTest {
-    final idSt = GetLocalStorge.getidUser();
+    final idSt = GetLocalStorage.getIdUser();
     final response = examResult.firstWhere(
       (p0) => idSt == p0.examResultEmailSt,
       orElse: () => ExamResultModel.noLabel,

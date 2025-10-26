@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import '../../../Core/Storage/Firebase/firebase_service.dart';
+import '../../../Core/Services/Firebase/firebase_service.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Utils/Models/exam_result_q_a.dart';

@@ -50,7 +50,7 @@ class ExamCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        AppCustomtext(
+                        AppCustomText.generate(
                           text: exam.examStatic.typeExam.toUpperCase(),
                           textStyle: AppTextStyles.bodyLargeBold.copyWith(
                             color: titleColor,
@@ -59,51 +59,53 @@ class ExamCard extends StatelessWidget {
                           specialText: "#${exam.examId.substring(5, 10)}",
                         ),
 
-                        AppCustomtext(
-                          text: exam.isEnded ?
-                            "Ended":exam.isStart
+                        AppCustomText.generate(
+                          text: exam.isEnded
+                              ? "Ended"
+                              : exam.isStart
                               ? exam.durationAfterStarted
                               : exam.durationBeforeStarted,
-                          textStyle: AppTextStyles.bodyXtraSmallMedium.copyWith(
-                            color: exam.isEnded
-                                ? Colors.redAccent.shade400
-                                : exam.isStart
-                                ? Colors.green.shade400
-                                : Colors.amberAccent.shade400,
-                          ),
+                          textStyle: AppTextStyles.bodyExtraSmallMedium
+                              .copyWith(
+                                color: exam.isEnded
+                                    ? Colors.redAccent.shade400
+                                    : exam.isStart
+                                    ? Colors.green.shade400
+                                    : Colors.amberAccent.shade400,
+                              ),
                         ),
                       ],
                     ),
                     SizedBox(height: 4.h),
-                    AppCustomtext(
+                    AppCustomText.generate(
                       text: 'Created: ${exam.created}',
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: subtitleColor,
                       ),
                     ),
                     SizedBox(height: 2.h),
-                    AppCustomtext(
+                    AppCustomText.generate(
                       text: 'Start: ${exam.started}',
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: subtitleColor,
                       ),
                     ),
                     SizedBox(height: 2.h),
-                    AppCustomtext(
-                      text: 'End: ${exam.eneded}',
+                    AppCustomText.generate(
+                      text: 'End: ${exam.ended}',
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: subtitleColor,
                       ),
                     ),
                     SizedBox(height: 2.h),
-                     AppCustomtext(
+                    AppCustomText.generate(
                       text: 'Q: ${exam.examStatic.numberOfQuestions}',
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: subtitleColor,
                       ),
                     ),
                     SizedBox(height: 2.h),
-                    AppCustomtext(
+                    AppCustomText.generate(
                       text: 'do it : ${exam.examResult.length}',
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
                         color: subtitleColor,
@@ -114,7 +116,7 @@ class ExamCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 10.w),
-              if (exam.isME || (exam.myTest?.isdo ?? false))
+              if (exam.isME || (exam.myTest?.isDo ?? false))
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: showQA,
@@ -135,12 +137,12 @@ class ExamCard extends StatelessWidget {
                       size: 18.sp,
                       color: primary.withValues(alpha: .8),
                     ),
-                    label: AppCustomtext(
+                    label: AppCustomText.generate(
                       text: exam.isME
                           ? 'Show Questions'
                           : exam.showResult
                           ? "Show Result"
-                          : exam.myTest?.isdo ?? false
+                          : exam.myTest?.isDo ?? false
                           ? "Waiting For Result"
                           : "Testing",
                       textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
@@ -156,13 +158,12 @@ class ExamCard extends StatelessWidget {
           // Bottom buttons row
           Row(
             children: [
-              // Download PDF - للمعلم فقط
               if (exam.isME)
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: pdf,
                     icon: Icon(AppIcons.download, color: primary, size: 18.sp),
-                    label: AppCustomtext(
+                    label: AppCustomText.generate(
                       text: 'Download PDF',
                       textStyle: AppTextStyles.bodyMediumMedium.copyWith(
                         color: primary,
@@ -179,13 +180,12 @@ class ExamCard extends StatelessWidget {
                   ),
                 ),
               if (exam.isME) SizedBox(width: 8.w),
-              // Take Test - للطالب فقط ولو لم يحل الامتحان
-              if (!exam.isME && !(exam.myTest?.isdo ?? false))
+              if (!exam.isME && !(exam.myTest?.isDo ?? false))
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: againTest,
                     icon: Icon(AppIcons.quiz, size: 18.sp, color: Colors.white),
-                    label: AppCustomtext(
+                    label: AppCustomText.generate(
                       text: 'Take Test',
                       textStyle: AppTextStyles.bodyMediumMedium.copyWith(
                         color: Colors.white,

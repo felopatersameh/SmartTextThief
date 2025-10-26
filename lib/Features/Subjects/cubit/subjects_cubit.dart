@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
+import '/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 
 import '../../../Core/Utils/show_message_snack_bar.dart';
@@ -33,7 +33,7 @@ class SubjectCubit extends Cubit<SubjectState> {
     List<ExamModel> listDataOfExams = [];
     final resonse = await SubjectsSources.getExam(idSubject);
     resonse.fold(
-      (error) async {   
+      (error) async {
         emit(
           state.copyWith(error: error, listDataOfExams: [], loadinExams: false),
         );

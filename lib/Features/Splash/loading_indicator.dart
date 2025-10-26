@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import '/Core/Resources/app_icons.dart';
 
 class LoadingIndicator extends StatelessWidget {
   final AnimationController controller;
@@ -24,7 +24,8 @@ class LoadingIndicator extends StatelessWidget {
                 color: Colors.blue.shade100,
                 shape: BoxShape.circle,
               ),
-              child:AppIcons.splash),
+              child: AppIcons.splash,
+            ),
             SizedBox(height: 30.h),
             Text(
               'Loading...',
@@ -64,10 +65,7 @@ class LoadingIndicator extends StatelessWidget {
             SizedBox(height: 10.h),
             Text(
               '${(value * 100).toInt()}%',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
             ),
           ],
         );

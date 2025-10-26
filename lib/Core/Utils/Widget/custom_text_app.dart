@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../Resources/app_colors.dart';
 
-class AppCustomtext extends StatelessWidget {
-  const AppCustomtext(
-      {super.key,
-      required this.text,
-      this.textStyle,
-      this.maxLines,
-      this.overflow,
-      this.textAlign,
-      this.specialText,
-      this.onPressed});
+class AppCustomText extends StatelessWidget {
+  const AppCustomText.generate({
+    super.key,
+    required this.text,
+    this.textStyle,
+    this.maxLines,
+    this.overflow,
+    this.textAlign,
+    this.specialText,
+    this.onPressed,
+  });
 
   final String text;
   final String? specialText;
@@ -27,21 +28,21 @@ class AppCustomtext extends StatelessWidget {
         specialText == null || specialText?.isEmpty == true
             ? _method()
             : Row(
-              children: [
-                _method(),
-                TextButton(
-                  isSemanticButton: false,
+                children: [
+                  _method(),
+                  TextButton(
+                    isSemanticButton: false,
                     onPressed: onPressed,
                     child: Text(
                       specialText!,
-                      style: textStyle?.copyWith(
-                          color: AppColors.colorPrimary),
+                      style: textStyle?.copyWith(color: AppColors.colorPrimary),
                       maxLines: maxLines ?? specialText?.length,
                       textAlign: textAlign,
                       overflow: overflow,
-                    ))
-              ],
-            )
+                    ),
+                  ),
+                ],
+              ),
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../Config/Routes/name_routes.dart';
 import '../../../../Core/Resources/app_colors.dart';
 import '../../../../Core/Resources/app_icons.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
@@ -21,6 +22,7 @@ class SubjectPage extends StatelessWidget {
         final read = context.read<ProfileCubit>().state;
 
         return Scaffold(
+          appBar: AppBar(title: Text(NameRoutes.subject.titleAppBar)),
           body: state.loading == true
               ? Center(
                   child: CircularProgressIndicator(

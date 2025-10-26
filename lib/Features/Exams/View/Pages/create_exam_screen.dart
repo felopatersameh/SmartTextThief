@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Config/app_config.dart';
+
+import '../../../../Config/Routes/name_routes.dart';
+import '../../../../Config/app_config.dart';
 import '../../../../Core/Resources/app_colors.dart';
 import '../../../../Core/Resources/app_fonts.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
@@ -22,6 +24,7 @@ class CreateExamScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => CreateExamCubit(subject: subject),
       child: Scaffold(
+        appBar: AppBar(title: Text(NameRoutes.createExam.titleAppBar)),
         body: CustomScrollView(
           physics: AppConfig.physicsCustomScrollView,
           slivers: [

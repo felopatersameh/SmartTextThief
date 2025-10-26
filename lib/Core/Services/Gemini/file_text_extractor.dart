@@ -1,10 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
+
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../../../Features/Exams/View/widgets/upload_option_section.dart';
+import '../../Utils/Enums/upload_option.dart';
 
 class FileTextExtractor {
   /// Extract text from PDF file using Syncfusion
@@ -33,7 +33,7 @@ class FileTextExtractor {
           ? 'Unable to extract text from PDF. The file might be image-based or protected.'
           : result;
     } catch (e) {
-      log('Error extracting PDF text: $e');
+      // log('Error extracting PDF text: $e');
       return 'Error reading PDF file: ${e.toString()}';
     }
   }
@@ -57,7 +57,7 @@ class FileTextExtractor {
 
       return recognizedText.text;
     } catch (e) {
-      log('Error extracting image text: $e');
+      // log('Error extracting image text: $e');
       return 'Error reading image file: ${e.toString()}';
     }
   }
@@ -89,7 +89,7 @@ class FileTextExtractor {
 
         extractedTexts.add(header + text);
       } catch (e) {
-        log('Error processing file ${file.name}: $e');
+        // log('Error processing file ${file.name}: $e');
         extractedTexts.add(
           '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
           'File ${i + 1}: ${file.name}\n'
@@ -127,9 +127,9 @@ class FileTextExtractor {
     final words = cleanText.split(RegExp(r'\s+'));
     final validWords = words.where((w) => w.length > 2).length;
 
-    log(
-      'Extracted text has $validWords valid words (minimum required: $minWords)',
-    );
+    // log(
+    //   'Extracted text has $validWords valid words (minimum required: $minWords)',
+    // );
     return validWords >= minWords;
   }
 

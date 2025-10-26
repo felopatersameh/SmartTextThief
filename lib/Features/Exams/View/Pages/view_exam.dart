@@ -72,7 +72,7 @@ class _ViewExamContent extends StatelessWidget {
                     ],
 
                     /// === Section Title ===
-                    AppCustomtext(
+                    AppCustomText.generate(
                       text: state.isEditMode
                           ? "Questions (Edit Mode)"
                           : "Results",
@@ -111,10 +111,10 @@ class _ViewExamContent extends StatelessWidget {
             CreateButton(
               onPress: state.loadingSave
                   ? null
-                  : () => context.read<ViewExamCubit>().saveSubmint(context),
-              text: state.loadingSave ? "Saveing" : "Save && Submint",
+                  : () => context.read<ViewExamCubit>().saveSubmit(context),
+              text: state.loadingSave ? "Saving" : "Save && Submit",
             ),
-             if (state.loadingSave)
+            if (state.loadingSave)
               LinearProgressIndicator(color: AppColors.colorPrimary),
           ],
           persistentFooterDecoration: BoxDecoration(),

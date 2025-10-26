@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Storage/Local/get_local_storge.dart';
+
+import '../../Storage/Local/get_local_storage.dart';
+import '../Enums/data_key.dart';
 import '../Extensions/date_time_extension.dart';
 import 'subject_teacher.dart';
-import '../Enums/data_key.dart';
+
 class SubjectModel extends Equatable {
   const SubjectModel({
     required this.subjectId,
@@ -43,12 +45,13 @@ class SubjectModel extends Equatable {
       subjectId: json[DataKey.subjectIdSubject.key] ?? "",
       subjectCode: json[DataKey.subjectCodeSub.key] ?? "",
       subjectName: json[DataKey.subjectNameSubject.key] ?? "",
-      subjectTeacher: 
-           SubjectTeacher.fromJson(json[DataKey.subjectTeacher.key]),
+      subjectTeacher: SubjectTeacher.fromJson(json[DataKey.subjectTeacher.key]),
       subjectEmailSts: json[DataKey.subjectEmailSts.key] == null
           ? []
           : List<String>.from(json[DataKey.subjectEmailSts.key]!.map((x) => x)),
-      subjectCreatedAt: DateTime.fromMillisecondsSinceEpoch(json[DataKey.subjectCreatedAt.key] ?? 0),
+      subjectCreatedAt: DateTime.fromMillisecondsSinceEpoch(
+        json[DataKey.subjectCreatedAt.key] ?? 0,
+      ),
     );
   }
 
@@ -71,6 +74,7 @@ class SubjectModel extends Equatable {
     subjectCreatedAt,
   ];
 
-  get createdAt => subjectCreatedAt.shortMonthYear ;
-  bool get isME => (subjectTeacher.teacherEmail) == (GetLocalStorge.getemailUser());
+  get createdAt => subjectCreatedAt.shortMonthYear;
+  bool get isME =>
+      (subjectTeacher.teacherEmail) == (GetLocalStorage.getEmailUser());
 }

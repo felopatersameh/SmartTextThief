@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
+import '../Enums/data_key.dart';
 
 class SubjectTeacher extends Equatable {
   const SubjectTeacher({

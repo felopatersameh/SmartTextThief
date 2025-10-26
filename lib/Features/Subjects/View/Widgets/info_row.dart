@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import '/Core/Resources/resources.dart';
+import '/Core/Utils/Widget/custom_text_app.dart';
 
 class InfoRow extends StatelessWidget {
   final IconData icon;
@@ -16,7 +16,7 @@ class InfoRow extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.grey.shade600, size: 14.sp),
           SizedBox(width: 6.w),
-          AppCustomtext(
+          AppCustomText.generate(
             text: label,
             textStyle: AppTextStyles.bodySmallMedium.copyWith(
               color: Colors.grey.shade500,

@@ -49,7 +49,7 @@ class _BodyScreenState extends State<BodyScreen> {
             state.message != null) {
           if (state.sucess == true) {
             await showMessageSnackBar(
-              context,  
+              context,
               title: state.message!,
               type: MessageType.success,
             );
@@ -71,12 +71,12 @@ class _BodyScreenState extends State<BodyScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AppCustomtext(
+            AppCustomText.generate(
               text: AppStrings.welcome,
               textStyle: AppTextStyles.h5SemiBold,
             ),
             SizedBox(height: 8.h),
-            AppCustomtext(
+            AppCustomText.generate(
               text: AppStrings.welcomeHint,
               textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
                 color: Colors.grey.shade500,
@@ -107,7 +107,7 @@ class _BodyScreenState extends State<BodyScreen> {
                         minimumSize: Size(0, 0),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      child: AppCustomtext(
+                      child: AppCustomText.generate(
                         text: AppStrings.forgotPassword,
                         textStyle: AppTextStyles.bodySmallSemiBold.copyWith(
                           color: AppColors.colorPrimary,
@@ -132,7 +132,7 @@ class _BodyScreenState extends State<BodyScreen> {
                     text: AppStrings.login,
                   ),
                   SizedBox(height: 20.h),
-                  AppCustomtext(
+                  AppCustomText.generate(
                     text: AppStrings.orContinue,
                     textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
                       color: Colors.grey.shade600,
@@ -148,7 +148,7 @@ class _BodyScreenState extends State<BodyScreen> {
                           .read<AuthenticationCubit>()
                           .loginByGoogle(context),
                     ),
-                    iconErrorBuilder:AppIcons.google,
+                    iconErrorBuilder: AppIcons.google,
                     text: AppStrings.orSignInWithGoogle,
                     textIcon: "",
                   ),

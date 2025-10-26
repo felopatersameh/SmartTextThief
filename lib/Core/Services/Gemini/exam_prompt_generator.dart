@@ -1,4 +1,4 @@
-import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
+import '../../Utils/Enums/level_exam.dart';
 
 /// Prompt generator for different scenarios
 class ExamPromptGenerator {

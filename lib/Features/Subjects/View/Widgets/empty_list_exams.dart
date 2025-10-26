@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:icon_broken/icon_broken.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import '/Core/Resources/app_fonts.dart';
 
 class EmptyListExams extends StatelessWidget {
-  const EmptyListExams({
-    super.key,
-  });
+  const EmptyListExams({super.key});
 
   @override
   Widget build(BuildContext context) {

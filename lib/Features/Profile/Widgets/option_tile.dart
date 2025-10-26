@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import '/Core/Resources/app_colors.dart';
+import '/Core/Resources/app_fonts.dart';
+import '/Core/Utils/Widget/custom_text_app.dart';
 
 class OptionTile extends StatelessWidget {
-  const OptionTile({
-    super.key,
-    required this.title,
-    this.onTap,
-    this.color,
-  });
+  const OptionTile({super.key, required this.title, this.onTap, this.color});
 
   final String title;
   final VoidCallback? onTap;
@@ -33,7 +28,7 @@ class OptionTile extends StatelessWidget {
         ),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
-          title: AppCustomtext(
+          title: AppCustomText.generate(
             text: title,
             textStyle: AppTextStyles.h6Bold,
           ),

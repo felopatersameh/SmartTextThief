@@ -1,4 +1,4 @@
-import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
+import '../../Utils/Models/exam_result_q_a.dart';
 
 /// Result wrapper for exam generation
 class ExamGenerationResultModel {

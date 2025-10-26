@@ -1,12 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 
+import '../../Utils/Models/exam_model.dart';
 import '../../Utils/Models/exam_result_q_a.dart';
+import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
   static Future<void> createExamPdf({
@@ -45,7 +46,7 @@ class ExamPdfUtil {
       // First page - Exam Info
       pdf.addPage(
         pw.Page(
-          pageTheme: _buildPageTheme(font, logoImage,isShow: false),
+          pageTheme: _buildPageTheme(font, logoImage, isShow: false),
           build: (context) => pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             mainAxisAlignment: pw.MainAxisAlignment.center,
@@ -116,13 +117,17 @@ class ExamPdfUtil {
       await pdfFile.writeAsBytes(await pdf.save());
       await OpenFile.open(pdfFile.path);
     } catch (e) {
-      print('Error creating exam PDF: $e');
+      // print('Error creating exam PDF: $e');
       rethrow;
     }
   }
 
   // Build page theme with watermark
-  static pw.PageTheme _buildPageTheme(pw.Font font, pw.MemoryImage logoImage,{bool isShow =true }) {
+  static pw.PageTheme _buildPageTheme(
+    pw.Font font,
+    pw.MemoryImage logoImage, {
+    bool isShow = true,
+  }) {
     return pw.PageTheme(
       pageFormat: PdfPageFormat.a4,
       theme: pw.ThemeData.withFont(base: font),
@@ -135,14 +140,16 @@ class ExamPdfUtil {
               color: PdfColor.fromInt(0xFFF5EDE2),
             ),
             // Watermark
-          isShow?  pw.Positioned(
-              top: 10,
-              right: 10,
-              child: pw.Opacity(
-                opacity: .98,
-                child: pw.Image(logoImage, width: 60, height: 60),
-              ),
-            ):pw.Container(),
+            isShow
+                ? pw.Positioned(
+                    top: 10,
+                    right: 10,
+                    child: pw.Opacity(
+                      opacity: .98,
+                      child: pw.Image(logoImage, width: 60, height: 60),
+                    ),
+                  )
+                : pw.Container(),
           ],
         ),
       ),
@@ -177,9 +184,19 @@ class ExamPdfUtil {
                 ),
               ),
               pw.SizedBox(height: 20),
-              _buildCenteredInfoRow('Subject:', subInfo.subjectName, font, fontBold),
+              _buildCenteredInfoRow(
+                'Subject:',
+                subInfo.subjectName,
+                font,
+                fontBold,
+              ),
               pw.SizedBox(height: 8),
-              _buildCenteredInfoRow('Exam Type:', examInfo.examStatic.typeExam, font, fontBold),
+              _buildCenteredInfoRow(
+                'Exam Type:',
+                examInfo.examStatic.typeExam,
+                font,
+                fontBold,
+              ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
                 'Level:',
@@ -204,7 +221,7 @@ class ExamPdfUtil {
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
                 'End Date:',
-                examInfo.eneded ?? 'N/A',
+                examInfo.ended ?? 'N/A',
                 font,
                 fontBold,
               ),
@@ -219,7 +236,7 @@ class ExamPdfUtil {
           ),
         ),
         pw.SizedBox(height: 200),
-        
+
         pw.Container(
           width: 450,
           child: pw.Row(
@@ -238,7 +255,10 @@ class ExamPdfUtil {
                   // ),
                   pw.SizedBox(height: 15),
                   pw.Container(
-                    padding: pw.EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    padding: pw.EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 5,
+                    ),
                     decoration: pw.BoxDecoration(
                       border: pw.Border(
                         bottom: pw.BorderSide(
@@ -288,11 +308,7 @@ class ExamPdfUtil {
         pw.SizedBox(width: 10),
         pw.Text(
           value,
-          style: pw.TextStyle(
-            font: font,
-            fontSize: 14,
-            color: PdfColors.black,
-          ),
+          style: pw.TextStyle(font: font, fontSize: 14, color: PdfColors.black),
         ),
       ],
     );

@@ -28,13 +28,11 @@ class BuildButtonApp extends StatelessWidget {
           backgroundColor: background ?? AppColors.colorPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.r),
-          ),  
+          ),
         ),
-        child: AppCustomtext(
+        child: AppCustomText.generate(
           text: text,
-          textStyle:
-              textStyle ??
-             AppTextStyles.bodyLargeMedium,
+          textStyle: textStyle ?? AppTextStyles.bodyLargeMedium,
         ),
       ),
     );

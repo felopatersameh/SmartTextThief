@@ -7,8 +7,8 @@ import '../../../../../Core/Utils/Widget/custom_text_app.dart';
 import '../../cubit/create/exam_cubit.dart';
 
 class TypeExamField extends StatelessWidget {
-  const TypeExamField({super.key, required this.state}); final CreateExamState state;
-
+  const TypeExamField({super.key, required this.state});
+  final CreateExamState state;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +17,11 @@ class TypeExamField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppCustomtext(
+        AppCustomText.generate(
           text: "Type of Exam",
-          textStyle: AppTextStyles.h6SemiBold.copyWith(color: AppColors.colorPrimary),
+          textStyle: AppTextStyles.h6SemiBold.copyWith(
+            color: AppColors.colorPrimary,
+          ),
         ),
         SizedBox(height: 6.h),
         TextFormField(
@@ -28,8 +30,13 @@ class TypeExamField extends StatelessWidget {
           style: AppTextStyles.bodyMediumMedium,
           decoration: InputDecoration(
             hintText: 'Enter exam type',
-            hintStyle: AppTextStyles.bodySmallMedium.copyWith(color: Colors.grey),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            hintStyle: AppTextStyles.bodySmallMedium.copyWith(
+              color: Colors.grey,
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 10.h,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
               borderSide: BorderSide(color: AppColors.colorPrimary, width: 1.5),

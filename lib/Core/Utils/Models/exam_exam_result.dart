@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../Storage/Local/get_local_storge.dart';
+import '../../Storage/Local/get_local_storage.dart';
 import '../Enums/data_key.dart';
 import '../Enums/level_exam.dart';
 
@@ -25,7 +25,7 @@ class ExamResultModel extends Equatable {
   final String typeExam;
 
   /// Default noLabel instance (all fields set to "empty" or default values)
-  static  ExamResultModel noLabel = ExamResultModel(
+  static ExamResultModel noLabel = ExamResultModel(
     examResultEmailSt: "",
     examResultDegree: "",
     examResultQA: const [],
@@ -96,6 +96,5 @@ class ExamResultModel extends Equatable {
     typeExam,
   ];
 
-  bool get isdo => (examResultEmailSt) == (GetLocalStorge.getidUser());
-  
+  bool get isDo => (examResultEmailSt) == (GetLocalStorage.getIdUser());
 }

@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
+import '../../Utils/Models/exam_result_q_a.dart';
 
 /// Parser for AI responses
 class ExamResponseParser {
@@ -30,8 +29,8 @@ class ExamResponseParser {
           .toList();
           
     } catch (e) {
-      log('Error parsing questions: $e');
-      log('Response was: $jsonResponse');
+      // log('Error parsing questions: $e');
+      // log('Response was: $jsonResponse');
       rethrow;
     }
   }

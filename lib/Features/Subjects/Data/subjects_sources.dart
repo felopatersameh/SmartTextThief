@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
-import '../../../Core/Storage/Firebase/firebase_service.dart';
-import '../../../Core/Storage/Firebase/response_model.dart';
+import '../../../Core/Services/Firebase/firebase_service.dart';
+import '../../../Core/Services/Firebase/response_model.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
 import '../../../Core/Utils/Models/exam_model.dart';
 import '../../../Core/Utils/Models/subject_model.dart';
 
-import '../../../Core/Storage/Firebase/failure_model.dart';
+import '../../../Core/Services/Firebase/failure_model.dart';
 
 class SubjectsSources {
  

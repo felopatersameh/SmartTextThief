@@ -8,7 +8,7 @@ import '../../cubit/create/exam_cubit.dart';
 
 class QuestionNumbersRow extends StatelessWidget {
   const QuestionNumbersRow({super.key, required this.state});
- final CreateExamState state;
+  final CreateExamState state;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +17,11 @@ class QuestionNumbersRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppCustomtext(
+        AppCustomText.generate(
           text: "Number of Questions",
-          textStyle: AppTextStyles.h6SemiBold.copyWith(color: AppColors.colorPrimary),
+          textStyle: AppTextStyles.h6SemiBold.copyWith(
+            color: AppColors.colorPrimary,
+          ),
         ),
         SizedBox(height: 4.h),
         Row(

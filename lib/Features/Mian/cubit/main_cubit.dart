@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import '../../../Core/Storage/Local/get_local_storge.dart';
+import '../../../Core/Storage/Local/get_local_storage.dart';
 import '../../../Config/Routes/app_router.dart';
 import '../../../Config/Routes/name_routes.dart';
 import '../../../Core/Resources/app_icons.dart';
@@ -24,7 +24,7 @@ class MainCubit extends Cubit<MainState> {
       context,
       nav[index],
       pathParameters: index == 2
-          ? {"email": GetLocalStorge.getemailUser().split("@").first}
+          ? {"email": GetLocalStorage.getEmailUser().split("@").first}
           : {},
     );
     emit(state.copyWith(index: index));

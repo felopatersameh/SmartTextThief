@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Storage/Local/local_storage_keys.dart';
-import 'package:smart_text_thief/Core/Storage/Local/local_storage_service.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
-import 'package:smart_text_thief/Core/Utils/Models/user_model.dart';
+import '/Core/Storage/Local/local_storage_keys.dart';
+import '/Core/Storage/Local/local_storage_service.dart';
+import '/Core/Utils/Enums/collection_key.dart';
+import '/Core/Utils/Models/user_model.dart';
 
-import '../../../Core/Storage/Firebase/firebase_service.dart';
+import '../../../Core/Services/Firebase/firebase_service.dart';
 
 part 'profile_state.dart';
 

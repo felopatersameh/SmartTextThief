@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import '../../../../Core/Resources/app_colors.dart';
+import '../../../../Core/Resources/app_fonts.dart';
+import '../../../../Core/Utils/Models/exam_exam_result.dart';
+import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class StudentSelector extends StatelessWidget {
   final List<ExamResultModel> examResults;
   final String? selectedEmail;
   final Function(String) onSelect;
 
-  const StudentSelector({super.key, 
+  const StudentSelector({
+    super.key,
     required this.examResults,
     required this.selectedEmail,
     required this.onSelect,
@@ -24,16 +25,18 @@ class StudentSelector extends StatelessWidget {
         color: AppColors.colorsBackGround2,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: AppColors.colorPrimary.withValues(alpha:0.3),
+          color: AppColors.colorPrimary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppCustomtext(
+          AppCustomText.generate(
             text: "Select Student",
-            textStyle: AppTextStyles.h6SemiBold.copyWith(color: AppColors.textWhite),
+            textStyle: AppTextStyles.h6SemiBold.copyWith(
+              color: AppColors.textWhite,
+            ),
           ),
           SizedBox(height: 12.h),
           Wrap(
@@ -44,7 +47,10 @@ class StudentSelector extends StatelessWidget {
               return GestureDetector(
                 onTap: () => onSelect(result.examResultEmailSt),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.colorPrimary
@@ -53,32 +59,39 @@ class StudentSelector extends StatelessWidget {
                     border: Border.all(
                       color: isSelected
                           ? AppColors.colorPrimary
-                          : AppColors.colorPrimary.withValues(alpha:0.3),
+                          : AppColors.colorPrimary.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AppCustomtext(
+                      AppCustomText.generate(
                         text: result.examResultEmailSt,
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                          color: isSelected ? Colors.white : AppColors.textWhite,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textWhite,
                           fontSize: 12.sp,
                         ),
                       ),
                       SizedBox(width: 6.w),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.w,
+                          vertical: 2.h,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.white.withValues(alpha:0.2)
-                              : AppColors.colorPrimary.withValues(alpha:0.2),
+                              ? Colors.white.withValues(alpha: 0.2)
+                              : AppColors.colorPrimary.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4.r),
                         ),
-                        child: AppCustomtext(
+                        child: AppCustomText.generate(
                           text: result.examResultDegree,
                           textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                            color: isSelected ? Colors.white : AppColors.colorPrimary,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.colorPrimary,
                             fontSize: 10.sp,
                           ),
                         ),

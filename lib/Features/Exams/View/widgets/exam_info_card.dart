@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import '../../../../Core/Resources/app_colors.dart';
+import '../../../../Core/Resources/app_fonts.dart';
+import '../../../../Core/Utils/Models/exam_model.dart';
+import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class ExamInfoCard extends StatelessWidget {
   final ExamModel exam;
@@ -25,7 +25,7 @@ class ExamInfoCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: AppColors.colorPrimary.withValues(alpha:0.3),
+          color: AppColors.colorPrimary.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -78,13 +78,13 @@ class _InfoRow extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.colorPrimary, size: 20.sp),
         SizedBox(width: 8.w),
-        AppCustomtext(
+        AppCustomText.generate(
           text: "$label: ",
           textStyle: AppTextStyles.bodyMediumMedium.copyWith(
             color: AppColors.textCoolGray,
           ),
         ),
-        AppCustomtext(
+        AppCustomText.generate(
           text: value,
           textStyle: AppTextStyles.bodyMediumMedium.copyWith(
             color: AppColors.textWhite,

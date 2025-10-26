@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
-import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
+import '../../../../Config/setting.dart';
+import '../../../../Core/Utils/Models/exam_model.dart';
+import '../../../../Core/Utils/Models/exam_result_q_a.dart';
+import '../../../../Core/Utils/show_message_snack_bar.dart';
 
 import '../../Data/exam_source.dart';
 part 'view_exam_state.dart';
@@ -67,7 +67,7 @@ class ViewExamCubit extends Cubit<ViewExamState> {
     emit(state.copyWith(selectedStudentEmail: studentEmail));
   }
 
-  Future<void> saveSubmint(BuildContext context) async {
+  Future<void> saveSubmit(BuildContext context) async {
     final model = state.exam;
     emit(state.copyWith(loadingSave: true));
     final response = await ExamSource.createExam(model.examIdSubject, model);

@@ -22,6 +22,7 @@ class DetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text(NameRoutes.subjectDetails.titleAppBar)),
       body: FutureBuilder(
         future: context.read<SubjectCubit>().getExams(subjectModel.subjectId),
         builder: (context, snapshot) {
@@ -71,7 +72,7 @@ class DetailsScreen extends StatelessWidget {
               SliverToBoxAdapter(
                 child: SubjectInfoCard(
                   subjectModel: subjectModel,
-                  examLenght: snapshot.data?.length ?? 0,
+                  examLength: snapshot.data?.length ?? 0,
                 ),
               ),
               body,

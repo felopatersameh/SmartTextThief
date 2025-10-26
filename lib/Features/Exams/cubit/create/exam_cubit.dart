@@ -8,8 +8,8 @@ import '../../../../Config/setting.dart';
 
 import '../../../../../Core/Utils/Enums/level_exam.dart';
 import '../../../../../Core/Utils/Models/subject_model.dart';
-import '../../../../Core/Storage/Gemini/exam_generator_service.dart';
-import '../../../../Core/Storage/Local/get_local_storge.dart';
+import '../../../../Core/Services/Gemini/exam_generator_service.dart';
+import '../../../../Core/Storage/Local/get_local_storage.dart';
 import '../../../../Core/Utils/Enums/upload_option.dart';
 import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/exam_result_static_model.dart';
@@ -176,9 +176,9 @@ class CreateExamCubit extends Cubit<CreateExamState> {
             title: "No Files Uploaded",
             type: MessageType.error,
           );
-        }else {
-        await created(context);
-      }
+        } else {
+          await created(context);
+        }
       } else if (currentState.uploadOption == UploadOption.text) {
         if (currentState.uploadText.trim().isEmpty) {
           await showMessageSnackBar(
@@ -186,10 +186,10 @@ class CreateExamCubit extends Cubit<CreateExamState> {
             title: "No text found",
             type: MessageType.error,
           );
-        }else {
-        await created(context);
+        } else {
+          await created(context);
+        }
       }
-      } 
     } catch (e) {
       emit(state.copyWith(loadingCreating: false));
     }
@@ -203,16 +203,16 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         (int.tryParse(numChose) ?? 0) +
         (int.tryParse(numTF) ?? 0) +
         (int.tryParse(numQA) ?? 0);
-    final resonse = await ExamGeneratorService().generateExamQuestions(
+    final response = await ExamGeneratorService().generateExamQuestions(
       level: state.selectedLevel!,
       multipleChoiceCount: numChose,
       trueFalseCount: numTF,
       shortAnswerCount: numQA,
       uploadedFiles: state.uploadedFiles,
     );
-    final userId = GetLocalStorge.getidUser();
+    final userId = GetLocalStorage.getIdUser();
     final exam = ExamModel(
-      examId: generateExamtId(),
+      examId: generateExamId(),
       examIdSubject: state.subject.subjectId,
       examIdTeacher: userId,
       startedAt: state.startDate!,
@@ -220,7 +220,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       examCreatedAt: DateTime.now(),
       examResult: [],
       examStatic: ExamStaticModel(
-        examResultQA: resonse.questions!,
+        examResultQA: response.questions!,
         levelExam: state.selectedLevel!,
         numberOfQuestions: sum,
         typeExam: state.type,
@@ -229,7 +229,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     );
     log("generated::: ${exam.toJson()}");
     if (!context.mounted) return;
-    if (!resonse.isSuccess) throw ("error");
+    if (!response.isSuccess) throw ("error");
     await showMessageSnackBar(
       context,
       title: "Created is Done",
@@ -237,10 +237,11 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     );
     emit(state.copyWith(loadingCreating: false));
     if (!context.mounted) return;
-    AppRouter.nextScreenNoPath(context, NameRoutes.view, extra: exam,pathParameters: {
-      "exam":exam.examId,
-      "id":exam.examIdSubject
-    });
-  
+    AppRouter.nextScreenNoPath(
+      context,
+      NameRoutes.view,
+      extra: exam,
+      pathParameters: {"exam": exam.examId, "id": exam.examIdSubject},
+    );
   }
 }

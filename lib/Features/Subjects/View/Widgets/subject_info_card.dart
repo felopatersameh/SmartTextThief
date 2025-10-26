@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
-import 'package:smart_text_thief/Features/Subjects/View/Widgets/info_row.dart';
+import '/Core/Resources/resources.dart';
+import '/Core/Utils/Models/subject_model.dart';
+import '/Core/Utils/Widget/custom_text_app.dart';
+import '/Features/Subjects/View/Widgets/info_row.dart';
 
 class SubjectInfoCard extends StatelessWidget {
   final SubjectModel subjectModel;
-  final int? examLenght;
+  final int? examLength;
   const SubjectInfoCard({
     super.key,
     required this.subjectModel,
-    required this.examLenght,
+    required this.examLength,
   });
 
   @override
@@ -70,7 +70,7 @@ class SubjectInfoCard extends StatelessWidget {
                 Expanded(
                   child: InfoRow(
                     icon: AppIcons.exame,
-                    label: 'Exams: $examLenght',
+                    label: 'Exams: $examLength',
                   ),
                 ),
               ],
@@ -90,9 +90,7 @@ class SubjectInfoCard extends StatelessWidget {
                       ).then((_) {
                         if (!context.mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("subject Code copied"),
-                          ),
+                          SnackBar(content: Text("subject Code copied")),
                         );
                       }),
                   child: Icon(AppIcons.copy, size: 20.w),
@@ -113,7 +111,7 @@ class SubjectInfoCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: AppCustomtext(
+          child: AppCustomText.generate(
             text: subjectModel.subjectName,
             textStyle: AppTextStyles.bodyLargeBold.copyWith(
               color: Colors.white,

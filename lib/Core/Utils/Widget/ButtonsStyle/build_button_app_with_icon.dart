@@ -21,7 +21,7 @@ class BuildButtonAppWithIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:320.w,
+      width: 320.w,
       height: 50.h,
       child: OutlinedButton.icon(
         onPressed: actions,
@@ -33,10 +33,9 @@ class BuildButtonAppWithIcon extends StatelessWidget {
             return iconErrorBuilder;
           },
         ),
-        label: AppCustomtext(
+        label: AppCustomText.generate(
           text: text,
-          textStyle:
-              textStyle ?? AppTextStyles.bodyMediumSemiBold,
+          textStyle: textStyle ?? AppTextStyles.bodyMediumSemiBold,
         ),
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: Colors.grey.shade700, width: 1),

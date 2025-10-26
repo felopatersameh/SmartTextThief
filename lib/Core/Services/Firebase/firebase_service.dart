@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +7,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../Utils/Enums/collection_key.dart';
 import 'response_model.dart';
 import 'failure_model.dart';
+
+// Comment out all log statements to disable logging
 
 class FirebaseServices {
   FirebaseServices._();
@@ -50,7 +51,7 @@ class FirebaseServices {
       );
       return ResponseModel.error(message: failure.message, failure: failure);
     } catch (e) {
-      log(e.toString());
+      // log(e.toString());
       final failure = FailureModel(
         message: 'An unexpected error occurred during login',
         error: e,
@@ -73,16 +74,16 @@ class FirebaseServices {
         message: 'Firebase Authentication Error during account creation',
         error: createError,
       );
-      log('TestFIrebaseServices::: Error creating user: ${failure.toString()}');
+      // log('TestFIrebaseServices::: Error creating user: ${failure.toString()}');
       return ResponseModel.error(message: failure.message, failure: failure);
     } catch (e) {
       final failure = FailureModel(
         message: 'An unexpected error occurred during account creation',
         error: e,
       );
-      log(
-        'TestFIrebaseServices::: An unexpected error occurred during account creation: ${failure.toString()}',
-      );
+      // log(
+      //   'TestFIrebaseServices::: An unexpected error occurred during account creation: ${failure.toString()}',
+      // );
       return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
@@ -117,7 +118,7 @@ class FirebaseServices {
         .collection(collectionName)
         .where(field, isEqualTo: search)
         .get();
-    log('checkUserExists::: ${querySnapshot.docs.length}');
+    // log('checkUserExists::: ${querySnapshot.docs.length}');
     if (querySnapshot.docs.isNotEmpty) {
       return ResponseModel.success(
         message: 'exists',
@@ -140,7 +141,7 @@ class FirebaseServices {
     DocumentReference docRef =
         firestore!.collection(mainCollectionName).doc(mainDocumentId);
 
-    // If subcollections are provided, traverse into them one by one
+    // If subCollections are provided, traverse into them one by one
     if (subCollections != null && subCollections.isNotEmpty) {
       for (int i = 0; i < subCollections.length; i++) {
         final subCollection = subCollections[i];
@@ -154,7 +155,7 @@ class FirebaseServices {
       }
     }
 
-    // Write the data to the final docRef (either the main document or within a subcollection)
+    // Write the data to the final docRef (either the main document or within a subCollections)
     await docRef.set(data);
 
     // Return the main documentId as requested
@@ -195,11 +196,11 @@ Future<ResponseModel> removeData(
     }
 
     await docRef.delete();
-    log('TestFirebaseServices:::Document $documentId removed from $mainCollectionName');
+    // log('TestFirebaseServices:::Document $documentId removed from $mainCollectionName');
     return ResponseModel.success(message: 'Data removed successfully');
   } catch (e) {
     final failure = FailureModel(message: 'Error removing data', error: e);
-    log('TestFirebaseServices:::Error removing data: ${failure.toString()}');
+    // log('TestFirebaseServices:::Error removing data: ${failure.toString()}');
     return ResponseModel.error(message: failure.message, failure: failure);
   }
 }
@@ -226,11 +227,11 @@ Future<ResponseModel> updateData(
     }
 
     await docRef.update(data);
-    log('TestFirebaseServices:::Document $documentId in $mainCollectionName updated with $data');
+    // log('TestFirebaseServices:::Document $documentId in $mainCollectionName updated with $data');
     return ResponseModel.success(message: 'Updated successfully');
   } catch (e) {
     final failure = FailureModel(message: 'Error updating data', error: e);
-    log('TestFirebaseServices:::Error updating data: ${failure.toString()}');
+    // log('TestFirebaseServices:::Error updating data: ${failure.toString()}');
     return ResponseModel.error(message: failure.message, failure: failure);
   }
 }
@@ -269,7 +270,7 @@ Future<ResponseModel> getData(
     }
   } catch (e) {
     final failure = FailureModel(message: 'Error getting data', error: e);
-    log('TestFirebaseServices:::Error getting data: ${failure.toString()}');
+    // log('TestFirebaseServices:::Error getting data: ${failure.toString()}');
     return ResponseModel.error(message: failure.message, failure: failure);
   }
 }
@@ -288,7 +289,7 @@ Future<ResponseModel> getAllData(
     CollectionReference<Map<String, dynamic>> targetCollection =
         docRef.collection(mainCollectionName);
 
-    // If there are subcollections, traverse until the last one
+    // If there are subCollections, traverse until the last one
     if (subCollections != null && subCollections.isNotEmpty) {
       for (int i = 0; i < subCollections.length; i++) {
         final subCollection = subCollections[i];
@@ -307,7 +308,7 @@ Future<ResponseModel> getAllData(
         }
       }
     } else {
-      // No subcollections, so get all documents directly under the main document
+      // No subCollections, so get all documents directly under the main document
       targetCollection = docRef.collection(mainCollectionName);
     }
 
@@ -318,15 +319,15 @@ Future<ResponseModel> getAllData(
         .map((doc) => doc.data())
         .toList();
 
-    log('TestFirebaseServices::: Successfully retrieved all data from $mainCollectionName/$documentId');
-    log('results::: $results');
+    // log('TestFirebaseServices::: Successfully retrieved all data from $mainCollectionName/$documentId');
+    // log('results::: $results');
     return ResponseModel.success(
       message: 'Data retrieved successfully',
       data: results,
     );
   } catch (e) {
     final failure = FailureModel(message: 'Error getting data', error: e);
-    log('TestFirebaseServices::: Error getting all data: ${failure.toString()}');
+    // log('TestFirebaseServices::: Error getting all data: ${failure.toString()}');
     return ResponseModel.error(message: failure.message, failure: failure);
   }
 }
@@ -445,18 +446,18 @@ Future<ResponseModel> getAllData(
         message: 'Error sending verification email',
         error: e,
       );
-      log(
-        'TestFIrebaseServices:::Error sending verification email: ${failure.toString()}',
-      );
+      // log(
+      //   'TestFIrebaseServices:::Error sending verification email: ${failure.toString()}',
+      // );
       return ResponseModel.error(message: failure.message, failure: failure);
     } catch (e) {
       final failure = FailureModel(
         message: 'Unexpected error sending verification email',
         error: e,
       );
-      log(
-        'TestFIrebaseServices:::Unexpected error sending verification email: ${failure.toString()}',
-      );
+      // log(
+      //   'TestFIrebaseServices:::Unexpected error sending verification email: ${failure.toString()}',
+      // );
       return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
@@ -475,9 +476,9 @@ Future<ResponseModel> getAllData(
   }
 
   Future<ResponseModel> sendPhoneVerification(String phoneNumber) async {
-    log(
-      'TestFIrebaseServices:::Requesting phone verification for: $phoneNumber',
-    );
+    // log(
+    //   'TestFIrebaseServices:::Requesting phone verification for: $phoneNumber',
+    // );
     return ResponseModel.success(
       message: 'Phone verification initiated. Implement UI flow for OTP.',
     );
