@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:smart_text_thief/Core/Storage/Local/get_local_storge.dart';
 import '../Extensions/date_time_extension.dart';
 import 'subject_teacher.dart';
 import '../Enums/data_key.dart';
@@ -71,4 +72,5 @@ class SubjectModel extends Equatable {
   ];
 
   get createdAt => subjectCreatedAt.shortMonthYear ;
+  bool get isME => (subjectTeacher.teacherEmail) == (GetLocalStorge.getemailUser());
 }

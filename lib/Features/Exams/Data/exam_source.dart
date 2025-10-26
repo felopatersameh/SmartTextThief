@@ -9,7 +9,7 @@ import '../../../Core/Utils/Models/exam_model.dart';
 
 class ExamSource {
 
-  Future<Either<String, bool>> createExam(
+ static Future<Either<String, bool>> createExam(
     String idSubjects,
     ExamModel model,
   ) async {
@@ -18,8 +18,8 @@ class ExamSource {
         CollectionKey.subjects.key,
         idSubjects,
         model.toJson(),
-        subIds: [model.examId],
         subCollections: [CollectionKey.exams.key],
+        subIds: [model.examId],
       );
       if (response.status) {
         return right(response.status);
@@ -31,7 +31,7 @@ class ExamSource {
     }
   }
 
-  Future<Either<String, bool>> removeExam(
+ static Future<Either<String, bool>> removeExam(
     String idSuject,
     String idExam,
   ) async {
@@ -52,7 +52,7 @@ class ExamSource {
     }
   }
 
-  Future<Either<String, bool>> updateTimeExam(
+ static Future<Either<String, bool>> updateTimeExam(
     String idSubject,
     String idExam,
     DateTime time,
@@ -76,7 +76,7 @@ class ExamSource {
     }
   }
 
-  Future<Either<String, bool>> updateAnwserQuestionInExam(
+ static Future<Either<String, bool>> updateAnwserQuestionInExam(
     String idSubject,
     String idExam,
     ExamResultQA examResultQA,
@@ -101,7 +101,7 @@ class ExamSource {
     }
   }
 
-  Future<Either<String, bool>> removeAnwserQuestionInExam(
+ static Future<Either<String, bool>> removeAnwserQuestionInExam(
     String idSubject,
     String idExam,
     ExamResultQA examResultQA,

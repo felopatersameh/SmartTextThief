@@ -38,7 +38,7 @@ class ExamResultQA  extends Equatable {
     'options': options,
     'correctAnswer': correctAnswer,
     'studentAnswer': studentAnswer,
-    'score': score??"-1",
+    'score': score?? "-1",
   };
  
   @override

@@ -17,19 +17,34 @@ class SubjectCubit extends Cubit<SubjectState> {
     final resonse = await SubjectsSources.getSubjects(email, stu);
     resonse.fold(
       (error) async => emit(
-        state.copyWith(error: error.message, listDataOfSubjects: [], loading: false),
+        state.copyWith(
+          error: error.message,
+          listDataOfSubjects: [],
+          loading: false,
+        ),
       ),
-      (list) async => emit(state.copyWith(listDataOfSubjects: list, loading: false)),
+      (list) async =>
+          emit(state.copyWith(listDataOfSubjects: list, loading: false)),
     );
   }
 
-  Future<void> getExams(BuildContext context , String idSubject) async {
+  Future<List<ExamModel>> getExams(String idSubject) async {
+    emit(state.copyWith(loadinExams: true));
+    List<ExamModel> listDataOfExams = [];
     final resonse = await SubjectsSources.getExam(idSubject);
     resonse.fold(
-      (error) async =>
-          emit(state.copyWith(error: error, listDataOfExams: [], loading: false)),
-      (list) async => emit(state.copyWith(listDataOfExams: list, loading: false)),
+      (error) async {   
+        emit(
+          state.copyWith(error: error, listDataOfExams: [], loadinExams: false),
+        );
+        listDataOfExams = [];
+      },
+      (list) async {
+        emit(state.copyWith(listDataOfExams: list, loadinExams: false));
+        listDataOfExams = list;
+      },
     );
+    return listDataOfExams;
   }
 
   Future<void> addSubject(BuildContext context, SubjectModel model) async {

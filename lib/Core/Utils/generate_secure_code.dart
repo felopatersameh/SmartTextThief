@@ -17,4 +17,5 @@ String generateSecureCode(int length) {
 
 /// Convenience helpers for subject-specific identifiers
 String generateSubjectId([int length = 20]) => generateSecureCode(length);
+String generateExamtId([int length = 30]) => generateSecureCode(length);
 String generateSubjectJoinCode([int length = 5]) => generateSecureCode(length);

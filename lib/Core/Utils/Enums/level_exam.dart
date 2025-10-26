@@ -1,6 +1,6 @@
 enum LevelExam {
   easy("easy"),
-  meduim("meduim"),
+  normal("normal"),
   hard("hard");
 
   final String name;
@@ -9,8 +9,7 @@ enum LevelExam {
   static LevelExam fromString(String value) {
     return LevelExam.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => LevelExam.meduim,
+      orElse: () => LevelExam.normal,
     );
   }
 }
-

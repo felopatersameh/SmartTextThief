@@ -35,6 +35,7 @@ class AppIcons {
   //******************************************************** for navigate
   static const IconData homepage = IconBroken.Home;
   static const IconData profile = IconBroken.Profile;
+  static const IconData studenst = EvaIcons.people;
   static const IconData exame = IconBroken.Document;
 
   static Widget taskPage = Container(
@@ -107,7 +108,14 @@ class AppIcons {
   static const IconData quiz = IconBroken.Document;
   static const IconData calendar = IconBroken.Calendar;
   static const IconData arrowForward = IconBroken.Arrow___Right_2;
+  static const IconData share = EvaIcons.share;
   static const IconData download = IconBroken.Download;
   static const IconData refresh = EvaIcons.refresh;
   static const IconData showQuestions = IconBroken.Show;
-}
+
+  //******************************************************** for Chart/Graph
+  static const IconData chart = Bootstrap.bar_chart_fill;
+  static const IconData code = Bootstrap.code;
+  static const IconData avarege = Bootstrap.percent;
+  static const IconData copy = Bootstrap.copy;
+} 

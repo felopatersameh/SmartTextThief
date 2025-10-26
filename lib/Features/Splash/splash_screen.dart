@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Core/Storage/Local/local_storage_keys.dart';
-import 'package:smart_text_thief/Core/Storage/Local/local_storage_service.dart';
+import '../../Core/Storage/Local/local_storage_keys.dart';
+import '../../Core/Storage/Local/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
 import '../../Config/Routes/name_routes.dart';
 
@@ -69,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
       _controller.value = 1.0;
 
       if (mounted) {
-        AppRouter.goNamedByPath(context, NameRoutes.main);
+        AppRouter.goNamedByPath(context, NameRoutes.subject);
       }
     } catch (e) {
       if (mounted) {

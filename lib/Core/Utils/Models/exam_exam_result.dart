@@ -1,11 +1,12 @@
 import 'package:equatable/equatable.dart';
+import '../../Storage/Local/get_local_storge.dart';
 import '../Enums/data_key.dart';
 import '../Enums/level_exam.dart';
 
 import 'exam_result_q_a.dart';
 
-class ExamResult extends Equatable {
-  const ExamResult({
+class ExamResultModel extends Equatable {
+  const ExamResultModel({
     required this.examResultEmailSt,
     required this.examResultDegree,
     required this.examResultQA,
@@ -23,7 +24,18 @@ class ExamResult extends Equatable {
   final bool randomQuestions;
   final String typeExam;
 
-  ExamResult copyWith({
+  /// Default noLabel instance (all fields set to "empty" or default values)
+  static  ExamResultModel noLabel = ExamResultModel(
+    examResultEmailSt: "",
+    examResultDegree: "",
+    examResultQA: const [],
+    levelExam: LevelExam.easy,
+    numberOfQuestions: 0,
+    randomQuestions: false,
+    typeExam: "Quiz",
+  );
+
+  ExamResultModel copyWith({
     String? examResultEmailSt,
     String? examResultDegree,
     List<ExamResultQA>? examResultQA,
@@ -32,7 +44,7 @@ class ExamResult extends Equatable {
     bool? randomQuestions,
     String? typeExam,
   }) {
-    return ExamResult(
+    return ExamResultModel(
       examResultEmailSt: examResultEmailSt ?? this.examResultEmailSt,
       examResultDegree: examResultDegree ?? this.examResultDegree,
       examResultQA: examResultQA ?? this.examResultQA,
@@ -43,8 +55,8 @@ class ExamResult extends Equatable {
     );
   }
 
-  factory ExamResult.fromJson(Map<String, dynamic> json) {
-    return ExamResult(
+  factory ExamResultModel.fromJson(Map<String, dynamic> json) {
+    return ExamResultModel(
       examResultEmailSt: json[DataKey.examResultEmailSt.key] ?? "",
       examResultDegree: json[DataKey.examResultDegree.key] ?? "",
       examResultQA: json[DataKey.examResultQandA.key] == null
@@ -83,4 +95,7 @@ class ExamResult extends Equatable {
     randomQuestions,
     typeExam,
   ];
+
+  bool get isdo => (examResultEmailSt) == (GetLocalStorge.getidUser());
+  
 }

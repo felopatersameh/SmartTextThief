@@ -12,7 +12,7 @@ class SubjectsCard extends StatelessWidget {
 
   const SubjectsCard({
     super.key,
-  
+
     this.openSubjectDetails, required this.model,
   });
 

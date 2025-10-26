@@ -7,7 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smart_text_thief/Features/Subjects/cubit/subjects_cubit.dart';
 
 import 'Config/setting.dart';
-import 'Core/Resources/Services/Notifications/notification_services.dart';
+import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/Storage/Firebase/firebase_service.dart';
 import 'Core/Storage/Local/local_storage_service.dart';
 import 'Features/Profile/cubit/profile_cubit.dart';

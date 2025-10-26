@@ -54,7 +54,7 @@ class _BodyScreenState extends State<BodyScreen> {
               type: MessageType.success,
             );
             if (!context.mounted) return;
-            AppRouter.goNamedByPath(context, NameRoutes.main);
+            AppRouter.goNamedByPath(context, NameRoutes.subject);
           }
           if (state.sucess == false) {
             if (!context.mounted) return;

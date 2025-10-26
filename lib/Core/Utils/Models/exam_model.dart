@@ -1,43 +1,50 @@
 import 'package:equatable/equatable.dart';
+import 'package:smart_text_thief/Core/Utils/Extensions/date_time_extension.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
+import '../../Storage/Local/get_local_storge.dart';
 import '../Enums/data_key.dart';
+import 'exam_result_static_model.dart';
 
 class ExamModel extends Equatable {
   const ExamModel({
     required this.examId,
     required this.examIdSubject,
     required this.examIdTeacher,
-    required this.examExamResult,
-    required this.examQandA,
+    required this.examResult,
+    required this.examStatic,
     required this.examCreatedAt,
     required this.examFinishAt,
+    required this.startedAt,
   });
 
   final String examId;
   final String examIdSubject;
   final String examIdTeacher;
-  final List<ExamResult> examExamResult;
-  final List<ExamResult> examQandA;
+  final List<ExamResultModel> examResult;
+  final ExamStaticModel examStatic;
   final DateTime examCreatedAt;
   final DateTime examFinishAt;
+  final DateTime startedAt;
 
   ExamModel copyWith({
     String? examId,
     String? examIdSubject,
     String? examIdTeacher,
-    List<ExamResult>? examExamResult,
-    List<ExamResult>? examQandA,
+    List<ExamResultModel>? examResult,
+    ExamStaticModel? examStatic,
     DateTime? examCreatedAt,
     DateTime? examFinishAt,
+    DateTime? startedAt,
   }) {
     return ExamModel(
       examId: examId ?? this.examId,
       examIdSubject: examIdSubject ?? this.examIdSubject,
       examIdTeacher: examIdTeacher ?? this.examIdTeacher,
-      examExamResult: examExamResult ?? this.examExamResult,
-      examQandA: examQandA ?? this.examQandA,
+      examResult: examResult ?? this.examResult,
+      examStatic: examStatic ?? this.examStatic,
       examCreatedAt: examCreatedAt ?? this.examCreatedAt,
       examFinishAt: examFinishAt ?? this.examFinishAt,
+      startedAt: startedAt ?? this.startedAt,
     );
   }
 
@@ -46,46 +53,92 @@ class ExamModel extends Equatable {
       examId: json[DataKey.examId.key] ?? "",
       examIdSubject: json[DataKey.examIdSubject.key] ?? "",
       examIdTeacher: json[DataKey.examIdTeacher.key] ?? "",
-      examExamResult: json[DataKey.examExamResult.key] == null
+      examResult: json[DataKey.examExamResult.key] == null
           ? []
-          : List<ExamResult>.from(
+          : List<ExamResultModel>.from(
               (json[DataKey.examExamResult.key] as List<dynamic>).map(
-                (x) => ExamResult.fromJson(x),
+                (x) => ExamResultModel.fromJson(x),
               ),
             ),
-      examQandA: json['exam_Q&A'] == null
-          ? []
-          : List<ExamResult>.from(
-              (json['exam_Q&A'] as List<dynamic>).map(
-                (x) => ExamResult.fromJson(x),
-              ),
+      examStatic: json['exam_static'] == null
+          ? ExamStaticModel(
+              examResultQA: [],
+              levelExam: json[DataKey.levelExam.key] ?? "",
+              numberOfQuestions: 0,
+              typeExam: "",
+            )
+          : ExamStaticModel.fromJson(
+              json['exam_static'] as Map<String, dynamic>,
             ),
-      examCreatedAt:
-          DateTime.fromMillisecondsSinceEpoch(json[DataKey.examCreatedAt.key]),
-      examFinishAt:
-          DateTime.fromMillisecondsSinceEpoch(json[DataKey.examFinishAt.key]),
+      examCreatedAt: DateTime.fromMillisecondsSinceEpoch(
+        json[DataKey.examCreatedAt.key],
+      ),
+      examFinishAt: DateTime.fromMillisecondsSinceEpoch(
+        json[DataKey.examFinishAt.key],
+      ),
+      startedAt: DateTime.fromMillisecondsSinceEpoch(json['startedAt']),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        DataKey.examId.key: examId,
-        DataKey.examIdSubject.key: examIdSubject,
-        DataKey.examIdTeacher.key: examIdTeacher,
-        DataKey.examExamResult.key:
-            examExamResult.map((x) => x.toJson()).toList(),
-        'exam_Q&A': examQandA.map((x) => x.toJson()).toList(),
-        DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
-        DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
-      };
+    DataKey.examId.key: examId,
+    DataKey.examIdSubject.key: examIdSubject,
+    DataKey.examIdTeacher.key: examIdTeacher,
+    DataKey.examExamResult.key: examResult.map((x) => x.toJson()).toList(),
+    'exam_static': examStatic.toJson(),
+    DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
+    DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
+    'startedAt': startedAt.millisecondsSinceEpoch,
+  };
 
   @override
   List<Object?> get props => [
-        examId,
-        examIdSubject,
-        examIdTeacher,
-        examExamResult,
-        examQandA,
-        examCreatedAt,
-        examFinishAt,
-      ];
+    examId,
+    examIdSubject,
+    examIdTeacher,
+    examResult,
+    examStatic,
+    examCreatedAt,
+    examFinishAt,
+    startedAt,
+  ];
+
+  get created => examCreatedAt.shortMonthYear;
+  get started => startedAt.fullDateTime;
+  get isStart => startedAt.isBefore(DateTime.now());
+  get isEnded => examFinishAt.isBefore(DateTime.now());
+  get eneded => examFinishAt.fullDateTime;
+  bool get isME => (examIdTeacher) == (GetLocalStorge.getidUser());
+
+  ExamResultModel? get myTest {
+    final idSt = GetLocalStorge.getidUser();
+    final response = examResult.firstWhere(
+      (p0) => idSt == p0.examResultEmailSt,
+      orElse: () => ExamResultModel.noLabel,
+    );
+    if (response == ExamResultModel.noLabel) return null;
+    return response;
+  }
+
+  bool get showResult =>
+      ((myTest != null) && (examFinishAt.isBefore(DateTime.now())))
+      ? true
+      : false;
+
+  String get durationBeforeStarted {
+    final text = "Started in ";
+    final hours = examFinishAt.difference(startedAt).inHours;
+    final day = examFinishAt.difference(startedAt).inDays;
+    if (hours >= 24) return "$text $day Days";
+    return "$text $hours H";
+  }
+
+  String get durationAfterStarted {
+    final text = "Ended in";
+    final now = DateTime.now();
+    final hours = examFinishAt.difference(now).inHours;
+    final day = examFinishAt.difference(now).inDays;
+    if (hours >= 24) return "$text $day Days";
+    return "$text $hours H";
+  }
 }

@@ -26,24 +26,22 @@ class AppCustomtext extends StatelessWidget {
       children: [
         specialText == null || specialText?.isEmpty == true
             ? _method()
-            : Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _method(),
-                    TextButton(
-                        onPressed: onPressed,
-                        child: Text(
-                          specialText!,
-                          style: textStyle?.copyWith(
-                              color: AppColors.colorPrimary),
-                          maxLines: maxLines ?? specialText?.length,
-                          textAlign: textAlign,
-                          overflow: overflow,
-                        ))
-                  ],
-                ),
-              )
+            : Row(
+              children: [
+                _method(),
+                TextButton(
+                  isSemanticButton: false,
+                    onPressed: onPressed,
+                    child: Text(
+                      specialText!,
+                      style: textStyle?.copyWith(
+                          color: AppColors.colorPrimary),
+                      maxLines: maxLines ?? specialText?.length,
+                      textAlign: textAlign,
+                      overflow: overflow,
+                    ))
+              ],
+            )
       ],
     );
   }

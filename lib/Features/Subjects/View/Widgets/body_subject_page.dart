@@ -32,7 +32,14 @@ class BodySubjectPage extends StatelessWidget {
               child: SubjectsCard(
                 model: state.listDataOfSubjects[index],
                 openSubjectDetails: () {
-                  // Handle subject details navigation
+                  AppRouter.nextScreenNoPath(
+                    context,
+                    pathParameters: {
+                      "id": state.listDataOfSubjects[index].subjectId,
+                    },
+                    NameRoutes.subjectDetails,
+                    extra: state.listDataOfSubjects[index],
+                  );
                 },
               ),
             ),

@@ -4,7 +4,8 @@ import '../../Core/Resources/resources.dart';
 import 'cubit/main_cubit.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  final Widget child;
+  const MainScreen({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +15,7 @@ class MainScreen extends StatelessWidget {
         builder: (context, state) {
           final read = context.read<MainCubit>();
           return Scaffold(
-            appBar: AppBar(title: Text(read.nameScreens[state.index])),
-            body: SafeArea(child: read.screens[state.index]),
+            body: SafeArea(child: child),
             bottomNavigationBar: Container(
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.white54)),
@@ -25,7 +25,7 @@ class MainScreen extends StatelessWidget {
                 showUnselectedLabels: false,
                 items: read.items,
                 currentIndex: state.index,
-                onTap: (value) => read.changeIndex(value),
+                onTap: (value) => read.changeIndex(value,context),
                 backgroundColor: AppColors.colorsBackGround,
                 selectedItemColor: AppColors.colorPrimary,
                 unselectedItemColor: AppColors.colorUnSelected,

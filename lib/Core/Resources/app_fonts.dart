@@ -51,7 +51,7 @@ class AppTextStyles {
   static final bodyLargeMedium = _getTextStyle(16, FontWeight.w500);
   static final bodyMediumMedium = _getTextStyle(14, FontWeight.normal);
   static final bodySmallMedium = _getTextStyle(12, FontWeight.w500);
-  static final bodyXtraSmallMedium = _getTextStyle(12, FontWeight.bold);
+  static final bodyXtraSmallMedium = _getTextStyle(9, FontWeight.bold);
 
   static TextStyle getTextStyleSpecial({Color? color, double? fontSize}) {
     return GoogleFonts.changa(

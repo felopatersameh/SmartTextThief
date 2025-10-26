@@ -59,6 +59,7 @@ class AuthenticationSource {
     );
       await LocalStorageService.setValue(LocalStorageKeys.id, account.id);
       await LocalStorageService.setValue(LocalStorageKeys.isLoggedIn, true);
+      await LocalStorageService.setValue(LocalStorageKeys.email, account.email);
       return Right(true);
     } catch (error) {
       final FailureModel model = FailureModel(

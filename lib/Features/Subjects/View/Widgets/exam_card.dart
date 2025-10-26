@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Resources/app_colors.dart';
 import '../../../../Core/Resources/app_fonts.dart';
 import '../../../../Core/Resources/app_icons.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class ExamCard extends StatelessWidget {
-  final String title;
-  final String date;
-  final String type;
+  final ExamModel exam;
   final VoidCallback? againTest;
   final VoidCallback? pdf;
   final VoidCallback? showQA;
 
   const ExamCard({
     super.key,
-    required this.title,
-    required this.date,
-    required this.type,
+    required this.exam,
     this.againTest,
     this.pdf,
     this.showQA,
@@ -46,59 +43,112 @@ class ExamCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppCustomtext(
-                    text: title,
-                    textStyle: AppTextStyles.bodyLargeBold.copyWith(
-                      color: titleColor,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AppCustomtext(
+                          text: exam.examStatic.typeExam.toUpperCase(),
+                          textStyle: AppTextStyles.bodyLargeBold.copyWith(
+                            color: titleColor,
+                          ),
+                          textAlign: TextAlign.start,
+                          specialText: "#${exam.examId.substring(5, 10)}",
+                        ),
+
+                        AppCustomtext(
+                          text: exam.isEnded ?
+                            "Ended":exam.isStart
+                              ? exam.durationAfterStarted
+                              : exam.durationBeforeStarted,
+                          textStyle: AppTextStyles.bodyXtraSmallMedium.copyWith(
+                            color: exam.isEnded
+                                ? Colors.redAccent.shade400
+                                : exam.isStart
+                                ? Colors.green.shade400
+                                : Colors.amberAccent.shade400,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 2.h),
-                  AppCustomtext(
-                    text: 'Created on: $date',
-                    textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                      color: subtitleColor,
+                    SizedBox(height: 4.h),
+                    AppCustomtext(
+                      text: 'Created: ${exam.created}',
+                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                        color: subtitleColor,
+                      ),
                     ),
-                  ),
-                  AppCustomtext(
-                    text: type,
-                    textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                      color: subtitleColor,
+                    SizedBox(height: 2.h),
+                    AppCustomtext(
+                      text: 'Start: ${exam.started}',
+                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                        color: subtitleColor,
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 2.h),
+                    AppCustomtext(
+                      text: 'End: ${exam.eneded}',
+                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                        color: subtitleColor,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                     AppCustomtext(
+                      text: 'Q: ${exam.examStatic.numberOfQuestions}',
+                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                        color: subtitleColor,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    AppCustomtext(
+                      text: 'do it : ${exam.examResult.length}',
+                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                        color: subtitleColor,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                  ],
+                ),
               ),
               SizedBox(width: 10.w),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: showQA,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonBg,
-                    elevation: 0,
-                    foregroundColor: primary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 8.h,
+              if (exam.isME || (exam.myTest?.isdo ?? false))
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: showQA,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonBg,
+                      elevation: 0,
+                      foregroundColor: primary,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  icon: Icon(
-                    AppIcons.showQuestions,
-                    size: 18.sp,
-                    color: primary.withValues(alpha: .8),
-                  ),
-                  label: AppCustomtext(
-                    text: 'Show Questions',
-                    textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
+                    icon: Icon(
+                      AppIcons.showQuestions,
+                      size: 18.sp,
                       color: primary.withValues(alpha: .8),
+                    ),
+                    label: AppCustomtext(
+                      text: exam.isME
+                          ? 'Show Questions'
+                          : exam.showResult
+                          ? "Show Result"
+                          : exam.myTest?.isdo ?? false
+                          ? "Waiting For Result"
+                          : "Testing",
+                      textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
+                        color: primary.withValues(alpha: .8),
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 16.h),
@@ -106,53 +156,51 @@ class ExamCard extends StatelessWidget {
           // Bottom buttons row
           Row(
             children: [
-              // Download PDF
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: pdf,
-                  icon: Icon(AppIcons.download, color: primary, size: 18.sp),
-                  label: AppCustomtext(
-                    text: 'Download PDF',
-                    textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                      color: primary,
+              // Download PDF - للمعلم فقط
+              if (exam.isME)
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: pdf,
+                    icon: Icon(AppIcons.download, color: primary, size: 18.sp),
+                    label: AppCustomtext(
+                      text: 'Download PDF',
+                      textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                        color: primary,
+                      ),
                     ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: pdfButtonBg,
-                    side: BorderSide.none,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              // Retake Test
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: againTest,
-                  icon: Icon(
-                    AppIcons.refresh,
-                    size: 18.sp,
-                    color: Colors.white,
-                  ),
-                  label: AppCustomtext(
-                    text: 'Retake Test',
-                    textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primary,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: pdfButtonBg,
+                      side: BorderSide.none,
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              if (exam.isME) SizedBox(width: 8.w),
+              // Take Test - للطالب فقط ولو لم يحل الامتحان
+              if (!exam.isME && !(exam.myTest?.isdo ?? false))
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: againTest,
+                    icon: Icon(AppIcons.quiz, size: 18.sp, color: Colors.white),
+                    label: AppCustomtext(
+                      text: 'Take Test',
+                      textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primary,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ],

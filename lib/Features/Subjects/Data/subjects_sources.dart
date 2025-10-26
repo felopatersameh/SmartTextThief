@@ -13,16 +13,15 @@ class SubjectsSources {
  
  static Future<Either<String, List<ExamModel>>> getExam(String idSubject) async {
     try {
-      final response = await FirebaseServices.instance.findDocsInList(
+      final response = await FirebaseServices.instance.getAllData(
         CollectionKey.subjects.key,
         idSubject,
         subCollections: [ CollectionKey.exams.key],
-        nameField: DataKey.examIdSubject.key,
       );
       final List<ExamModel> model = [];
       if (response.status) {
         for (var element in response.data as List) {
-          model.add(element);
+          model.add(ExamModel.fromJson(element));
         }
 
         return right(model);

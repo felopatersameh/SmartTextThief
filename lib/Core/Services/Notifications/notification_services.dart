@@ -5,8 +5,8 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
 
-import '../../../Storage/Local/local_storage_keys.dart';
-import '../../../Storage/Local/local_storage_service.dart';
+import '../../Storage/Local/local_storage_keys.dart';
+import '../../Storage/Local/local_storage_service.dart';
 
 class NotificationServices {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
