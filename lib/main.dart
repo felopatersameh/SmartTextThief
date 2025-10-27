@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,12 +16,16 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  await Future.wait([
+    Hive.initFlutter(),
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+  ]);
   await LocalStorageService.init();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseServices.instance.initialize();
   final NotificationServices notificationServices = NotificationServices();
-  await notificationServices.initFCM();
+  await Future.wait([
+    FirebaseServices.instance.initialize(),
+    notificationServices.initFCM(),
+  ]);
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
   runApp(const MyApp());
 }
@@ -51,9 +56,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) async => await AppScreenOrientationHelper.lockPortrait(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await AppScreenOrientationHelper.lockPortrait();
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness:
+              Brightness.light, // dark icons for light background
+          systemNavigationBarColor: Colors.white, // nav bar color
+          systemNavigationBarIconBrightness: Brightness.light, // dark nav icons
+          systemNavigationBarDividerColor: Colors.white, // optional divider
+        ),
+      );
+    });
     super.initState();
   }
 

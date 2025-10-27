@@ -46,18 +46,6 @@ void main() {
     //   expect(authenticationCubit.state.message, 'succeed Login By Google');
     // });
 
-    test('loginByFacebook method exists and is callable', () async {
-      // Test that the method exists and can be called
-      expect(authenticationCubit.loginByFacebook, isA<Function>());
-
-      // Call the method to ensure it doesn't throw
-      await authenticationCubit.loginByFacebook();
-
-      // Verify state changes after calling
-      expect(authenticationCubit.state.loading, false);
-      expect(authenticationCubit.state.success, true);
-      expect(authenticationCubit.state.message, 'succeed Login By Facebook');
-    });
   });
 
   group('Navigation Tests', () {

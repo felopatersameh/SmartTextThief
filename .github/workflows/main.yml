@@ -1,4 +1,4 @@
-name: Build for Appetize.io
+name: version 1.1.0
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.35.5'
+        flutter-version: '3.35.6'
     
     - name: Install dependencies
       run: flutter pub get
@@ -37,7 +37,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.35.5'
+        flutter-version: '3.35.6'
     
     - name: Install dependencies
       run: flutter pub get
@@ -66,7 +66,7 @@ jobs:
   #   - name: ⚙️ Setup Flutter
   #     uses: subosito/flutter-action@v2
   #     with:
-  #       flutter-version: '3.35.5'
+  #       flutter-version: '3.35.6'
     
   #   - name: 📦 Install dependencies
   #     run: |
