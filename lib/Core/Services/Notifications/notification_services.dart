@@ -23,13 +23,13 @@ class NotificationServices {
     if (tokenIn == null || tokenIn == '' && tokenFCM != tokenIn) {
       await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
     }
-    FirebaseMessaging.onMessageOpenedApp.listen((message)async {
+    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
       debugPrint(
         "📲 onMessageOpenedAppData:: ${message.notification?.toMap()}",
       );
     });
 
-    FirebaseMessaging.onMessage.listen((message)async {
+    FirebaseMessaging.onMessage.listen((message) async {
       debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
       // final notification = message.notification;
 
@@ -40,7 +40,12 @@ class NotificationServices {
       // await  LocalNotificationService.showNotification(title: title, body: body);
       // }
     });
+  
   }
+Future<void> subscribeToTopic(String topic) async =>
+      await _firebaseMessaging.subscribeToTopic(topic);
+  Future<void> unSubscribeToTopic(String topic) async =>
+      await _firebaseMessaging.unsubscribeFromTopic(topic);
 
   Future<ServiceAccountCredentials> _loadServiceAccount() async {
     final jsonStr = await rootBundle.loadString('Assets/service_account.json');

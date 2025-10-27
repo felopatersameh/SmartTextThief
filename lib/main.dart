@@ -19,7 +19,6 @@ void main() async {
   await LocalStorageService.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseServices.instance.initialize();
-  // await LocalNotificationService.initialize();
   final NotificationServices notificationServices = NotificationServices();
   await notificationServices.initFCM();
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
@@ -71,11 +70,10 @@ class _MyAppState extends State<MyApp> {
         ScreenUtil.init(context);
         return MultiBlocProvider(
           providers: [
-            BlocProvider(create: (context) => SettingsCubit()),
+            BlocProvider(create: (context) => SettingsCubit(), lazy: true),
             BlocProvider(create: (context) => ProfileCubit()),
             BlocProvider(create: (context) => SubjectCubit()),
           ],
-
           child: BlocBuilder<SettingsCubit, SettingsState>(
             builder: (context, state) {
               return MaterialApp.router(

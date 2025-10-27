@@ -54,8 +54,7 @@ jobs:
         name: android-builds
         path: |
           build/app/outputs/flutter-apk/app-release.apk
-
-#           build/app/outputs/bundle/release/app-release.aab
+ #          build/app/outputs/bundle/release/app-release.aab
   # build_ios_appetize:
   #   name: 🍎 Build iOS for Appetize
   #   runs-on: macos-latest

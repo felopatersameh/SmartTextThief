@@ -61,6 +61,7 @@ dependencies:
   syncfusion_flutter_pdf: ^31.2.2
   pdf: ^3.11.3
   open_file: ^3.5.10
+  connectivity_plus: ^7.0.0
 
 
 dev_dependencies:

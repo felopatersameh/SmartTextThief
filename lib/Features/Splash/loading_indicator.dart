@@ -5,7 +5,7 @@ import '/Core/Resources/app_icons.dart';
 class LoadingIndicator extends StatelessWidget {
   final AnimationController controller;
 
-  const LoadingIndicator({super.key, required this.controller});
+  const LoadingIndicator({super.key, required this.controller,});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class LoadingIndicator extends StatelessWidget {
             ),
             SizedBox(height: 30.h),
             Text(
-              'Loading...',
+             'Loading...',
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,

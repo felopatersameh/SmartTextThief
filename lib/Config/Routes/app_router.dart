@@ -1,7 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_text_thief/Config/Routes/no_connection_screen.dart';
+import 'package:smart_text_thief/Config/Setting/settings_cubit.dart';
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
 import '../../Features/Exams/View/Pages/create_exam_screen.dart';
@@ -114,9 +117,18 @@ class AppRouter {
         ],
       ),
     ],
-    errorBuilder: (context, state) => const ErrorScreen(),
+    
+    errorBuilder: (context, state) {
+      
+      if (state.error?.message.toString().contains("NoConnectionScreen")==true) {
+        return const NoConnectionScreen();
+      }
+      return const ErrorScreen();
+    },
     redirect: (context, state) {
+      final internet = context.read<SettingsCubit>().getConnectivity();
       log("location::${state.matchedLocation.toString()}");
+      if (!internet) throw "NoConnectionScreen";
       return null;
     },
   );

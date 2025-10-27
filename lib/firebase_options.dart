@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'smarttextthief',
     storageBucket: 'smarttextthief.firebasestorage.app',
   );
+
 }
