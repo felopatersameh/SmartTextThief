@@ -240,7 +240,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     AppRouter.nextScreenNoPath(
       context,
       NameRoutes.view,
-      extra: exam,
+      extra: {"exam": exam,"isEditMode":true},
       pathParameters: {"exam": exam.examId, "id": exam.examIdSubject},
     );
   }

@@ -104,15 +104,17 @@ class ExamModel extends Equatable {
     startedAt,
   ];
 
-  get created => examCreatedAt.shortMonthYear;
-  get started => startedAt.fullDateTime;
-  get isStart => startedAt.isBefore(DateTime.now());
-  get isEnded => examFinishAt.isBefore(DateTime.now());
-  get ended => examFinishAt.fullDateTime;
-  bool get isME => (examIdTeacher) == (GetLocalStorage.getIdUser());
+  String get created => examCreatedAt.shortMonthYear;
+  String get started => startedAt.fullDateTime;
+  bool get isStart => startedAt.isBefore(DateTime.now());
+  bool get isEnded => examFinishAt.isBefore(DateTime.now());
+  String get ended => examFinishAt.fullDateTime;
+  String get specialIdLiveExam =>
+      "${examId.substring(0, 5)}--${GetLocalStorage.getIdUser().substring(0, 5)}";
+  bool get isTeacher => (examIdTeacher) == (GetLocalStorage.getIdUser());
 
   ExamResultModel? get myTest {
-    final idSt = GetLocalStorage.getIdUser();
+    final idSt = GetLocalStorage.getEmailUser();
     final response = examResult.firstWhere(
       (p0) => idSt == p0.examResultEmailSt,
       orElse: () => ExamResultModel.noLabel,
@@ -121,8 +123,10 @@ class ExamModel extends Equatable {
     return response;
   }
 
+  bool get doExam => (myTest != null);
+
   bool get showResult =>
-      ((myTest != null) && (examFinishAt.isBefore(DateTime.now())))
+      ((myTest != null) || (examFinishAt.isBefore(DateTime.now())))
       ? true
       : false;
 
@@ -141,5 +145,11 @@ class ExamModel extends Equatable {
     final day = examFinishAt.difference(now).inDays;
     if (hours >= 24) return "$text $day Days";
     return "$text $hours H";
+  }
+
+  int get attempts {
+    int attempt = examResult.length;
+    if (!doExam && isEnded) attempt += 1;
+    return attempt;
   }
 }

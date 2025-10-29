@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Features/Subjects/cubit/subjects_cubit.dart';
 
 import 'Config/setting.dart';
@@ -24,9 +24,20 @@ void main() async {
   final NotificationServices notificationServices = NotificationServices();
   await Future.wait([
     FirebaseServices.instance.initialize(),
+    RealtimeFirebase.initialize(),
     notificationServices.initFCM(),
   ]);
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
+      //   SystemChrome.setSystemUIOverlayStyle(
+      //   const SystemUiOverlayStyle(
+      //     statusBarBrightness: Brightness.light,
+      //     statusBarIconBrightness:
+      //         Brightness.light, // dark icons for light background
+      //     systemNavigationBarColor: Colors.white, // nav bar color
+      //     systemNavigationBarIconBrightness: Brightness.light, // dark nav icons
+      //     systemNavigationBarDividerColor: Colors.white, // optional divider
+      //   ),
+      // );
   runApp(const MyApp());
 }
 
@@ -58,16 +69,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppScreenOrientationHelper.lockPortrait();
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness:
-              Brightness.light, // dark icons for light background
-          systemNavigationBarColor: Colors.white, // nav bar color
-          systemNavigationBarIconBrightness: Brightness.light, // dark nav icons
-          systemNavigationBarDividerColor: Colors.white, // optional divider
-        ),
-      );
+
     });
     super.initState();
   }

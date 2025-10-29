@@ -15,13 +15,14 @@ import '../widgets/exam_date_section.dart';
 // ==================== View ====================
 class ViewExam extends StatelessWidget {
   final ExamModel examModel;
+  final bool isEditMode;
 
-  const ViewExam({super.key, required this.examModel});
+  const ViewExam({super.key, required this.examModel, required this.isEditMode,});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ViewExamCubit(exam: examModel),
+      create: (context) => ViewExamCubit(exam: examModel,isEditMode: isEditMode)..init(),
       child: const _ViewExamContent(),
     );
   }
@@ -47,6 +48,7 @@ class _ViewExamContent extends StatelessWidget {
                     SizedBox(height: 16.h),
 
                     /// === Exam Date Section ===
+                    if(!state.exam.isEnded)
                     ExamDateSection(
                       startDate: state.startDate,
                       endDate: state.endDate,
@@ -75,7 +77,7 @@ class _ViewExamContent extends StatelessWidget {
                     AppCustomText.generate(
                       text: state.isEditMode
                           ? "Questions (Edit Mode)"
-                          : "Results",
+                          : "Results(${state.exam.myTest?.examResultDegree??0} From ${state.exam.examStatic.numberOfQuestions})",
                       textStyle: AppTextStyles.h5SemiBold.copyWith(
                         color: AppColors.textWhite,
                       ),
@@ -107,7 +109,7 @@ class _ViewExamContent extends StatelessWidget {
               ),
             ],
           ),
-          persistentFooterButtons: [
+          persistentFooterButtons: state.isEditMode?[
             CreateButton(
               onPress: state.loadingSave
                   ? null
@@ -116,7 +118,7 @@ class _ViewExamContent extends StatelessWidget {
             ),
             if (state.loadingSave)
               LinearProgressIndicator(color: AppColors.colorPrimary),
-          ],
+          ]:null,
           persistentFooterDecoration: BoxDecoration(),
         );
       },

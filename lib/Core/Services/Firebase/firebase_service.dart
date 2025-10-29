@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -208,30 +207,33 @@ Future<ResponseModel> removeData(
 Future<ResponseModel> updateData(
   String mainCollectionName,
   String documentId,
-  dynamic data, {
+  Map<String,dynamic> data, {
   List<String>? subCollections,
   List<String>? subIds,
 }) async {
   try {
-    DocumentReference docRef =
-        firestore!.collection(mainCollectionName).doc(documentId);
+
+    DocumentReference docRef = firestore!.collection(mainCollectionName).doc(documentId);
+
 
     if (subCollections != null && subCollections.isNotEmpty) {
       for (int i = 0; i < subCollections.length; i++) {
         final subCollection = subCollections[i];
         final subId = (subIds != null && subIds.length > i) ? subIds[i] : null;
         final CollectionReference colRef = docRef.collection(subCollection);
-        docRef =
-            (subId != null && subId.isNotEmpty) ? colRef.doc(subId) : colRef.doc();
+
+        docRef = (subId != null && subId.isNotEmpty) ? colRef.doc(subId) : colRef.doc();
       }
     }
 
+    // log('updateData:: Updating document at path: ${docRef.path} with data: $data');
     await docRef.update(data);
-    // log('TestFirebaseServices:::Document $documentId in $mainCollectionName updated with $data');
+    // log('updateData:: Document updated successfully');
+
     return ResponseModel.success(message: 'Updated successfully');
   } catch (e) {
     final failure = FailureModel(message: 'Error updating data', error: e);
-    // log('TestFirebaseServices:::Error updating data: ${failure.toString()}');
+    // log('updateData:: Error updating data: ${failure.toString()}');
     return ResponseModel.error(message: failure.message, failure: failure);
   }
 }

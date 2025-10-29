@@ -14,6 +14,7 @@ class NameRoutes {
   static const String createExam = 'create';
   static const String doExam = 'do/';
   static const String view = 'view';
+  static const String result = 'result';
 
   static final Map<String, String> titleAppBar = {
     profile: "profile",
@@ -21,6 +22,7 @@ class NameRoutes {
     subject: "Subjects",
     createExam: "Create Exam",
     subjectDetails: "Detail",
+    doExam: "Exam Live",
   };
 }
 
@@ -35,5 +37,5 @@ extension PathStringExtension on String {
 
   String removeSlash() => endsWith('/') ? substring(0, length - 1) : this;
 
-  get titleAppBar => NameRoutes.titleAppBar[this]??"";
+ String get titleAppBar => NameRoutes.titleAppBar[this]??"";
 }

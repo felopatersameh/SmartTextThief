@@ -99,6 +99,7 @@ class SubjectInfoCard extends StatelessWidget {
             ),
 
             SizedBox(height: 20.h),
+            if(subjectModel.isME)
             _buildShowGraphButton(),
           ],
         ),

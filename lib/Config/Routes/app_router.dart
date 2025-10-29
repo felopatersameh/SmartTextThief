@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_text_thief/Config/Routes/no_connection_screen.dart';
 import 'package:smart_text_thief/Config/Setting/settings_cubit.dart';
+import 'package:smart_text_thief/Features/Exams/View/Pages/do_exam.dart';
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
 import '../../Features/Exams/View/Pages/create_exam_screen.dart';
@@ -96,14 +97,36 @@ class AppRouter {
                         name: NameRoutes.view,
                         path: "/:exam${NameRoutes.view.ensureWithSlash()}",
                         pageBuilder: (context, state) {
-                          final exam = state.extra as ExamModel;
+                          final data = state.extra as Map;
+                          final exam = data['exam'] as ExamModel;
+                          final isEditMode = data['isEditMode'] as bool;
                           return NoTransitionPage(
-                            child: ViewExam(examModel: exam),
+                            child: ViewExam(examModel: exam, isEditMode: isEditMode),
                           );
                         },
                       ),
                     ],
                   ),
+                  GoRoute(
+                    name: NameRoutes.doExam,
+                    path: '${NameRoutes.doExam.ensureWithSlash()}:exam',
+                    pageBuilder: (context, state) {
+                      final examModel = state.extra as ExamModel;
+                      return NoTransitionPage(child: DoExam(model: examModel));
+                    },
+                  ),
+                  GoRoute(
+                        name: NameRoutes.result,
+                        path: "/:exam${NameRoutes.result.ensureWithSlash()}/:email",
+                        pageBuilder: (context, state) {
+                          final data = state.extra as Map;
+                          final exam = data['exam'] as ExamModel;
+                          final isEditMode = data['isEditMode'] as bool;
+                          return NoTransitionPage(
+                            child: ViewExam(examModel: exam, isEditMode: isEditMode),
+                          );
+                        },
+                      ),
                 ],
               ),
             ],

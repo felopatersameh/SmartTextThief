@@ -25,7 +25,6 @@ class ExamCard extends StatelessWidget {
     final Color primary = AppColors.colorPrimary;
     final Color background = primary.withValues(alpha: 0.13);
     final Color titleColor = Colors.white;
-    final Color subtitleColor = Colors.grey.shade600;
     final Color buttonBg = primary.withValues(alpha: 0.1);
     final Color pdfButtonBg = primary.withValues(alpha: 0.1);
 
@@ -58,99 +57,107 @@ class ExamCard extends StatelessWidget {
                           textAlign: TextAlign.start,
                           specialText: "#${exam.examId.substring(5, 10)}",
                         ),
-
                         AppCustomText.generate(
                           text: exam.isEnded
                               ? "Ended"
                               : exam.isStart
-                              ? exam.durationAfterStarted
-                              : exam.durationBeforeStarted,
-                          textStyle: AppTextStyles.bodyExtraSmallMedium
-                              .copyWith(
-                                color: exam.isEnded
-                                    ? Colors.redAccent.shade400
-                                    : exam.isStart
+                                  ? exam.durationAfterStarted
+                                  : exam.durationBeforeStarted,
+                          textStyle: AppTextStyles.bodyExtraSmallMedium.copyWith(
+                            color: exam.isEnded
+                                ? Colors.redAccent.shade400
+                                : exam.isStart
                                     ? Colors.green.shade400
                                     : Colors.amberAccent.shade400,
-                              ),
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 4.h),
-                    AppCustomText.generate(
-                      text: 'Created: ${exam.created}',
-                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: subtitleColor,
+                    
+                    // Enhanced Info Section - Horizontal Scroll Chips
+                    SizedBox(height: 12.h),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildCompactChip(
+                            label: 'Created',
+                            value: exam.created,
+                            color: Colors.blueAccent,
+                          ),
+                          SizedBox(width: 8.w),
+                          _buildCompactChip(
+                            label: 'Start',
+                            value: exam.started,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 8.w),
+                          _buildCompactChip(
+                            label: 'End',
+                            value: exam.ended,
+                            color: Colors.redAccent,
+                          ),
+                          SizedBox(width: 8.w),
+                          _buildCompactChip(
+                            label: 'Questions',
+                            value: '${exam.examStatic.numberOfQuestions}',
+                            color: Colors.orangeAccent,
+                          ),
+                          SizedBox(width: 8.w),
+                          _buildCompactChip(
+                            label: 'Attempts',
+                            value: '${exam.examResult.length}',
+                            color: Colors.purpleAccent,
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 2.h),
-                    AppCustomText.generate(
-                      text: 'Start: ${exam.started}',
-                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: subtitleColor,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    AppCustomText.generate(
-                      text: 'End: ${exam.ended}',
-                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: subtitleColor,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    AppCustomText.generate(
-                      text: 'Q: ${exam.examStatic.numberOfQuestions}',
-                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: subtitleColor,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    AppCustomText.generate(
-                      text: 'do it : ${exam.examResult.length}',
-                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: subtitleColor,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
                   ],
                 ),
               ),
-              SizedBox(width: 10.w),
-              if (exam.isME || (exam.myTest?.isDo ?? false))
-                Expanded(
-                  child: ElevatedButton.icon(
+              SizedBox(width: 12.w),
+              Column(
+                children: [
+                  ElevatedButton(
                     onPressed: showQA,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonBg,
                       elevation: 0,
                       foregroundColor: primary,
                       padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 8.h,
+                        horizontal: 16.w,
+                        vertical: 12.h,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                     ),
-                    icon: Icon(
-                      AppIcons.showQuestions,
-                      size: 18.sp,
-                      color: primary.withValues(alpha: .8),
-                    ),
-                    label: AppCustomText.generate(
-                      text: exam.isME
-                          ? 'Show Questions'
-                          : exam.showResult
-                          ? "Show Result"
-                          : exam.myTest?.isDo ?? false
-                          ? "Waiting For Result"
-                          : "Testing",
-                      textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                        color: primary.withValues(alpha: .8),
-                      ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          AppIcons.showQuestions,
+                          size: 24.sp,
+                          color: primary,
+                        ),
+                        SizedBox(height: 4.h),
+                        AppCustomText.generate(
+                          text: exam.isTeacher
+                              ? 'View'
+                              : exam.isEnded
+                                  ? 'Result'
+                                  : exam.doExam
+                                      ? 'Done'
+                                      : 'Pending',
+                          textStyle: AppTextStyles.bodyExtraSmallSemiBold.copyWith(
+                            color: primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                ],
+              ),
             ],
           ),
           SizedBox(height: 16.h),
@@ -158,7 +165,7 @@ class ExamCard extends StatelessWidget {
           // Bottom buttons row
           Row(
             children: [
-              if (exam.isME)
+              if (exam.isTeacher)
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: pdf,
@@ -179,8 +186,8 @@ class ExamCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (exam.isME) SizedBox(width: 8.w),
-              if (!exam.isME && !(exam.myTest?.isDo ?? false))
+              if (exam.isTeacher) SizedBox(width: 8.w),
+              if (!exam.isTeacher && !(exam.showResult))
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: againTest,
@@ -202,6 +209,48 @@ class ExamCard extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactChip({
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha: 0.2),
+            color.withValues(alpha: 0.1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: color.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppCustomText.generate(
+            text: '$label: ',
+            textStyle: AppTextStyles.bodyExtraSmallMedium.copyWith(
+              color: color,
+            ),
+          ),
+          AppCustomText.generate(
+            text: value,
+            textStyle: AppTextStyles.bodySmallSemiBold.copyWith(
+              color: Colors.white,
+            ),
           ),
         ],
       ),

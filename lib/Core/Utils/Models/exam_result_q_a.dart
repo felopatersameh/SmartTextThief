@@ -27,7 +27,7 @@ class ExamResultQA  extends Equatable {
       options: List<String>.from(json['options'].map((x) => x.toString())),
       correctAnswer: json['correctAnswer'] ?? "",
       studentAnswer: json['studentAnswer'] ?? "",
-      score: json['score'],
+      score: json['score'].toString(),
     );
   }
 

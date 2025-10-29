@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Features/login/cubit/authentication_cubit.dart';
 import 'package:smart_text_thief/Core/Resources/strings.dart';
@@ -45,7 +44,6 @@ void main() {
     //   expect(authenticationCubit.state.success, true);
     //   expect(authenticationCubit.state.message, 'succeed Login By Google');
     // });
-
   });
 
   group('Navigation Tests', () {

@@ -33,12 +33,6 @@ class ExamInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _InfoRow(
-            icon: Icons.quiz,
-            label: "Type",
-            value: exam.examStatic.typeExam,
-          ),
-          SizedBox(height: 8.h),
-          _InfoRow(
             icon: Icons.signal_cellular_alt,
             label: "Level",
             value: exam.examStatic.levelExam.name,
@@ -50,11 +44,6 @@ class ExamInfoCard extends StatelessWidget {
             value: exam.examStatic.numberOfQuestions.toString(),
           ),
           SizedBox(height: 8.h),
-          _InfoRow(
-            icon: Icons.shuffle,
-            label: "Random",
-            value: exam.examStatic.randomQuestions ? "Yes" : "No",
-          ),
         ],
       ),
     );

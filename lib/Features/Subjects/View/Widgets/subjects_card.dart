@@ -21,7 +21,7 @@ class SubjectsCard extends StatelessWidget {
     final String title = model.subjectName;
     final String date = model.createdAt;
     final int lengthStudent = model.subjectEmailSts.length;
-    final int examsStudent = model.subjectEmailSts.length;
+    // final int examsStudent = model.subjectEmailSts.length;
     return GestureDetector(
       onTap: openSubjectDetails,
       child: Container(
@@ -85,20 +85,20 @@ class SubjectsCard extends StatelessWidget {
                   ),
                 ),
                 // Exams
-                Expanded(
-                  child: Row(
-                    children: [
-                      Icon(AppIcons.quiz, size: 16.sp, color: primary),
-                      SizedBox(width: 6.w),
-                      AppCustomText.generate(
-                        text: '$examsStudent Exams',
-                        textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                          color: primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Expanded(
+                //   child: Row(
+                //     children: [
+                //       Icon(AppIcons.quiz, size: 16.sp, color: primary),
+                //       SizedBox(width: 6.w),
+                //       AppCustomText.generate(
+                //         text: '$examsStudent Exams',
+                //         textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                //           color: primary,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
               ],
             ),
           ],

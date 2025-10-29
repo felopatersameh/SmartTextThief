@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Core/Storage/Local/get_local_storage.dart';
 import '../../../../Config/Routes/app_router.dart';
 import '../../../../Config/Routes/name_routes.dart';
 
@@ -53,10 +54,37 @@ class DetailsScreen extends StatelessWidget {
                     final exam = exams[index];
                     return ExamCard(
                       exam: exam,
+                      againTest: () {
+                        AppRouter.nextScreenNoPath(
+                          context,
+                          NameRoutes.doExam,
+                          extra: exam,
+                          pathParameters: {
+                            "exam": exam.examId,
+                            "id": exam.examIdSubject,
+                          },
+                        );
+                      },
                       pdf: () async {
                         await ExamPdfUtil.createExamPdf(
                           examData: exam,
                           examInfo: subjectModel,
+                        );
+                      },
+                      showQA: () {
+                        final email = GetLocalStorage.getEmailUser()
+                            .split("@")
+                            .first;
+                        
+                        AppRouter.nextScreenNoPath(
+                          context,
+                          NameRoutes.result,
+                          extra: {"exam": exam, "isEditMode": false},
+                          pathParameters: {
+                            "exam": exam.examId,
+                            "id": exam.examIdSubject,
+                            "email": email,
+                          },
                         );
                       },
                     );
