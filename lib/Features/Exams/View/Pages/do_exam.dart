@@ -116,7 +116,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
 
           return PopScope(
             canPop: state.isExamFinished,
-            onPopInvoked: (didPop) async {
+            onPopInvokedWithResult: (didPop, p0) async {
               if (!didPop && !state.isExamFinished) {
                 // Show confirmation dialog
                 final shouldExit = await _showExitConfirmationDialog(
@@ -427,7 +427,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   final success = await cubit.submitExam();
-                  if (context.mounted && !success  ) {
+                  if (!success && mounted) {
                     _showValidationDialog(context, cubit);
                   }
                 },
