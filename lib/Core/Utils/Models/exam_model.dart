@@ -66,6 +66,7 @@ class ExamModel extends Equatable {
               examResultQA: [],
               levelExam: json[DataKey.levelExam.key] ?? "",
               numberOfQuestions: 0,
+              time:  "0",
               typeExam: "",
             )
           : ExamStaticModel.fromJson(

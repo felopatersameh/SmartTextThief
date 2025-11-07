@@ -38,7 +38,7 @@ void main() async {
       //     systemNavigationBarDividerColor: Colors.white, // optional divider
       //   ),
       // );
-  runApp(const MyApp());
+  runApp( const MyApp());
 }
 
 @pragma('vm:entry-point')
@@ -65,6 +65,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {

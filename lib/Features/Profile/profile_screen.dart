@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../Core/Utils/Enums/enum_user.dart';
 import '/Core/Services/Firebase/firebase_service.dart';
 import '/Core/Storage/Local/local_storage_service.dart';
 import '/Core/Utils/show_message_snack_bar.dart';
@@ -13,6 +14,7 @@ import 'Widgets/info_card.dart';
 import 'Widgets/option_tile.dart';
 import 'Widgets/profile_avatar.dart';
 import 'cubit/profile_cubit.dart';
+import 'package:restart_app/restart_app.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -23,6 +25,8 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(title: Text(NameRoutes.profile.titleAppBar)),
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
+          final checkType = state.model!.userType == UserType.st;
+          final typeConverting = checkType ? "Instructor" : "Student";
           if (state.loading == true) {
             return Center(
               child: CircularProgressIndicator(
@@ -42,14 +46,19 @@ class ProfileScreen extends StatelessWidget {
                   // isAdmin: true,
                 ),
                 SizedBox(height: 24.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  runSpacing: 20.h,
+                  spacing: 10.w,
                   children: [
-                    InfoCard(title: '12', subtitle: 'Exams Created'),
-                    InfoCard(title: 'World History', subtitle: 'Last Exam'),
+                    ...(state.options ?? []).map(
+                      (option) => InfoCard(
+                        title: option.value,
+                        subtitle: option.name,
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(height: 45.h),
+                SizedBox(height: 30.h),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: AppCustomText.generate(
@@ -60,6 +69,25 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 12.h),
+                OptionTile(
+                  title: 'Switch to $typeConverting',
+                  onTap: () async {
+                    await showMessageSnackBar(
+                      context,
+                      title: "Waiting...",
+                      type: MessageType.loading,
+                      onLoading: () async {
+                        final userType = checkType ? UserType.te : UserType.st;
+                        final isDone = await context
+                            .read<ProfileCubit>()
+                            .updateType(userType);
+                        if (isDone) {
+                          await Restart.restartApp();
+                        }
+                      },
+                    );
+                  },
+                ),
                 OptionTile(title: 'Settings'),
                 OptionTile(title: 'Help'),
                 OptionTile(

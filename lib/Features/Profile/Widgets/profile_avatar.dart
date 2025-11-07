@@ -1,10 +1,11 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '/Core/Resources/app_colors.dart';
 
 import '../../../Core/Resources/app_fonts.dart';
 import '../../../Core/Utils/Widget/custom_text_app.dart';
+import '/Core/Resources/app_colors.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String name;
@@ -50,6 +51,7 @@ class ProfileAvatar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16.r),
                             child: Image.network(
                               imageUrl!,
+                              filterQuality: FilterQuality.high,
                               width: 250.w,
                               fit: BoxFit.contain,
                               errorBuilder: (_, __, ___) {
@@ -68,6 +70,7 @@ class ProfileAvatar extends StatelessWidget {
                   imageUrl ?? '',
                   width: 100.r,
                   height: 100.r,
+                  filterQuality: FilterQuality.high,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return _buildFallbackAvatar();

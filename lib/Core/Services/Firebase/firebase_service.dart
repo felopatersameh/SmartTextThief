@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
+import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 
+import '../../../Features/Profile/cubit/profile_cubit.dart';
 import '../../Utils/Enums/collection_key.dart';
 import 'response_model.dart';
 import 'failure_model.dart';
@@ -128,213 +133,221 @@ class FirebaseServices {
     }
   }
 
- Future<ResponseModel> addData(
-  String mainCollectionName,
-  String mainDocumentId,
-  Map<String, dynamic> data, {
-  List<String>? subCollections,
-  List<String>? subIds,
-}) async {
-  try {
-    // Start with the DocumentReference to the main collection and the provided documentId
-    DocumentReference docRef =
-        firestore!.collection(mainCollectionName).doc(mainDocumentId);
+  Future<ResponseModel> addData(
+    String mainCollectionName,
+    String mainDocumentId,
+    Map<String, dynamic> data, {
+    List<String>? subCollections,
+    List<String>? subIds,
+  }) async {
+    try {
+      // Start with the DocumentReference to the main collection and the provided documentId
+      DocumentReference docRef = firestore!
+          .collection(mainCollectionName)
+          .doc(mainDocumentId);
 
-    // If subCollections are provided, traverse into them one by one
-    if (subCollections != null && subCollections.isNotEmpty) {
-      for (int i = 0; i < subCollections.length; i++) {
-        final subCollection = subCollections[i];
-        final subId = (subIds != null && subIds.length > i) ? subIds[i] : null;
+      // If subCollections are provided, traverse into them one by one
+      if (subCollections != null && subCollections.isNotEmpty) {
+        for (int i = 0; i < subCollections.length; i++) {
+          final subCollection = subCollections[i];
+          final subId = (subIds != null && subIds.length > i)
+              ? subIds[i]
+              : null;
 
-        // Get the CollectionReference under the current docRef
-        final CollectionReference colRef = docRef.collection(subCollection);
+          // Get the CollectionReference under the current docRef
+          final CollectionReference colRef = docRef.collection(subCollection);
 
-        // If a subId is provided, use it; otherwise, generate a new doc
-        docRef = (subId != null && subId.isNotEmpty) ? colRef.doc(subId) : colRef.doc();
+          // If a subId is provided, use it; otherwise, generate a new doc
+          docRef = (subId != null && subId.isNotEmpty)
+              ? colRef.doc(subId)
+              : colRef.doc();
+        }
       }
+
+      // Write the data to the final docRef (either the main document or within a subCollections)
+      await docRef.set(data);
+
+      // Return the main documentId as requested
+      return ResponseModel.success(
+        message: 'Data added successfully',
+        data: mainDocumentId,
+      );
+    } catch (e) {
+      final failure = FailureModel(message: 'Error adding data', error: e);
+      return ResponseModel.error(message: failure.message, failure: failure);
     }
-
-    // Write the data to the final docRef (either the main document or within a subCollections)
-    await docRef.set(data);
-
-    // Return the main documentId as requested
-    return ResponseModel.success(
-      message: 'Data added successfully',
-      data: mainDocumentId,
-    );
-  } catch (e) {
-    final failure = FailureModel(
-      message: 'Error adding data',
-      error: e,
-    );
-    return ResponseModel.error(
-      message: failure.message,
-      failure: failure,
-    );
   }
-}
 
-Future<ResponseModel> removeData(
-  String mainCollectionName,
-  String documentId, {
-  List<String>? subCollections,
-  List<String>? subIds,
-}) async {
-  try {
-    DocumentReference docRef =
-        firestore!.collection(mainCollectionName).doc(documentId);
+  Future<ResponseModel> removeData(
+    String mainCollectionName,
+    String documentId, {
+    List<String>? subCollections,
+    List<String>? subIds,
+  }) async {
+    try {
+      DocumentReference docRef = firestore!
+          .collection(mainCollectionName)
+          .doc(documentId);
 
-    if (subCollections != null && subCollections.isNotEmpty) {
-      for (int i = 0; i < subCollections.length; i++) {
-        final subCollection = subCollections[i];
-        final subId = (subIds != null && subIds.length > i) ? subIds[i] : null;
-        final CollectionReference colRef = docRef.collection(subCollection);
-        docRef =
-            (subId != null && subId.isNotEmpty) ? colRef.doc(subId) : colRef.doc();
+      if (subCollections != null && subCollections.isNotEmpty) {
+        for (int i = 0; i < subCollections.length; i++) {
+          final subCollection = subCollections[i];
+          final subId = (subIds != null && subIds.length > i)
+              ? subIds[i]
+              : null;
+          final CollectionReference colRef = docRef.collection(subCollection);
+          docRef = (subId != null && subId.isNotEmpty)
+              ? colRef.doc(subId)
+              : colRef.doc();
+        }
       }
-    }
 
-    await docRef.delete();
-    // log('TestFirebaseServices:::Document $documentId removed from $mainCollectionName');
-    return ResponseModel.success(message: 'Data removed successfully');
-  } catch (e) {
-    final failure = FailureModel(message: 'Error removing data', error: e);
-    // log('TestFirebaseServices:::Error removing data: ${failure.toString()}');
-    return ResponseModel.error(message: failure.message, failure: failure);
+      await docRef.delete();
+      // log('TestFirebaseServices:::Document $documentId removed from $mainCollectionName');
+      return ResponseModel.success(message: 'Data removed successfully');
+    } catch (e) {
+      final failure = FailureModel(message: 'Error removing data', error: e);
+      // log('TestFirebaseServices:::Error removing data: ${failure.toString()}');
+      return ResponseModel.error(message: failure.message, failure: failure);
+    }
   }
-}
 
-Future<ResponseModel> updateData(
-  String mainCollectionName,
-  String documentId,
-  Map<String,dynamic> data, {
-  List<String>? subCollections,
-  List<String>? subIds,
-}) async {
-  try {
+  Future<ResponseModel> updateData(
+    String mainCollectionName,
+    String documentId,
+    Map<String, dynamic> data, {
+    List<String>? subCollections,
+    List<String>? subIds,
+  }) async {
+    try {
+      DocumentReference docRef = firestore!
+          .collection(mainCollectionName)
+          .doc(documentId);
 
-    DocumentReference docRef = firestore!.collection(mainCollectionName).doc(documentId);
+      if (subCollections != null && subCollections.isNotEmpty) {
+        for (int i = 0; i < subCollections.length; i++) {
+          final subCollection = subCollections[i];
+          final subId = (subIds != null && subIds.length > i)
+              ? subIds[i]
+              : null;
+          final CollectionReference colRef = docRef.collection(subCollection);
 
-
-    if (subCollections != null && subCollections.isNotEmpty) {
-      for (int i = 0; i < subCollections.length; i++) {
-        final subCollection = subCollections[i];
-        final subId = (subIds != null && subIds.length > i) ? subIds[i] : null;
-        final CollectionReference colRef = docRef.collection(subCollection);
-
-        docRef = (subId != null && subId.isNotEmpty) ? colRef.doc(subId) : colRef.doc();
+          docRef = (subId != null && subId.isNotEmpty)
+              ? colRef.doc(subId)
+              : colRef.doc();
+        }
       }
+
+      // log('updateData:: Updating document at path: ${docRef.path} with data: $data');
+      await docRef.update(data);
+      // log('updateData:: Document updated successfully');
+
+      return ResponseModel.success(message: 'Updated successfully');
+    } catch (e) {
+      final failure = FailureModel(message: 'Error updating data', error: e);
+      // log('updateData:: Error updating data: ${failure.toString()}');
+      return ResponseModel.error(message: failure.message, failure: failure);
     }
-
-    // log('updateData:: Updating document at path: ${docRef.path} with data: $data');
-    await docRef.update(data);
-    // log('updateData:: Document updated successfully');
-
-    return ResponseModel.success(message: 'Updated successfully');
-  } catch (e) {
-    final failure = FailureModel(message: 'Error updating data', error: e);
-    // log('updateData:: Error updating data: ${failure.toString()}');
-    return ResponseModel.error(message: failure.message, failure: failure);
   }
-}
 
-Future<ResponseModel> getData(
-  String documentId,
-  String mainCollectionName,
-   {
-  List<String>? subCollections,
-  List<String>? subIds,
-}) async {
-  try {
-    DocumentReference docRef =
-        firestore!.collection(mainCollectionName).doc(documentId);
+  Future<ResponseModel> getData(
+    String documentId,
+    String mainCollectionName, {
+    List<String>? subCollections,
+    List<String>? subIds,
+  }) async {
+    try {
+      DocumentReference docRef = firestore!
+          .collection(mainCollectionName)
+          .doc(documentId);
 
-    if (subCollections != null && subCollections.isNotEmpty) {
-      for (int i = 0; i < subCollections.length; i++) {
-        final subCollection = subCollections[i];
-        final subId = (subIds != null && subIds.length > i) ? subIds[i] : null;
-        final CollectionReference colRef = docRef.collection(subCollection);
-        docRef =
-            (subId != null && subId.isNotEmpty) ? colRef.doc(subId) : colRef.doc();
+      if (subCollections != null && subCollections.isNotEmpty) {
+        for (int i = 0; i < subCollections.length; i++) {
+          final subCollection = subCollections[i];
+          final subId = (subIds != null && subIds.length > i)
+              ? subIds[i]
+              : null;
+          final CollectionReference colRef = docRef.collection(subCollection);
+          docRef = (subId != null && subId.isNotEmpty)
+              ? colRef.doc(subId)
+              : colRef.doc();
+        }
       }
+
+      final documentSnapshot = await docRef.get();
+
+      if (documentSnapshot.exists) {
+        return ResponseModel.success(
+          message: 'Data retrieved successfully',
+          data: documentSnapshot.data(),
+        );
+      } else {
+        return ResponseModel.error(message: 'No data found', data: null);
+      }
+    } catch (e) {
+      final failure = FailureModel(message: 'Error getting data', error: e);
+      // log('TestFirebaseServices:::Error getting data: ${failure.toString()}');
+      return ResponseModel.error(message: failure.message, failure: failure);
     }
+  }
 
-    final  documentSnapshot =
-        await docRef.get();
+  Future<ResponseModel> getAllData(
+    String mainCollectionName,
+    String documentId, {
+    List<String>? subCollections,
+    List<String>? subIds,
+  }) async {
+    try {
+      // Always start from the main document
+      DocumentReference<Map<String, dynamic>> docRef = firestore!
+          .collection(mainCollectionName)
+          .doc(documentId);
 
-    if (documentSnapshot.exists) {
+      // Initialize targetCollection with a default value (to satisfy null safety)
+      CollectionReference<Map<String, dynamic>> targetCollection = docRef
+          .collection(mainCollectionName);
+
+      // If there are subCollections, traverse until the last one
+      if (subCollections != null && subCollections.isNotEmpty) {
+        for (int i = 0; i < subCollections.length; i++) {
+          final subCollection = subCollections[i];
+          final subId = (subIds != null && subIds.length > i)
+              ? subIds[i]
+              : null;
+
+          final currentCollection = docRef.collection(subCollection);
+
+          if (i == subCollections.length - 1) {
+            // The last collection is the one we’ll get all docs from
+            targetCollection = currentCollection;
+          }
+
+          if (subId != null && subId.isNotEmpty) {
+            docRef = currentCollection.doc(subId);
+          }
+        }
+      } else {
+        // No subCollections, so get all documents directly under the main document
+        targetCollection = docRef.collection(mainCollectionName);
+      }
+
+      // Fetch all documents from the target collection
+      final querySnapshot = await targetCollection.get();
+
+      final results = querySnapshot.docs.map((doc) => doc.data()).toList();
+
+      // log('TestFirebaseServices::: Successfully retrieved all data from $mainCollectionName/$documentId');
+      // log('results::: $results');
       return ResponseModel.success(
         message: 'Data retrieved successfully',
-        data: documentSnapshot.data(),
+        data: results,
       );
-    } else {
-      return ResponseModel.error(message: 'No data found', data: null);
+    } catch (e) {
+      final failure = FailureModel(message: 'Error getting data', error: e);
+      // log('TestFirebaseServices::: Error getting all data: ${failure.toString()}');
+      return ResponseModel.error(message: failure.message, failure: failure);
     }
-  } catch (e) {
-    final failure = FailureModel(message: 'Error getting data', error: e);
-    // log('TestFirebaseServices:::Error getting data: ${failure.toString()}');
-    return ResponseModel.error(message: failure.message, failure: failure);
   }
-}
-Future<ResponseModel> getAllData(
-  String mainCollectionName,
-  String documentId, {
-  List<String>? subCollections,
-  List<String>? subIds,
-}) async {
-  try {
-    // Always start from the main document
-    DocumentReference<Map<String, dynamic>> docRef =
-        firestore!.collection(mainCollectionName).doc(documentId);
-
-    // Initialize targetCollection with a default value (to satisfy null safety)
-    CollectionReference<Map<String, dynamic>> targetCollection =
-        docRef.collection(mainCollectionName);
-
-    // If there are subCollections, traverse until the last one
-    if (subCollections != null && subCollections.isNotEmpty) {
-      for (int i = 0; i < subCollections.length; i++) {
-        final subCollection = subCollections[i];
-        final subId =
-            (subIds != null && subIds.length > i) ? subIds[i] : null;
-
-        final currentCollection = docRef.collection(subCollection);
-
-        if (i == subCollections.length - 1) {
-          // The last collection is the one we’ll get all docs from
-          targetCollection = currentCollection;
-        }
-
-        if (subId != null && subId.isNotEmpty) {
-          docRef = currentCollection.doc(subId);
-        }
-      }
-    } else {
-      // No subCollections, so get all documents directly under the main document
-      targetCollection = docRef.collection(mainCollectionName);
-    }
-
-    // Fetch all documents from the target collection
-    final querySnapshot = await targetCollection.get();
-
-    final results = querySnapshot.docs
-        .map((doc) => doc.data())
-        .toList();
-
-    // log('TestFirebaseServices::: Successfully retrieved all data from $mainCollectionName/$documentId');
-    // log('results::: $results');
-    return ResponseModel.success(
-      message: 'Data retrieved successfully',
-      data: results,
-    );
-  } catch (e) {
-    final failure = FailureModel(message: 'Error getting data', error: e);
-    // log('TestFirebaseServices::: Error getting all data: ${failure.toString()}');
-    return ResponseModel.error(message: failure.message, failure: failure);
-  }
-}
-
-
 
   /// Generic query helpers by email field for any collection
   Future<ResponseModel> findDocsByField(
@@ -484,5 +497,91 @@ Future<ResponseModel> getAllData(
     return ResponseModel.success(
       message: 'Phone verification initiated. Implement UI flow for OTP.',
     );
+  }
+
+  //================================================================================================
+  Future<List<DataModel>> analyzedInstructor({required String email}) async {
+    final object =
+        "${(DataKey.subjectTeacher.key)}.${(DataKey.teacherEmail.key)}";
+    int countDoc = 0;
+    int countExam = 0;
+    int endedExam = 0;
+    int runningExam = 0;
+    final response = await firestore!
+        .collection(CollectionKey.subjects.key)
+        .where(object, isEqualTo: email)
+        .get();
+    countDoc = response.docs.length;
+    if (countDoc != 0) {
+      for (var element in response.docs) {
+        final String idSubject = element["subject_idSubject"];
+        final responseExam = await firestore!
+            .collection(CollectionKey.subjects.key)
+            .doc(idSubject)
+            .collection(CollectionKey.exams.key)
+            .get();
+        countExam += responseExam.docs.length;
+        if (countExam != 0) {
+          for (var element in responseExam.docs) {
+            final idExam = element["exam_id"];
+            final result = await firestore!
+                .collection(CollectionKey.subjects.key)
+                .doc(idSubject)
+                .collection(CollectionKey.exams.key)
+                .doc(idExam)
+                .get();
+            final model = ExamModel.fromJson(
+              result.data() as Map<String, dynamic>,
+            );
+            if (model.isEnded) {
+              ++endedExam;
+            } else {
+              ++runningExam;
+            }
+          }
+        }
+      }
+    }
+    return [
+      DataModel(name: "Exams Created", valueNum: countExam.toInt()),
+      DataModel(name: "Subjects Created", valueNum: countDoc.toInt()),
+      DataModel(name: "Ended Exams", valueNum: endedExam.toInt()),
+      DataModel(name: "Running Exams", valueNum: runningExam.toInt()),
+    ];
+  }
+
+  Future<List<DataModel>> analyzedStudent({required String email}) async {
+    final object =
+        "${(DataKey.subjectTeacher.key)}.${(DataKey.teacherEmail.key)}";
+    int countDoc = 0;
+    int countExam = 0;
+    String lastExam = "none";
+    String level = "none";
+    double average = 0.0;
+    final response = await firestore!
+        .collection(CollectionKey.subjects.key)
+        .where(object, isEqualTo: email)
+        .get();
+    countDoc = response.docs.length;
+    log("analyzedInstructor ::  $countDoc subject");
+    if (countDoc != 0) {
+      for (var element in response.docs) {
+        final String id = element["subject_idSubject"];
+        final responseExam = await firestore!
+            .collection(CollectionKey.subjects.key)
+            .doc(id)
+            .collection(CollectionKey.exams.key)
+            .count()
+            .get();
+        countExam += responseExam.count ?? 0;
+      }
+      log("analyzedInstructor ::  $countExam exam");
+    }
+    return [
+      DataModel(name: "Done Exams", valueNum: countExam.toInt()),
+      DataModel(name: "Last Exam", valueNum: -1, valueString: lastExam),
+      DataModel(name: "Average Degrees", valueNum: average),
+      DataModel(name: "Level Student", valueNum: -1, valueString: level),
+    ];
   }
 }

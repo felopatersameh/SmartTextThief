@@ -8,6 +8,7 @@ class CreateExamState extends Equatable {
   final String numMultipleChoice;
   final String numTrueFalse;
   final String numQA;
+  final int time; // added time int
   final UploadOption uploadOption;
   final List<InformationFileModel> uploadedFiles;
   final String uploadText;
@@ -23,6 +24,7 @@ class CreateExamState extends Equatable {
     this.numMultipleChoice = '',
     this.numTrueFalse = '',
     this.numQA = '',
+    this.time = 0, // added time int default
     this.uploadOption = UploadOption.file,
     this.uploadedFiles = const [],
     this.uploadText = '',
@@ -39,6 +41,7 @@ class CreateExamState extends Equatable {
     String? numMultipleChoice,
     String? numTrueFalse,
     String? numQA,
+    int? time, // added time int param
     UploadOption? uploadOption,
     List<InformationFileModel>? uploadedFiles,
     String? uploadText,
@@ -54,6 +57,7 @@ class CreateExamState extends Equatable {
       numMultipleChoice: numMultipleChoice ?? this.numMultipleChoice,
       numTrueFalse: numTrueFalse ?? this.numTrueFalse,
       numQA: numQA ?? this.numQA,
+      time: time ?? this.time, // added time copy
       uploadOption: uploadOption ?? this.uploadOption,
       uploadedFiles: uploadedFiles ?? this.uploadedFiles,
       uploadText: uploadText ?? this.uploadText,
@@ -72,6 +76,7 @@ class CreateExamState extends Equatable {
     numMultipleChoice,
     numTrueFalse,
     numQA,
+    time, // added time int to props
     uploadOption,
     uploadedFiles,
     uploadText,

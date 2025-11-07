@@ -49,6 +49,12 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     );
   }
 
+  void changeTime(int time) {
+    if (state.loadingCreating) return;
+
+    emit(state.copyWith(time: time));
+  }
+
   void changeStartDate(DateTime date) {
     emit(state.copyWith(startDate: date));
   }
@@ -154,6 +160,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
           title: "All fields must be filled",
           type: MessageType.error,
         );
+        throw ("All fields must be filled");
       } else if (currentState.numMultipleChoice.isEmpty &&
           currentState.numTrueFalse.isEmpty &&
           currentState.numQA.isEmpty) {
@@ -162,6 +169,14 @@ class CreateExamCubit extends Cubit<CreateExamState> {
           title: "You must select a number of questions",
           type: MessageType.error,
         );
+        throw ("You must select a number of questions");
+      } else if (currentState.time < 10) {
+        await showMessageSnackBar(
+          context,
+          title: "Exam time cannot be less than 10 minutes",
+          type: MessageType.warning,
+        );
+        throw ("Exam time cannot be less than 10 minutes");
       } else if (currentState.startDate == null ||
           currentState.endDate == null) {
         await showMessageSnackBar(
@@ -169,6 +184,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
           title: "Please specify start and end time",
           type: MessageType.warning,
         );
+        throw ("Please specify start and end time");
       } else if (currentState.uploadOption == UploadOption.file) {
         if (currentState.uploadedFiles.isEmpty) {
           await showMessageSnackBar(
@@ -176,6 +192,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
             title: "No Files Uploaded",
             type: MessageType.error,
           );
+          throw ("No Files Uploaded");
         } else {
           await created(context);
         }
@@ -186,6 +203,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
             title: "No text found",
             type: MessageType.error,
           );
+          throw ("No text found");
         } else {
           await created(context);
         }
@@ -223,6 +241,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         examResultQA: response.questions!,
         levelExam: state.selectedLevel!,
         numberOfQuestions: sum,
+        time: state.time.toString(),
         typeExam: state.type,
         randomQuestions: state.canOpenQuestions,
       ),
@@ -240,7 +259,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     AppRouter.nextScreenNoPath(
       context,
       NameRoutes.view,
-      extra: {"exam": exam,"isEditMode":true},
+      extra: {"exam": exam, "isEditMode": true},
       pathParameters: {"exam": exam.examId, "id": exam.examIdSubject},
     );
   }

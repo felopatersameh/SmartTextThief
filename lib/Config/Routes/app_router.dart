@@ -101,7 +101,10 @@ class AppRouter {
                           final exam = data['exam'] as ExamModel;
                           final isEditMode = data['isEditMode'] as bool;
                           return NoTransitionPage(
-                            child: ViewExam(examModel: exam, isEditMode: isEditMode),
+                            child: ViewExam(
+                              examModel: exam,
+                              isEditMode: isEditMode,
+                            ),
                           );
                         },
                       ),
@@ -116,34 +119,37 @@ class AppRouter {
                     },
                   ),
                   GoRoute(
-                        name: NameRoutes.result,
-                        path: "/:exam${NameRoutes.result.ensureWithSlash()}/:email",
-                        pageBuilder: (context, state) {
-                          final data = state.extra as Map;
-                          final exam = data['exam'] as ExamModel;
-                          final isEditMode = data['isEditMode'] as bool;
-                          return NoTransitionPage(
-                            child: ViewExam(examModel: exam, isEditMode: isEditMode),
-                          );
-                        },
-                      ),
+                    name: NameRoutes.result,
+                    path: "/:exam${NameRoutes.result.ensureWithSlash()}/:email",
+                    pageBuilder: (context, state) {
+                      final data = state.extra as Map;
+                      final exam = data['exam'] as ExamModel;
+                      final isEditMode = data['isEditMode'] as bool;
+                      return NoTransitionPage(
+                        child: ViewExam(
+                          examModel: exam,
+                          isEditMode: isEditMode,
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ],
           ),
           GoRoute(
-            name: NameRoutes.home,
-            path: NameRoutes.home.ensureWithSlash(),
+            name: NameRoutes.notification,
+            path: NameRoutes.notification.ensureWithSlash(),
             pageBuilder: (context, state) =>
                 NoTransitionPage(child: Container()),
           ),
         ],
       ),
     ],
-    
+
     errorBuilder: (context, state) {
-      
-      if (state.error?.message.toString().contains("NoConnectionScreen")==true) {
+      if (state.error?.message.toString().contains("NoConnectionScreen") ==
+          true) {
         return const NoConnectionScreen();
       }
       return const ErrorScreen();

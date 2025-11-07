@@ -51,6 +51,19 @@ class QuestionNumbersRow extends StatelessWidget {
             ),
           ],
         ),
+        SizedBox(height: 10.h),
+         AppCustomText.generate(
+          text: "Exam Duration (Min)",
+          textStyle: AppTextStyles.h6SemiBold.copyWith(
+            color: AppColors.colorPrimary,
+          ),
+        ),
+        SizedBox(height: 4.h),
+         _NumberField(
+          label: "Min Only",
+          initialValue: state.time.toString(),
+          onChanged: (v) => cubit.changeTime(int.tryParse(v)??0),
+        ),
       ],
     );
   }

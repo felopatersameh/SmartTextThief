@@ -11,6 +11,7 @@ class ExamStaticModel extends Equatable {
     required this.numberOfQuestions,
     this.randomQuestions = false,
     required this.typeExam,
+    required this.time,
   });
 
   final List<ExamResultQA> examResultQA;
@@ -18,6 +19,7 @@ class ExamStaticModel extends Equatable {
   final int numberOfQuestions;
   final bool randomQuestions;
   final String typeExam;
+  final String time;
 
   ExamStaticModel copyWith({
     List<ExamResultQA>? examResultQA,
@@ -25,6 +27,7 @@ class ExamStaticModel extends Equatable {
     int? numberOfQuestions,
     bool? randomQuestions,
     String? typeExam,
+    String? time,
   }) {
     return ExamStaticModel(
       examResultQA: examResultQA ?? this.examResultQA,
@@ -32,6 +35,7 @@ class ExamStaticModel extends Equatable {
       numberOfQuestions: numberOfQuestions ?? this.numberOfQuestions,
       randomQuestions: randomQuestions ?? this.randomQuestions,
       typeExam: typeExam ?? this.typeExam,
+      time: time ?? this.time,
     );
   }
 
@@ -50,23 +54,26 @@ class ExamStaticModel extends Equatable {
           0,
       randomQuestions: json[DataKey.randomQuestions.key] ?? false,
       typeExam: json[DataKey.typeExam.key] ?? "Quiz",
+      time: json["time"] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
-    DataKey.examResultQandA.key: examResultQA.map((x) => x.toJson()).toList(),
-    DataKey.levelExam.key: levelExam.name,
-    DataKey.numberOfQuestions.key: numberOfQuestions,
-    DataKey.randomQuestions.key: randomQuestions,
-    DataKey.typeExam.key: typeExam,
-  };
+        DataKey.examResultQandA.key: examResultQA.map((x) => x.toJson()).toList(),
+        DataKey.levelExam.key: levelExam.name,
+        DataKey.numberOfQuestions.key: numberOfQuestions,
+        DataKey.randomQuestions.key: randomQuestions,
+        DataKey.typeExam.key: typeExam,
+        "time": time,
+      };
 
   @override
   List<Object?> get props => [
-    examResultQA,
-    levelExam,
-    numberOfQuestions,
-    randomQuestions,
-    typeExam,
-  ];
+        examResultQA,
+        levelExam,
+        numberOfQuestions,
+        randomQuestions,
+        typeExam,
+        time,
+      ];
 }

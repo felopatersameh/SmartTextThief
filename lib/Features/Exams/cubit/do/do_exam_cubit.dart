@@ -24,13 +24,17 @@ class DoExamCubit extends Cubit<DoExamState> {
   ExamModel? currentExam;
   DateTime? startTime;
   ExamModel? examModel;
+  
   Future<void> init(ExamModel model) async {
     examModel = model;
     currentExam = model;
     startTime = DateTime.now();
     final totalQuestions = model.examStatic.examResultQA.length;
-    final examDuration = model.examFinishAt.difference(model.startedAt);
-
+    
+    // Convert minutes to Duration
+    final examDurationMinutes = int.tryParse(model.examStatic.time) ?? 10;
+    final examDuration = Duration(minutes: examDurationMinutes);
+    
     emit(
       state.copyWith(
         totalQuestions: totalQuestions,
@@ -38,31 +42,33 @@ class DoExamCubit extends Cubit<DoExamState> {
         loading: false,
       ),
     );
-
+    
     await createData(model);
     await createListeningExam(model);
-
+    
     // Start exam timer
     examTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       seconds++;
-
+      
       // Calculate remaining time
       final now = DateTime.now();
       final elapsed = now.difference(startTime!);
       final remaining = examDuration - elapsed;
-
+      
       if (remaining.isNegative || remaining.inSeconds <= 0) {
         // Exam time finished
         timer.cancel();
         await finishExam(model);
         return;
       }
-
-      emit(state.copyWith(timerExam: seconds, remainingTime: remaining));
+      
+      emit(state.copyWith(
+        timerExam: seconds, 
+        remainingTime: remaining,
+      ));
       updateData(model);
     });
   }
-
   void selectAnswer(String questionId, String answer) {
     final updatedAnswers = Map<String, String>.from(state.userAnswers);
     updatedAnswers[questionId] = answer;

@@ -9,16 +9,23 @@ import '../../../Core/Resources/app_icons.dart';
 part 'main_state.dart';
 
 class MainCubit extends Cubit<MainState> {
-  MainCubit() : super(MainState(index: 1));
-  List<String> nameScreens = ["Home", "Subject", "Profile"];
+  MainCubit() : super(MainState(index: 0));
+  List<String> nameScreens = ["Subject", "Notifications", "Profile"];
   // List<Widget> screens = [Container(), SubjectPage(), ProfileScreen()];
 
   List<BottomNavigationBarItem> items = [
-    BottomNavigationBarItem(icon: Icon(AppIcons.homepage), label: "Home"),
     BottomNavigationBarItem(icon: Icon(AppIcons.subject), label: "Subject"),
+    BottomNavigationBarItem(
+      icon: Icon(AppIcons.notificationPage),
+      label: "Notifications",
+    ),
     BottomNavigationBarItem(icon: Icon(AppIcons.profile), label: "Profile"),
   ];
-  List<String> nav = [NameRoutes.home, NameRoutes.subject, NameRoutes.profile];
+  List<String> nav = [
+    NameRoutes.subject,
+    NameRoutes.notification,
+    NameRoutes.profile,
+  ];
   void changeIndex(int index, BuildContext context) async {
     AppRouter.nextScreenNoPath(
       context,

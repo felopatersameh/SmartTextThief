@@ -13,7 +13,7 @@ class InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 160.w,
+      width: 180.w,
       padding: EdgeInsets.symmetric(vertical: 20.h),
       decoration: BoxDecoration(
         color: AppColors.colorsBackGround2,

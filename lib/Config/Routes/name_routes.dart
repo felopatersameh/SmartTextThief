@@ -7,7 +7,7 @@ class NameRoutes {
   // static const String main = 'main';
 
   static const String profile = 'in';
-  static const String home = 'home';
+  static const String notification = 'notifications';
   static const String subject = 'subjects';
 
   static const String subjectDetails = 's/';
@@ -18,7 +18,7 @@ class NameRoutes {
 
   static final Map<String, String> titleAppBar = {
     profile: "profile",
-    home: "home",
+    notification: "notifications",
     subject: "Subjects",
     createExam: "Create Exam",
     subjectDetails: "Detail",
@@ -37,5 +37,5 @@ extension PathStringExtension on String {
 
   String removeSlash() => endsWith('/') ? substring(0, length - 1) : this;
 
- String get titleAppBar => NameRoutes.titleAppBar[this]??"";
+  String get titleAppBar => NameRoutes.titleAppBar[this] ?? "";
 }

@@ -23,8 +23,12 @@ class SubjectCubit extends Cubit<SubjectState> {
           loading: false,
         ),
       ),
-      (list) async =>
-          emit(state.copyWith(listDataOfSubjects: list, loading: false)),
+      (list) async => emit(
+        state.copyWith(
+          listDataOfSubjects: list.reversed.toList(),
+          loading: false,
+        ),
+      ),
     );
   }
 
@@ -44,8 +48,9 @@ class SubjectCubit extends Cubit<SubjectState> {
         listDataOfExams = [];
       },
       (list) async {
-        emit(state.copyWith(listDataOfExams: list, loadingExams: false));
-        listDataOfExams = list;
+        final reversedList = list.reversed.toList();
+        emit(state.copyWith(listDataOfExams: reversedList, loadingExams: false));
+        listDataOfExams = reversedList;
       },
     );
     return listDataOfExams;

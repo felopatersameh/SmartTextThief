@@ -91,8 +91,8 @@ class UserModel extends Equatable {
     DataKey.userNotifications.key: userNotifications.map((x) => x).toList(),
   };
 
- bool get  isStu => userType.value == UserType.st.value;
- bool get  iste => userType.value == UserType.te.value;
+  bool get isStu => userType.value == UserType.st.value;
+  bool get isTe => userType.value == UserType.te.value;
   @override
   List<Object?> get props => [
     userId,
