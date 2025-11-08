@@ -1,13 +1,7 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-
-import '../../../Features/Profile/cubit/profile_cubit.dart';
 import '../../Utils/Enums/collection_key.dart';
 import 'response_model.dart';
 import 'failure_model.dart';
@@ -500,88 +494,51 @@ class FirebaseServices {
   }
 
   //================================================================================================
-  Future<List<DataModel>> analyzedInstructor({required String email}) async {
-    final object =
-        "${(DataKey.subjectTeacher.key)}.${(DataKey.teacherEmail.key)}";
-    int countDoc = 0;
-    int countExam = 0;
-    int endedExam = 0;
-    int runningExam = 0;
-    final response = await firestore!
-        .collection(CollectionKey.subjects.key)
-        .where(object, isEqualTo: email)
-        .get();
-    countDoc = response.docs.length;
-    if (countDoc != 0) {
-      for (var element in response.docs) {
-        final String idSubject = element["subject_idSubject"];
-        final responseExam = await firestore!
-            .collection(CollectionKey.subjects.key)
-            .doc(idSubject)
-            .collection(CollectionKey.exams.key)
-            .get();
-        countExam += responseExam.docs.length;
-        if (countExam != 0) {
-          for (var element in responseExam.docs) {
-            final idExam = element["exam_id"];
-            final result = await firestore!
-                .collection(CollectionKey.subjects.key)
-                .doc(idSubject)
-                .collection(CollectionKey.exams.key)
-                .doc(idExam)
-                .get();
-            final model = ExamModel.fromJson(
-              result.data() as Map<String, dynamic>,
-            );
-            if (model.isEnded) {
-              ++endedExam;
-            } else {
-              ++runningExam;
-            }
-          }
-        }
-      }
-    }
-    return [
-      DataModel(name: "Exams Created", valueNum: countExam.toInt()),
-      DataModel(name: "Subjects Created", valueNum: countDoc.toInt()),
-      DataModel(name: "Ended Exams", valueNum: endedExam.toInt()),
-      DataModel(name: "Running Exams", valueNum: runningExam.toInt()),
-    ];
+}
+
+Map<String, dynamic> calculateGpaWithLevel(
+  List<num> degree,
+  List<num> realDegree,
+) {
+  if (degree.isEmpty ||
+      realDegree.isEmpty ||
+      degree.length != realDegree.length) {
+    return {"gpa": 0.0, "level": "No Data"};
   }
 
-  Future<List<DataModel>> analyzedStudent({required String email}) async {
-    final object =
-        "${(DataKey.subjectTeacher.key)}.${(DataKey.teacherEmail.key)}";
-    int countDoc = 0;
-    int countExam = 0;
-    String lastExam = "none";
-    String level = "none";
-    double average = 0.0;
-    final response = await firestore!
-        .collection(CollectionKey.subjects.key)
-        .where(object, isEqualTo: email)
-        .get();
-    countDoc = response.docs.length;
-    log("analyzedInstructor ::  $countDoc subject");
-    if (countDoc != 0) {
-      for (var element in response.docs) {
-        final String id = element["subject_idSubject"];
-        final responseExam = await firestore!
-            .collection(CollectionKey.subjects.key)
-            .doc(id)
-            .collection(CollectionKey.exams.key)
-            .count()
-            .get();
-        countExam += responseExam.count ?? 0;
-      }
-      log("analyzedInstructor ::  $countExam exam");
-    }
-    return [
-      DataModel(name: "Done Exams", valueNum: countExam.toInt()),
-      DataModel(name: "Last Exam", valueNum: -1, valueString: lastExam),
-      DataModel(name: "Average Degrees", valueNum: average),
-      DataModel(name: "Level Student", valueNum: -1, valueString: level),
-    ];
-  }
+  final num totalGot = degree.reduce((a, b) => a + b);
+  final num totalPossible = realDegree.reduce((a, b) => a + b);
+
+  if (totalPossible == 0) return {"gpa": 0.0, "level": "No Data"};
+
+  final double percentage = (totalGot / totalPossible) * 100;
+
+  final double gpa = _convertToGradePoint(percentage);
+
+  final String level = _getLevelByGpa(gpa);
+
+  return {"gpa": double.parse(gpa.toStringAsFixed(2)), "level": level};
+}
+
+double _convertToGradePoint(double percentage) {
+  if (percentage >= 93) return 4.0;
+  if (percentage >= 90) return 3.7;
+  if (percentage >= 87) return 3.3;
+  if (percentage >= 83) return 3.0;
+  if (percentage >= 80) return 2.7;
+  if (percentage >= 77) return 2.3;
+  if (percentage >= 73) return 2.0;
+  if (percentage >= 70) return 1.7;
+  if (percentage >= 67) return 1.3;
+  if (percentage >= 65) return 1.0;
+  return 0.0;
+}
+
+String _getLevelByGpa(double gpa) {
+  if (gpa >= 3.7) return "Excellent";
+  if (gpa >= 3.3) return "Very Good";
+  if (gpa >= 2.7) return "Good";
+  if (gpa >= 2.0) return "Fair";
+  if (gpa >= 1.0) return "Poor";
+  return "Fail";
 }

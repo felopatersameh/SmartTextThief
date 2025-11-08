@@ -10,45 +10,43 @@ class ErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A1929),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              color: Colors.red,
-              size: 80.sp,
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              '404',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 40.sp,
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, color: Colors.red, size: 80.sp),
+              SizedBox(height: 20.h),
+              Text(
+                '404',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              'الصفحة غير موجودة',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 16.sp,
+              SizedBox(height: 10.h),
+              Text(
+                'الصفحة غير موجودة',
+                style: TextStyle(color: Colors.grey, fontSize: 16.sp),
               ),
-            ),
-            SizedBox(height: 30.h),
-            ElevatedButton(
-              onPressed: () => context.go(NameRoutes.splash),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2196F3),
-                padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 15.h),
+              SizedBox(height: 30.h),
+              ElevatedButton(
+                onPressed: () => context.go(NameRoutes.splash),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2196F3),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40.w,
+                    vertical: 15.h,
+                  ),
+                ),
+                child: Text(
+                  'العودة للرئيسية',
+                  style: TextStyle(fontSize: 14.sp),
+                ),
               ),
-              child: Text(
-                'العودة للرئيسية',
-                style: TextStyle(fontSize: 14.sp),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

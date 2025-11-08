@@ -54,7 +54,7 @@ class ExamStaticModel extends Equatable {
           0,
       randomQuestions: json[DataKey.randomQuestions.key] ?? false,
       typeExam: json[DataKey.typeExam.key] ?? "Quiz",
-      time: json["time"] ?? '',
+      time: json[DataKey.time.key] ?? '',
     );
   }
 
@@ -64,7 +64,7 @@ class ExamStaticModel extends Equatable {
         DataKey.numberOfQuestions.key: numberOfQuestions,
         DataKey.randomQuestions.key: randomQuestions,
         DataKey.typeExam.key: typeExam,
-        "time": time,
+        DataKey.time.key: time,
       };
 
   @override

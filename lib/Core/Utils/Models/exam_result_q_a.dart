@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../Enums/data_key.dart';
+
 class ExamResultQA  extends Equatable {
   final String questionId;
   final String questionType;
@@ -21,24 +23,26 @@ class ExamResultQA  extends Equatable {
 
   factory ExamResultQA.fromJson(Map<String, dynamic> json) {
     return ExamResultQA(
-      questionId: json['questionId'] ?? "",
-      questionType: json['questionType'] ?? "",
-      questionText: json['questionText'] ?? "",
-      options: List<String>.from(json['options'].map((x) => x.toString())),
-      correctAnswer: json['correctAnswer'] ?? "",
-      studentAnswer: json['studentAnswer'] ?? "",
-      score: json['score'].toString(),
+      questionId: json[DataKey.questionId.key] ?? "",
+      questionType: json[DataKey.questionType.key] ?? "",
+      questionText: json[DataKey.questionText.key] ?? "",
+      options: json[DataKey.options.key] == null
+          ? []
+          : List<String>.from((json[DataKey.options.key] as List).map((x) => x.toString())),
+      correctAnswer: json[DataKey.correctAnswer.key] ?? "",
+      studentAnswer: json[DataKey.studentAnswer.key] ?? "",
+      score: json[DataKey.score.key]?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'questionId': questionId,
-    'questionType': questionType,
-    'questionText': questionText,
-    'options': options,
-    'correctAnswer': correctAnswer,
-    'studentAnswer': studentAnswer,
-    'score': score?? "-1",
+    DataKey.questionId.key: questionId,
+    DataKey.questionType.key: questionType,
+    DataKey.questionText.key: questionText,
+    DataKey.options.key: options,
+    DataKey.correctAnswer.key: correctAnswer,
+    DataKey.studentAnswer.key: studentAnswer,
+    DataKey.score.key: score ?? "-1",
   };
  
   @override

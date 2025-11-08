@@ -131,7 +131,6 @@ class DoExamCubit extends Cubit<DoExamState> {
     examTimer?.cancel();
 
     if (listenerId != null) {
-      // Calculate correct answers and update map with student's answer and score
       if (examModel != null) {
         final Map<String, dynamic> resultsUpdate = {};
         int totalScore = 0;
@@ -144,7 +143,6 @@ class DoExamCubit extends Cubit<DoExamState> {
           final score = isCorrect ? 1 : 0;
           totalScore += score;
 
-          // If score/correctAnswer/fields are not supported in Question model, update the map directly
           resultsUpdate[question.questionId] = {
             ...question.toJson(),
             "studentAnswer": studentAnswer,

@@ -18,6 +18,8 @@ enum DataKey {
   examExamResult('exam_ExamResult'),
   examCreatedAt('exam_createdAt'),
   examFinishAt('exam_FinishAt'),
+  examStartedAt('startedAt'),
+  examStatic('exam_static'),
 
   // 🔹 ExamResult subfields
   examResultEmailSt('examResult_emailSt'),
@@ -27,6 +29,7 @@ enum DataKey {
   randomQuestions('randomQuestions'),
   numberOfQuestions('numberOfQuestions'),
   levelExam('levelExam'),
+  time('time'),
 
   // 🔹 Subject fields
   subjectIdSubject('subject_idSubject'),
@@ -38,7 +41,16 @@ enum DataKey {
 
   // 🔹 Teacher object (inside Subject)
   teacherEmail('teacher_email'),
-  teacherName('teacher_name');
+  teacherName('teacher_name'),
+
+  // 🔹 ExamResultQA fields (added)
+  questionId('questionId'),
+  questionType('questionType'),
+  questionText('questionText'),
+  options('options'),
+  correctAnswer('correctAnswer'),
+  studentAnswer('studentAnswer'),
+  score('score');
 
   final String key;
   const DataKey(this.key);

@@ -4,7 +4,6 @@ import '../../Core/Storage/Local/local_storage_service.dart';
 class NameRoutes {
   static const String splash = '/';
   static const String login = 'login';
-  // static const String main = 'main';
 
   static const String profile = 'in';
   static const String notification = 'notifications';

@@ -1,13 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/enum_user.dart';
+import '../../../Core/Utils/Models/data_model.dart';
+
+import '../../../Core/Services/Firebase/analysis_data.dart';
+import '../../../Core/Services/Firebase/firebase_service.dart';
+import '../../../Core/Utils/Enums/data_key.dart';
+import '../../../Core/Utils/Enums/enum_user.dart';
 import '/Core/Storage/Local/local_storage_keys.dart';
 import '/Core/Storage/Local/local_storage_service.dart';
 import '/Core/Utils/Enums/collection_key.dart';
 import '/Core/Utils/Models/user_model.dart';
-
-import '../../../Core/Services/Firebase/firebase_service.dart';
 
 part 'profile_state.dart';
 
@@ -57,7 +59,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     List<DataModel> list = [];
     final emailUser = state.model?.userEmail ?? "";
     if (emailUser.isNotEmpty) {
-      list = await FirebaseServices.instance.analyzedStudent(email: emailUser);
+      list = await AnalysisData.analyzedStudent(email: emailUser);
     }
     return list;
   }
@@ -66,24 +68,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     List<DataModel> list = [];
     final emailUser = state.model?.userEmail ?? "";
     if (emailUser.isNotEmpty) {
-      list = await FirebaseServices.instance.analyzedInstructor(
+      list = await AnalysisData.analyzedInstructor(
         email: emailUser,
       );
     }
     return list;
   }
-}
-
-class DataModel {
-  final String name;
-  final num _valueNum;
-  final String _valueString;
-  DataModel({
-    required this.name,
-    required num valueNum,
-    String valueString = "none",
-  }) : _valueString = valueString,
-       _valueNum = valueNum;
-
-  String get value => (_valueNum == -1) ? _valueString : _valueNum.toString();
 }

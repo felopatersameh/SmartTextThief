@@ -96,5 +96,5 @@ class ExamResultModel extends Equatable {
     typeExam,
   ];
 
-  bool get isDo => (examResultEmailSt) == (GetLocalStorage.getIdUser());
+  bool get isDo => (examResultEmailSt) == (GetLocalStorage.getEmailUser());
 }

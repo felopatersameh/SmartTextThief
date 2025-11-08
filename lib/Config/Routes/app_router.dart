@@ -3,22 +3,22 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_text_thief/Config/Routes/no_connection_screen.dart';
-import 'package:smart_text_thief/Config/Setting/settings_cubit.dart';
-import 'package:smart_text_thief/Features/Exams/View/Pages/do_exam.dart';
+
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
 import '../../Features/Exams/View/Pages/create_exam_screen.dart';
+import '../../Features/Exams/View/Pages/do_exam.dart';
 import '../../Features/Exams/View/Pages/view_exam.dart';
 import '../../Features/Main/main_screen.dart';
 import '../../Features/Profile/profile_screen.dart';
+import '../../Features/Splash/splash_screen.dart';
 import '../../Features/Subjects/View/Pages/details_screen.dart';
 import '../../Features/Subjects/View/Pages/subject_page.dart';
+import '../../Features/login/login_screen.dart';
+import '../Setting/settings_cubit.dart';
 import 'error_screen.dart';
 import 'name_routes.dart';
-
-import '../../Features/Splash/splash_screen.dart';
-import '../../Features/login/login_screen.dart';
+import 'no_connection_screen.dart';
 
 class AppRouter {
   static void nextScreenNoPath(

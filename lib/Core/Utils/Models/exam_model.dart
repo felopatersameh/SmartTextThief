@@ -61,16 +61,16 @@ class ExamModel extends Equatable {
                 (x) => ExamResultModel.fromJson(x),
               ),
             ),
-      examStatic: json['exam_static'] == null
+      examStatic: json[DataKey.examStatic.key] == null
           ? ExamStaticModel(
               examResultQA: [],
               levelExam: json[DataKey.levelExam.key] ?? "",
               numberOfQuestions: 0,
-              time:  "0",
+              time: "0",
               typeExam: "",
             )
           : ExamStaticModel.fromJson(
-              json['exam_static'] as Map<String, dynamic>,
+              json[DataKey.examStatic.key] as Map<String, dynamic>,
             ),
       examCreatedAt: DateTime.fromMillisecondsSinceEpoch(
         json[DataKey.examCreatedAt.key],
@@ -78,7 +78,9 @@ class ExamModel extends Equatable {
       examFinishAt: DateTime.fromMillisecondsSinceEpoch(
         json[DataKey.examFinishAt.key],
       ),
-      startedAt: DateTime.fromMillisecondsSinceEpoch(json['startedAt']),
+      startedAt: DateTime.fromMillisecondsSinceEpoch(
+        json[DataKey.examStartedAt.key],
+      ),
     );
   }
 
@@ -87,10 +89,10 @@ class ExamModel extends Equatable {
     DataKey.examIdSubject.key: examIdSubject,
     DataKey.examIdTeacher.key: examIdTeacher,
     DataKey.examExamResult.key: examResult.map((x) => x.toJson()).toList(),
-    'exam_static': examStatic.toJson(),
+    DataKey.examStatic.key: examStatic.toJson(),
     DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
     DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
-    'startedAt': startedAt.millisecondsSinceEpoch,
+    DataKey.examStartedAt.key: startedAt.millisecondsSinceEpoch,
   };
 
   @override

@@ -17,7 +17,6 @@ class MainScreen extends StatelessWidget {
         builder: (context, state) {
           final read = context.read<MainCubit>();
 
-          // Check if we're on the exam screen
           final isExamScreen = _isExamScreen(context);
 
           return Scaffold(
@@ -54,7 +53,6 @@ class MainScreen extends StatelessWidget {
       NameRoutes.view.ensureWithSlash(),
     ];
 
-    // Check if any of the exam paths are contained in the current location
     return examPaths.any((path) => location.contains(path));
   }
 }
