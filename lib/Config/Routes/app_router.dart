@@ -10,6 +10,7 @@ import '../../Features/Exams/View/Pages/create_exam_screen.dart';
 import '../../Features/Exams/View/Pages/do_exam.dart';
 import '../../Features/Exams/View/Pages/view_exam.dart';
 import '../../Features/Main/main_screen.dart';
+import '../../Features/Notifications/notification_page.dart';
 import '../../Features/Profile/profile_screen.dart';
 import '../../Features/Splash/splash_screen.dart';
 import '../../Features/Subjects/View/Pages/details_screen.dart';
@@ -141,7 +142,7 @@ class AppRouter {
             name: NameRoutes.notification,
             path: NameRoutes.notification.ensureWithSlash(),
             pageBuilder: (context, state) =>
-                NoTransitionPage(child: Container()),
+                NoTransitionPage(child: NotificationPage()),
           ),
         ],
       ),

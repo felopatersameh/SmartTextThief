@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_text_thief/Features/Notifications/cubit/notifications_cubit.dart';
 import '../../Core/Storage/Local/local_storage_keys.dart';
 import '../../Core/Storage/Local/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
@@ -25,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 1),
     );
     _navigateToMainScreen();
   }
@@ -58,9 +59,10 @@ class _SplashScreenState extends State<SplashScreen>
       _controller.value = 0.5;
 
       if (!mounted) return;
-      await context.read<SubjectCubit>().init(user.userEmail, user.isStu);
-      _controller.value = 0.6;
-      _controller.value = 0.7;
+      await Future.wait([
+        context.read<SubjectCubit>().init(user.userEmail, user.isStu),
+        context.read<NotificationsCubit>().init(user.userNotifications),
+      ]);
       _controller.value = 0.8;
 
       // await Future.delayed(const Duration(milliseconds: 300));

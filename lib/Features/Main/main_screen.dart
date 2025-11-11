@@ -30,7 +30,7 @@ class MainScreen extends StatelessWidget {
                     child: BottomNavigationBar(
                       showSelectedLabels: false,
                       showUnselectedLabels: false,
-                      items: read.items,
+                      items: read.items(context),
                       currentIndex: state.index,
                       onTap: (value) => read.changeIndex(value, context),
                       backgroundColor: AppColors.colorsBackGround,

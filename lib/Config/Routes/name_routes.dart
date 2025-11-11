@@ -17,7 +17,7 @@ class NameRoutes {
 
   static final Map<String, String> titleAppBar = {
     profile: "profile",
-    notification: "notifications",
+    notification: "Notifications",
     subject: "Subjects",
     createExam: "Create Exam",
     subjectDetails: "Detail",

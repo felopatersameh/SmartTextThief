@@ -27,10 +27,17 @@ class SettingsCubit extends Cubit<SettingsState> with WidgetsBindingObserver {
   }
 
   void _updateThemeMode() {
-    // final brightness = ui.PlatformDispatcher.instance.platformBrightness; // final systemThemeMode = // brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light; // emit(state.copyWith(themeMode: systemThemeMode));
+    // final brightness = ui.PlatformDispatcher.instance.platformBrightness;
+    // final systemThemeMode = // brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
+    // emit(state.copyWith(themeMode: systemThemeMode));
   }
   void _updateLanguage() {
-    // final locale = ui.PlatformDispatcher.instance.locale; // if (locale.languageCode == 'ar') { //   emit(state.copyWith(locale: Locale('ar'))); // } else { //   emit(state.copyWith(locale: Locale('en'))); // }
+    // final locale = ui.PlatformDispatcher.instance.locale;
+    // if (locale.languageCode == 'ar') {
+    //   emit(state.copyWith(locale: Locale('ar')));
+    // } else {
+    //  emit(state.copyWith(locale: Locale('en')));
+    // }
   }
   void toggleTheme() {
     emit(
@@ -50,11 +57,9 @@ class SettingsCubit extends Cubit<SettingsState> with WidgetsBindingObserver {
         emit(state.copyWith(internet: true));
       }
     });
-  } 
-  
+  }
 
-
-  bool  getConnectivity() => state.internet;
+  bool getConnectivity() => state.internet;
 
   void changeLanguage(Locale locale) {
     emit(state.copyWith(locale: locale));

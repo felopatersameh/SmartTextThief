@@ -116,6 +116,6 @@ class AppIcons {
   //******************************************************** for Chart/Graph
   static const IconData chart = Bootstrap.bar_chart_fill;
   static const IconData code = Bootstrap.code;
-  static const IconData avarege = Bootstrap.percent;
+  static const IconData avarege = Bootstrap.percent;  
   static const IconData copy = Bootstrap.copy;
 }

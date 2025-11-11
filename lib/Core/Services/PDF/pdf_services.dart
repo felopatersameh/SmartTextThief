@@ -16,7 +16,7 @@ class ExamPdfUtil {
   }) async {
     try {
       String fileName =
-          'Exam_${examData.examId}_${DateTime.now().millisecondsSinceEpoch}';
+          'Exam_${examData.specialIdLiveExam}';
       Directory downloadsDirectory = Directory(
         '/storage/emulated/0/Download/Exams',
       );

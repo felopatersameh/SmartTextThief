@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:smart_text_thief/Core/Utils/Models/notification_model.dart';
 import '../Enums/enum_user.dart';
 import '../Enums/data_key.dart';
 
@@ -17,7 +18,7 @@ class UserModel extends Equatable {
   });
 
   final String userId;
-  final List<dynamic> userTokensFcm;
+  final List<String> userTokensFcm;
   final String photo;
   final String userName;
   final String userEmail;
@@ -25,11 +26,11 @@ class UserModel extends Equatable {
   final String userPhone;
   final UserType userType;
   final DateTime userCreatedAt;
-  final List<dynamic> userNotifications;
+  final List<NotificationModel> userNotifications;
 
   UserModel copyWith({
     String? userId,
-    List<dynamic>? userTokensFcm,
+    List<String>? userTokensFcm,
     String? userName,
     String? userEmail,
     String? userPassword,
@@ -49,7 +50,7 @@ class UserModel extends Equatable {
       photo: photo ?? this.photo,
       userType: userType ?? this.userType,
       userCreatedAt: userCreatedAt ?? this.userCreatedAt,
-      userNotifications: userNotifications ?? this.userNotifications,
+      userNotifications: userNotifications?.cast<NotificationModel>() ?? this.userNotifications,
     );
   }
 
@@ -58,7 +59,7 @@ class UserModel extends Equatable {
       userId: json[DataKey.userId.key] ?? "",
       userTokensFcm: json[DataKey.userTokensFCM.key] == null
           ? []
-          : List<dynamic>.from(json[DataKey.userTokensFCM.key]!.map((x) => x)),
+          : List<String>.from(json[DataKey.userTokensFCM.key]!.map((x) => x)),
       userName: json[DataKey.userName.key] ?? "",
       photo: json[DataKey.photo.key] ?? "",
       userEmail: json[DataKey.userEmail.key] ?? "",
@@ -72,9 +73,9 @@ class UserModel extends Equatable {
                 : DateTime.now()),
       userNotifications: json[DataKey.userNotifications.key] == null
           ? []
-          : List<dynamic>.from(
-              json[DataKey.userNotifications.key]!.map((x) => x),
-            ),
+          : List<NotificationModel>.from(
+              (json[DataKey.userNotifications.key] as List<dynamic>)
+                  .map((x) => NotificationModel.fromJson(x))),
     );
   }
 

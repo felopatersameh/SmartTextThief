@@ -10,6 +10,7 @@ import 'Core/Services/Firebase/firebase_service.dart';
 import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/Storage/Local/local_storage_service.dart';
+import 'Features/Notifications/cubit/notifications_cubit.dart';
 import 'Features/Profile/cubit/profile_cubit.dart';
 import 'Features/Subjects/cubit/subjects_cubit.dart';
 import 'firebase_options.dart';
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
             BlocProvider(create: (context) => SettingsCubit(), lazy: true),
             BlocProvider(create: (context) => ProfileCubit()),
             BlocProvider(create: (context) => SubjectCubit()),
+            BlocProvider(create: (context) => NotificationsCubit()),
           ],
           child: BlocBuilder<SettingsCubit, SettingsState>(
             builder: (context, state) {
