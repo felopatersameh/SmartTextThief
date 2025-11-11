@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import '../../../Core/Services/Notifications/notification_services.dart';
 import '/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 
@@ -49,7 +50,9 @@ class SubjectCubit extends Cubit<SubjectState> {
       },
       (list) async {
         final reversedList = list.reversed.toList();
-        emit(state.copyWith(listDataOfExams: reversedList, loadingExams: false));
+        emit(
+          state.copyWith(listDataOfExams: reversedList, loadingExams: false),
+        );
         listDataOfExams = reversedList;
       },
     );
@@ -114,6 +117,7 @@ class SubjectCubit extends Cubit<SubjectState> {
           title: 'join Subject "${model.subjectName}" successfully!',
           type: MessageType.success,
         );
+        await NotificationServices.subscribeToTopic(model.subjectId);
       },
     );
   }

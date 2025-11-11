@@ -22,11 +22,10 @@ void main() async {
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
   await LocalStorageService.init();
-  final NotificationServices notificationServices = NotificationServices();
   await Future.wait([
     FirebaseServices.instance.initialize(),
     RealtimeFirebase.initialize(),
-    notificationServices.initFCM(),
+    NotificationServices.initFCM(),
   ]);
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
   runApp( const MyApp());
