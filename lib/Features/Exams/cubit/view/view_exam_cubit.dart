@@ -16,13 +16,14 @@ import '../../Data/exam_source.dart';
 part 'view_exam_state.dart';
 
 class ViewExamCubit extends Cubit<ViewExamState> {
-  ViewExamCubit({required ExamModel exam, required bool isEditMode})
+  ViewExamCubit({required ExamModel exam, required bool isEditMode,required String nameSubject})
     : super(
         ViewExamState(
           exam: exam,
           isEditMode: isEditMode,
           startDate: exam.startedAt,
           endDate: exam.examFinishAt,
+          nameSubject: nameSubject
         ),
       );
   Future<void> init() async {
@@ -114,10 +115,10 @@ class ViewExamCubit extends Cubit<ViewExamState> {
     emit(state.copyWith(selectedStudentEmail: studentEmail));
   }
 
-  Future<void> saveSubmit(BuildContext context) async {
+  Future<void> saveSubmit(BuildContext context,) async {
     final model = state.exam;
     emit(state.copyWith(loadingSave: true));
-    final response = await ExamSource.createExam(model.examIdSubject, model);
+    final response = await ExamSource.createExam( model,state.nameSubject);
     response.fold(
       (error) async {
         await showMessageSnackBar(

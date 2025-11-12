@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Features/Notifications/cubit/notifications_cubit.dart';
 import '../../Core/Utils/Enums/enum_user.dart';
 import '/Core/Services/Firebase/firebase_service.dart';
 import '/Core/Storage/Local/local_storage_service.dart';
@@ -51,10 +52,8 @@ class ProfileScreen extends StatelessWidget {
                   spacing: 10.w,
                   children: [
                     ...(state.options ?? []).map(
-                      (option) => InfoCard(
-                        title: option.value,
-                        subtitle: option.name,
-                      ),
+                      (option) =>
+                          InfoCard(title: option.value, subtitle: option.name),
                     ),
                   ],
                 ),
@@ -101,6 +100,9 @@ class ProfileScreen extends StatelessWidget {
                       onLoading: () async {
                         await LocalStorageService.clear();
                         await FirebaseServices.instance.logOut();
+                        if (!context.mounted) return;
+                        await context.read<NotificationsCubit>().clear();
+                        await context.read<NotificationsCubit>().clear();
                         if (!context.mounted) return;
                         AppRouter.goNamedByPath(context, NameRoutes.login);
                       },

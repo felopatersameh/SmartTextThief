@@ -5,9 +5,19 @@ import '../../Core/Resources/resources.dart';
 import '../../Config/Routes/name_routes.dart';
 import 'cubit/main_cubit.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   final Widget child;
   const MainScreen({super.key, required this.child});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +30,7 @@ class MainScreen extends StatelessWidget {
           final isExamScreen = _isExamScreen(context);
 
           return Scaffold(
-            body: SafeArea(child: child),
+            body: SafeArea(child: widget.child),
             bottomNavigationBar: isExamScreen
                 ? null
                 : Container(

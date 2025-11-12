@@ -1,247 +1,194 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:icon_broken/icon_broken.dart';
-
-enum NotificationType {
-  joinedSubject(
-    'Joined Subject',
-    IconBroken.AddUser,
-    Color(0xFF4CAF50),
-    Color(0xFFE8F5E9),
-  ),
-  createdExam(
-    'Created Exam',
-    IconBroken.Document,
-    Color(0xFF2196F3),
-    Color(0xFFE3F2FD),
-  ),
-  submit('Submit', IconBroken.Send, Color(0xFF9C27B0), Color(0xFFF3E5F5)),
-  examEnding(
-    'Exam Ending',
-    IconBroken.Time_Circle,
-    Color(0xFFFF9800),
-    Color(0xFFFFF3E0),
-  ),
-  examEnded(
-    'Exam Ended',
-    IconBroken.Close_Square,
-    Color(0xFFF44336),
-    Color(0xFFFFEBEE),
-  ),
-  examStarted(
-    'Exam Started',
-    IconBroken.Play,
-    Color(0xFF00BCD4),
-    Color(0xFFE0F7FA),
-  ),
-  other(
-    'Notification',
-    IconBroken.Notification,
-    Color(0xFF607D8B),
-    Color(0xFFECEFF1),
-  );
-
-  final String title;
-  final IconData icon;
-  final Color iconColor;
-  final Color backgroundColor;
-
-  const NotificationType(
-    this.title,
-    this.icon,
-    this.iconColor,
-    this.backgroundColor,
-  );
-
-  static NotificationType fromString(String value) {
-    return NotificationType.values.firstWhere(
-      (e) => e.name == value,
-      orElse: () => NotificationType.other,
-    );
-  }
-}
+import 'package:smart_text_thief/Core/Storage/Local/get_local_storage.dart';
+import '../Enums/notification_type.dart';
 
 class NotificationModel extends Equatable {
-  final String _id;
-  final NotificationType _type;
+  final String _topicId;
+  final NotificationType _titleTopic;
   final String _body;
-  final String _createdAt;
-  final bool _readOut;
-  final bool _readIn;
+  final DateTime? _createdAt;
+  final DateTime? _updatedAt;
+  final List<String> _readOut;
+  final List<String> _readIn;
 
-  const NotificationModel({
-    required String id,
+  const NotificationModel._internal({
+    required String topicId,
     required NotificationType type,
     required String body,
-    required String createdAt,
-    bool readOut = false,
-    bool readIn = false,
-  }) : _id = id,
-       _createdAt = createdAt,
+    required DateTime? createdAt,
+    required DateTime? updatedAt,
+    List<String>? readOut,
+    List<String>? readIn,
+  }) : _topicId = topicId,
+       _titleTopic = type,
        _body = body,
-       _type = type,
-       _readOut = readOut,
-       _readIn = readIn;
+       _createdAt = createdAt,
+       _updatedAt = updatedAt,
+       _readOut = readOut ?? const [],
+       _readIn = readIn ?? const [];
 
-  // Getters
-  String get id => _id;
-  NotificationType get type => _type;
-  String get title => _type.title;
-  String get body => _body;
-  String get createdAt => _createdAt;
-  bool get readOut => _readOut;
-  bool get readIn => _readIn;
-  IconData get icon => _type.icon;
-  Color get iconColor => _type.iconColor;
-  Color get backgroundColor => _type.backgroundColor;
-
-  // Duration since creation
-  Duration get timeSinceCreation {
-    final created = DateTime.parse(_createdAt);
-    return DateTime.now().difference(created);
+  factory NotificationModel({
+    required String topicId,
+    required NotificationType type,
+    required String body,
+    List<String>? readOut,
+    List<String>? readIn,
+  }) {
+    return NotificationModel._internal(
+      topicId: topicId,
+      type: type,
+      body: body,
+      createdAt: null,
+      updatedAt: null,
+      readOut: readOut,
+      readIn: readIn,
+    );
   }
 
-  // Formatted time string
-  String get formattedTime {
-    final duration = timeSinceCreation;
+  // Getters
+  String get topicId => _topicId;
+  NotificationType get titleTopic => _titleTopic;
+  String get title => _titleTopic.title;
+  String get body => _body;
+  DateTime? get createdAt => _createdAt;
+  DateTime? get updatedAt => _updatedAt;
+  bool get readOut {
+    final email = GetLocalStorage.getEmailUser();
+    return _readOut.contains(email);
+  }
 
+  bool get readIn {
+    final email = GetLocalStorage.getEmailUser();
+    return _readIn.contains(email);
+  }
+
+  IconData get icon => _titleTopic.icon;
+  Color get iconColor => _titleTopic.iconColor;
+  Color get backgroundColor => _titleTopic.backgroundColor;
+
+  Duration? get timeSinceCreation => _createdAt == null
+      ? null
+      : DateTime.now().difference(_createdAt);
+
+  Duration? get timeSinceUpdate => _updatedAt == null
+      ? null
+      : DateTime.now().difference(_updatedAt);
+
+  String get formattedTime {
+    if (_updatedAt == null) return '';
+    final duration = DateTime.now().difference(_updatedAt);
     if (duration.inMinutes < 1) return 'Just now';
     if (duration.inMinutes < 60) return '${duration.inMinutes}m ago';
     if (duration.inHours < 24) return '${duration.inHours}h ago';
     if (duration.inDays < 7) return '${duration.inDays}d ago';
-
     return '${(duration.inDays / 7).floor()}w ago';
   }
 
-  // Check if notification is read
-  bool get isRead => _readIn || _readOut;
+  bool get isRead => readIn || readOut;
 
   NotificationModel copyWith({
-    String? id,
+    String? topicId,
     NotificationType? type,
     String? body,
-    String? createdAt,
-    bool? readOut,
-    bool? readIn,
+    List<String>? readOut,
+    List<String>? readIn,
   }) {
-    return NotificationModel(
-      id: id ?? _id,
-      type: type ?? _type,
+    return NotificationModel._internal(
+      topicId: topicId ?? _topicId,
+      type: type ?? _titleTopic,
       body: body ?? _body,
-      createdAt: createdAt ?? _createdAt,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
       readOut: readOut ?? _readOut,
       readIn: readIn ?? _readIn,
     );
   }
 
+  @override
+  List<Object?> get props => [
+    _topicId,
+    _titleTopic,
+    _body,
+    _createdAt,
+    _updatedAt,
+    _readOut,
+    _readIn,
+  ];
+
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
-    return NotificationModel(
-      id: json['id_notification'] as String? ?? '',
-      type: NotificationType.fromString(json['type'] as String? ?? ''),
-      body: json['body'] as String? ?? '',
-      createdAt:
-          json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
-      readOut: json['readOut'] as bool? ?? false,
-      readIn: json['readIn'] as bool? ?? false,
+    // معالجة createdAt
+    DateTime? createdAt;
+    if (json['createdAt'] != null) {
+      if (json['createdAt'] is int) {
+        createdAt = DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int);
+      } else if (json['createdAt'] is String) {
+        createdAt = DateTime.tryParse(json['createdAt'] as String);
+      }
+    }
+
+    // معالجة updatedAt
+    DateTime? updatedAt;
+    if (json['updatedAt'] != null) {
+      if (json['updatedAt'] is int) {
+        updatedAt = DateTime.fromMillisecondsSinceEpoch(json['updatedAt'] as int);
+      } else if (json['updatedAt'] is String) {
+        updatedAt = DateTime.tryParse(json['updatedAt'] as String);
+      }
+    }
+
+    // معالجة readOut
+    List<String> readOut = [];
+    if (json['readOut'] != null) {
+      if (json['readOut'] is List) {
+        readOut = List<String>.from(json['readOut'].map((item) => item.toString()));
+      } else if (json['readOut'] is String) {
+        readOut = (json['readOut'] as String).split(',').map((e) => e.trim()).toList();
+      }
+    }
+
+    // معالجة readIn
+    List<String> readIn = [];
+    if (json['readIn'] != null) {
+      if (json['readIn'] is List) {
+        readIn = List<String>.from(json['readIn'].map((item) => item.toString()));
+      } else if (json['readIn'] is String) {
+        readIn = (json['readIn'] as String).split(',').map((e) => e.trim()).toList();
+      }
+    }
+
+    return NotificationModel._internal(
+      topicId: json['topicId']?.toString() ?? '',
+      type: NotificationType.fromString(json['titleTopic']?.toString() ?? ''),
+      body: json['body']?.toString() ?? '',
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      readOut: readOut,
+      readIn: readIn,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id_notification': _id,
-      'type': _type.name,
+      'topicId': _topicId,
+      'titleTopic': _titleTopic.name,
       'body': _body,
-      'createdAt': _createdAt,
+      'createdAt': _createdAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+      'updatedAt': _updatedAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
       'readOut': _readOut,
       'readIn': _readIn,
     };
   }
 
-  @override
-  List<Object?> get props => [_id, _type, _body, _createdAt, _readOut, _readIn];
-}
-
-// Notification Widget
-class NotificationCard extends StatelessWidget {
-  final NotificationModel notification;
-  final VoidCallback? onTap;
-
-  const NotificationCard({super.key, required this.notification, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E2630),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // Icon Container
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: notification.backgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    notification.icon,
-                    color: notification.iconColor,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        notification.body,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        notification.formattedTime,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Read indicator
-                if (!notification.isRead)
-                  Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.only(left: 12),
-                    decoration: BoxDecoration(
-                      color: notification.iconColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  Map<String, String> toJsonString() {
+    return {
+      'topicId': _topicId,
+      'titleTopic': _titleTopic.name,
+      'body': _body,
+      'createdAt': (_createdAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch).toString(),
+      'updatedAt': (_updatedAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch).toString(),
+      'readOut': _readOut.join(','),
+      'readIn': _readIn.join(','),
+    };
   }
 }

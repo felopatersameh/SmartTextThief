@@ -40,7 +40,6 @@ class AuthenticationSource {
           userPassword: '',
           userPhone: '',
           userType: UserType.te,
-          userNotifications: [],
           userCreatedAt: DateTime.now()
         );
 

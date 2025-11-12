@@ -77,4 +77,10 @@ class SubjectModel extends Equatable {
   get createdAt => subjectCreatedAt.shortMonthYear;
   bool get isME =>
       (subjectTeacher.teacherEmail) == (GetLocalStorage.getEmailUser());
+
+  /// Returns the topic ID for all subject members.
+  String get subscribeToTopicForMembers => subjectId;
+
+  /// Returns the topic ID for subject admin (teacher).
+  String get subscribeToTopicForAdmin => '${subjectId}_admin';
 }

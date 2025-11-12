@@ -79,7 +79,7 @@ class DetailsScreen extends StatelessWidget {
                         AppRouter.nextScreenNoPath(
                           context,
                           NameRoutes.result,
-                          extra: {"exam": exam, "isEditMode": false},
+                          extra: {"exam": exam, "isEditMode": false,"nameSubject":subjectModel.subjectName},
                           pathParameters: {
                             "exam": exam.examId,
                             "id": exam.examIdSubject,

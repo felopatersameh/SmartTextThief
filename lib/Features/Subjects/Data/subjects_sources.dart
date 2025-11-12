@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
+import 'package:smart_text_thief/Core/Utils/Models/notification_model.dart';
+import '../../../Core/Services/Notifications/notification_services.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Services/Firebase/firebase_service.dart';
 import '../../../Core/Services/Firebase/response_model.dart';
@@ -10,13 +13,14 @@ import '../../../Core/Utils/Models/subject_model.dart';
 import '../../../Core/Services/Firebase/failure_model.dart';
 
 class SubjectsSources {
- 
- static Future<Either<String, List<ExamModel>>> getExam(String idSubject) async {
+  static Future<Either<String, List<ExamModel>>> getExam(
+    String idSubject,
+  ) async {
     try {
       final response = await FirebaseServices.instance.getAllData(
         CollectionKey.subjects.key,
         idSubject,
-        subCollections: [ CollectionKey.exams.key],
+        subCollections: [CollectionKey.exams.key],
       );
       final List<ExamModel> model = [];
       if (response.status) {
@@ -84,6 +88,10 @@ class SubjectsSources {
         model.toJson(),
       );
       if (response.status == true) {
+        //* part Notifications
+        await NotificationServices.subscribeToTopic(
+          model.subscribeToTopicForAdmin,
+        );
         return right(model.subjectName);
       } else {
         final FailureModel model = FailureModel(
@@ -155,6 +163,7 @@ class SubjectsSources {
   static Future<Either<FailureModel, SubjectModel>> joinSubject(
     String code,
     String email,
+    String name,
   ) async {
     try {
       final isExists = await FirebaseServices.instance.checkIsExists(
@@ -193,6 +202,26 @@ class SubjectsSources {
         final data = SubjectModel.fromJson(
           response.data as Map<String, dynamic>,
         );
+        //* part Notifications
+        await NotificationServices.subscribeToTopic(
+          data.subscribeToTopicForMembers,
+        );
+        final length =
+            data.subjectEmailSts.isEmpty ||
+            data.subjectEmailSts.length - 1 == 0;
+        final String and = length
+            ? ""
+            : "and ${data.subjectEmailSts.length} members";
+        final NotificationModel model = NotificationModel(
+          topicId: "${data.subjectId}_admin",
+          type: NotificationType.joinedSubject,
+          body: "$name has joined ${data.subjectName} $and",
+        );
+        await NotificationServices.sendNotificationToTopic(
+          topic: data.subscribeToTopicForAdmin,
+          data: model.toJson(),
+          stringData: model.toJsonString()
+        );
         return right(data);
       } else {
         final FailureModel model = FailureModel(
@@ -209,5 +238,4 @@ class SubjectsSources {
       return Left(model);
     }
   }
-
 }

@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
-import 'package:smart_text_thief/Core/Storage/Local/get_local_storage.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
+import '../../../../Core/Services/Firebase/firebase_service.dart';
+import '../../../../Core/Storage/Local/get_local_storage.dart';
+import '../../../../Core/Utils/Enums/collection_key.dart';
 import '../../../../Core/Utils/Enums/data_key.dart';
 import '../../../../Core/Utils/Models/exam_exam_result.dart';
 import '../../../../Core/Utils/Models/exam_model.dart';
@@ -179,6 +179,7 @@ class DoExamCubit extends Cubit<DoExamState> {
       }
       
       await RealtimeFirebase.deleteData("Exam_Live/${model.specialIdLiveExam}");
+  
 
     }
   }

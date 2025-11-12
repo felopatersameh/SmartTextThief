@@ -28,23 +28,20 @@ void main() async {
     NotificationServices.initFCM(),
   ]);
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
-  runApp( const MyApp());
+  runApp(const MyApp());
 }
 
 @pragma('vm:entry-point')
 Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
-  // debugPrint("onMessage:: ${onData.notification?.toMap()}");
-  //  final notification = onData.notification;
+  // if (notification != null) {
+  //   final title = notification.title ?? 'No Title';
+  //   final body = notification.body ?? 'No Body';
 
-  //   if (notification != null) {
-  //     final title = notification.title ?? 'No Title';
-  //     final body = notification.body ?? 'No Body';
-
-  //    await LocalNotificationService.showNotification(
-  //       title: title,
-  //       body: body,
-  //     );
-  //   }
+  //  await LocalNotificationService.showNotification(
+  //     title: title,
+  //     body: body,
+  //   );
+  // }
 }
 
 class MyApp extends StatefulWidget {
@@ -55,7 +52,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {

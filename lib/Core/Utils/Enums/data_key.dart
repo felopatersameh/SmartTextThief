@@ -1,4 +1,13 @@
 enum DataKey {
+  // Newly requested fields
+  readIn('readIn'),
+  readOut('readOut'),
+  updatedAt('updatedAt'),
+  createdAt('createdAt'),
+  body('body'),
+  titleTopic('titleTopic'),
+  topicId('topicId'),
+
   // 🔹 User fields
   userId('user_id'),
   photo('photo'),
@@ -9,7 +18,7 @@ enum DataKey {
   userPhone('user_phone'),
   userType('user_type'),
   userCreatedAt('user_createdAt'),
-  userNotifications('user_notifications'),
+  subscribedTopics('subscribedTopics'),
 
   // 🔹 Exam fields
   examId('exam_id'),

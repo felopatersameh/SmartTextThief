@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_text_thief/Core/Utils/Models/notification_model.dart';
 import '../Enums/enum_user.dart';
 import '../Enums/data_key.dart';
 
@@ -14,7 +13,7 @@ class UserModel extends Equatable {
     required this.userPhone,
     required this.userType,
     required this.userCreatedAt,
-    required this.userNotifications,
+    this.subscribedTopics = const [],
   });
 
   final String userId;
@@ -26,7 +25,7 @@ class UserModel extends Equatable {
   final String userPhone;
   final UserType userType;
   final DateTime userCreatedAt;
-  final List<NotificationModel> userNotifications;
+  final List<String> subscribedTopics;
 
   UserModel copyWith({
     String? userId,
@@ -38,6 +37,7 @@ class UserModel extends Equatable {
     String? photo,
     UserType? userType,
     DateTime? userCreatedAt,
+    List<String>? subscribedTopics,
     List<dynamic>? userNotifications,
   }) {
     return UserModel(
@@ -50,7 +50,7 @@ class UserModel extends Equatable {
       photo: photo ?? this.photo,
       userType: userType ?? this.userType,
       userCreatedAt: userCreatedAt ?? this.userCreatedAt,
-      userNotifications: userNotifications?.cast<NotificationModel>() ?? this.userNotifications,
+      subscribedTopics: subscribedTopics ?? this.subscribedTopics,
     );
   }
 
@@ -71,11 +71,9 @@ class UserModel extends Equatable {
           : (json[DataKey.userCreatedAt.key] is DateTime
                 ? json[DataKey.userCreatedAt.key]
                 : DateTime.now()),
-      userNotifications: json[DataKey.userNotifications.key] == null
+      subscribedTopics: json[DataKey.subscribedTopics.key] == null
           ? []
-          : List<NotificationModel>.from(
-              (json[DataKey.userNotifications.key] as List<dynamic>)
-                  .map((x) => NotificationModel.fromJson(x))),
+          : List<String>.from(json[DataKey.subscribedTopics.key].map((x) => x)),
     );
   }
 
@@ -89,7 +87,7 @@ class UserModel extends Equatable {
     DataKey.userPhone.key: userPhone,
     DataKey.userType.key: userType.value,
     DataKey.userCreatedAt.key: userCreatedAt,
-    DataKey.userNotifications.key: userNotifications.map((x) => x).toList(),
+    DataKey.subscribedTopics.key: subscribedTopics.map((x) => x).toList(),
   };
 
   bool get isStu => userType.value == UserType.st.value;
@@ -105,6 +103,6 @@ class UserModel extends Equatable {
     userPhone,
     userType.value,
     userCreatedAt,
-    userNotifications,
+    subscribedTopics,
   ];
 }

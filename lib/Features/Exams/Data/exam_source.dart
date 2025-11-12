@@ -1,27 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
 import '../../../Core/Services/Firebase/firebase_service.dart';
+import '../../../Core/Services/Notifications/notification_services.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Utils/Models/exam_result_q_a.dart';
 
 import '../../../Core/Utils/Models/exam_model.dart';
+import '../../../Core/Utils/Models/notification_model.dart';
 
 class ExamSource {
-
- static Future<Either<String, bool>> createExam(
-    String idSubjects,
-    ExamModel model,
+  static Future<Either<String, bool>> createExam(
+    ExamModel examModel,
+    String nameSubject,
   ) async {
     try {
       final response = await FirebaseServices.instance.addData(
         CollectionKey.subjects.key,
-        idSubjects,
-        model.toJson(),
+        examModel.examIdSubject,
+        examModel.toJson(),
         subCollections: [CollectionKey.exams.key],
-        subIds: [model.examId],
+        subIds: [examModel.examId],
       );
       if (response.status) {
+        final NotificationModel model = NotificationModel(
+          topicId: examModel.examId,
+          type: NotificationType.createdExam,
+          body:
+              "New Exam Created ${examModel.specialIdLiveExam} in $nameSubject",
+        );
+        NotificationServices.sendNotificationToTopic(
+          topic: examModel.examIdSubject,
+          data: model.toJson(),
+          stringData: model.toJsonString()
+        );
         return right(response.status);
       } else {
         return left(response.message);
@@ -31,7 +44,7 @@ class ExamSource {
     }
   }
 
- static Future<Either<String, bool>> removeExam(
+  static Future<Either<String, bool>> removeExam(
     String idSuject,
     String idExam,
   ) async {
@@ -52,7 +65,7 @@ class ExamSource {
     }
   }
 
- static Future<Either<String, bool>> updateTimeExam(
+  static Future<Either<String, bool>> updateTimeExam(
     String idSubject,
     String idExam,
     DateTime time,
@@ -76,7 +89,7 @@ class ExamSource {
     }
   }
 
- static Future<Either<String, bool>> updateAnwserQuestionInExam(
+  static Future<Either<String, bool>> updateAnwserQuestionInExam(
     String idSubject,
     String idExam,
     ExamResultQA examResultQA,
@@ -101,7 +114,7 @@ class ExamSource {
     }
   }
 
- static Future<Either<String, bool>> removeAnwserQuestionInExam(
+  static Future<Either<String, bool>> removeAnwserQuestionInExam(
     String idSubject,
     String idExam,
     ExamResultQA examResultQA,

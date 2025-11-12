@@ -15,14 +15,15 @@ import '../widgets/exam_date_section.dart';
 // ==================== View ====================
 class ViewExam extends StatelessWidget {
   final ExamModel examModel;
+  final String nameSubject;
   final bool isEditMode;
 
-  const ViewExam({super.key, required this.examModel, required this.isEditMode,});
+  const ViewExam({super.key, required this.examModel, required this.isEditMode, required this.nameSubject,});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ViewExamCubit(exam: examModel,isEditMode: isEditMode)..init(),
+      create: (context) => ViewExamCubit(exam: examModel,isEditMode: isEditMode,nameSubject: nameSubject)..init(),
       child: const _ViewExamContent(),
     );
   }
@@ -113,7 +114,7 @@ class _ViewExamContent extends StatelessWidget {
             CreateButton(
               onPress: state.loadingSave
                   ? null
-                  : () => context.read<ViewExamCubit>().saveSubmit(context),
+                  : () => context.read<ViewExamCubit>().saveSubmit(context,),
               text: state.loadingSave ? "Saving" : "Save && Submit",
             ),
             if (state.loadingSave)

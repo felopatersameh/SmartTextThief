@@ -37,7 +37,7 @@ class SubjectPage extends StatelessWidget {
               final name = read.model?.userName ?? "";
 
               if (stu) {
-                _showJoinSubjectDialog(context, email: email);
+                _showJoinSubjectDialog(context, email: email,name: name);
               } else {
                 _showAddSubjectDialog(context, email: email, name: name);
               }
@@ -84,7 +84,7 @@ void _showAddSubjectDialog(
   );
 }
 
-void _showJoinSubjectDialog(BuildContext context, {required String email}) {
+void _showJoinSubjectDialog(BuildContext context, {required String email,required String name}) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -96,7 +96,7 @@ void _showJoinSubjectDialog(BuildContext context, {required String email}) {
       nameField: "Code",
       nameFieldHint: "Enter Code",
       onSubmit: (String code) async {
-        await context.read<SubjectCubit>().joinSubject(context, code, email);
+        await context.read<SubjectCubit>().joinSubject(context, code, email,name);
 
         // showMessageSnackBar(
         //     context,

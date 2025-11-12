@@ -1,33 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'Widgets/notification_card.dart';
 import 'cubit/notifications_cubit.dart';
 import '../../Config/Routes/name_routes.dart';
-import '../../Core/Utils/Models/notification_model.dart';
-
-class NotificationPage extends StatefulWidget {
+class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
-
-  @override
-  State<NotificationPage> createState() => _NotificationPageState();
-}
-
-class _NotificationPageState extends State<NotificationPage> {
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<NotificationsCubit>().readout();
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(NameRoutes.notification.titleAppBar)),
-
       body: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
+          if (state.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+      
           final notifications = state.notificationsList;
+          
           return CustomScrollView(
             slivers: [
               // Notifications list
@@ -64,12 +54,14 @@ class _NotificationPageState extends State<NotificationPage> {
                         return NotificationCard(
                           notification: notifications[index],
                           onTap: () {
-                            // Handle notification tap
+                            context.read<NotificationsCubit>().readIn(
+                              notifications[index].topicId,
+                            );
                           },
                         );
                       }, childCount: notifications.length),
                     ),
-
+      
               // Bottom spacing
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
             ],

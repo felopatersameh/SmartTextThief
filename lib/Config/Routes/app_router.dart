@@ -101,10 +101,12 @@ class AppRouter {
                           final data = state.extra as Map;
                           final exam = data['exam'] as ExamModel;
                           final isEditMode = data['isEditMode'] as bool;
+                          final nameSubject = data['nameSubject'] as String;
                           return NoTransitionPage(
                             child: ViewExam(
                               examModel: exam,
                               isEditMode: isEditMode,
+                              nameSubject: nameSubject,
                             ),
                           );
                         },
@@ -126,10 +128,12 @@ class AppRouter {
                       final data = state.extra as Map;
                       final exam = data['exam'] as ExamModel;
                       final isEditMode = data['isEditMode'] as bool;
+                      final nameSubject = data['nameSubject'] as String;
                       return NoTransitionPage(
                         child: ViewExam(
                           examModel: exam,
                           isEditMode: isEditMode,
+                          nameSubject: nameSubject,
                         ),
                       );
                     },

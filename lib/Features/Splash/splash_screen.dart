@@ -34,15 +34,13 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _navigateToMainScreen() async {
     try {
       _controller.value = 0.1;
-      final bool isLoggedIn = await LocalStorageService.getValue(
-        LocalStorageKeys.isLoggedIn,
-        defaultValue: false,
-      );
 
-      final String id = await LocalStorageService.getValue(
-        LocalStorageKeys.id,
-        defaultValue: "",
-      );
+
+      final bool isLoggedIn = LocalStorageService.getValue(
+          LocalStorageKeys.isLoggedIn,
+          defaultValue: "",
+        );
+      final String id =  LocalStorageService.getValue(LocalStorageKeys.id, defaultValue: "") ;
       _controller.value = 0.2;
 
       if (id.isEmpty || !isLoggedIn) {
@@ -52,22 +50,27 @@ class _SplashScreenState extends State<SplashScreen>
         return;
       }
       _controller.value = 0.3;
+      _controller.value = 0.4;
 
       if (!mounted) return;
       final user = await context.read<ProfileCubit>().init();
-      _controller.value = 0.4;
+      await Future.delayed(const Duration(milliseconds: 300));
       _controller.value = 0.5;
 
       if (!mounted) return;
       await Future.wait([
         context.read<SubjectCubit>().init(user.userEmail, user.isStu),
-        context.read<NotificationsCubit>().init(user.userNotifications),
+        context.read<NotificationsCubit>().init(user.subscribedTopics),
       ]);
+      await Future.delayed(const Duration(milliseconds: 300));
+      _controller.value = 0.6;
+      await Future.delayed(const Duration(milliseconds: 300));
+      _controller.value = 0.7;
+      await Future.delayed(const Duration(milliseconds: 300));
       _controller.value = 0.8;
-
-      // await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
       _controller.value = 0.9;
-      // await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
       _controller.value = 1.0;
 
       if (mounted) {

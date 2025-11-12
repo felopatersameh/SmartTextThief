@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import '../../../Core/Services/Notifications/notification_services.dart';
 import '/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
+import '../../../Core/Utils/Models/subject_model.dart';
 
 import '../../../Core/Utils/show_message_snack_bar.dart';
 import '../Data/subjects_sources.dart';
@@ -93,9 +92,10 @@ class SubjectCubit extends Cubit<SubjectState> {
     BuildContext context,
     String code,
     String email,
+    String name,
   ) async {
     final oldList = state.listDataOfSubjects;
-    final response = await SubjectsSources.joinSubject(code, email);
+    final response = await SubjectsSources.joinSubject(code, email,name);
     response.fold(
       (error) async {
         emit(state.copyWith(error: error.message, listDataOfSubjects: oldList));
@@ -117,7 +117,7 @@ class SubjectCubit extends Cubit<SubjectState> {
           title: 'join Subject "${model.subjectName}" successfully!',
           type: MessageType.success,
         );
-        await NotificationServices.subscribeToTopic(model.subjectId);
+        
       },
     );
   }
@@ -137,8 +137,31 @@ class SubjectCubit extends Cubit<SubjectState> {
         Navigator.of(context).pop();
       },
       (name) async {
+
+        // await NotificationServices.subscribeToTopic(
+        //   model.subscribeToTopicForMembers,
+        // );
+        // final length = model.subjectEmailSts.isNotEmpty;
+        // final String and = length
+        //     ? "and ${model.subjectEmailSts.length} members"
+        //     : "";
+        // final NotificationModel notification = NotificationModel(
+        //   id: "join_${model.subjectId}",
+        //   type: NotificationType.joinedSubject,
+        //   body: "$name has Leaved ${model.subjectName} $and",
+        //   createdAt: DateTime.now().millisecondsSinceEpoch,
+        // );
+        // await NotificationServices.sendNotificationToTopic(
+        //   title: notification.title,
+        //   body: notification.body,
+        //   topic: model.subscribeToTopicForAdmin,
+        //   data: notification.toJson(),
+        // );
+
         list.removeWhere((p0) => p0.subjectId == model.subjectId);
         emit(state.copyWith(listDataOfSubjects: list));
+
+
 
         if (!context.mounted) return;
         Navigator.of(context).pop();

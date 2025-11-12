@@ -8,6 +8,7 @@ class ViewExamState extends Equatable {
   final String? selectedStudentEmail;
   final DateTime? startDate;
   final DateTime? endDate;
+  final String nameSubject;
 
   const ViewExamState({
     required this.exam,
@@ -16,6 +17,7 @@ class ViewExamState extends Equatable {
     this.selectedStudentEmail,
     this.startDate,
     this.endDate,
+  required  this.nameSubject,
   });
 
   ViewExamState copyWith({
@@ -25,6 +27,7 @@ class ViewExamState extends Equatable {
     String? selectedStudentEmail,
     DateTime? startDate,
     DateTime? endDate,
+    String? nameSubject,
   }) {
     return ViewExamState(
       exam: exam ?? this.exam,
@@ -33,6 +36,7 @@ class ViewExamState extends Equatable {
       selectedStudentEmail: selectedStudentEmail ?? this.selectedStudentEmail,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      nameSubject: nameSubject ?? this.nameSubject,
     );
   }
 
@@ -44,6 +48,7 @@ class ViewExamState extends Equatable {
         selectedStudentEmail,
         startDate,
         endDate,
+        nameSubject,
       ];
 }
 
