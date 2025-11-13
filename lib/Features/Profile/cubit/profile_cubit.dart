@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../Core/Services/Notifications/notification_services.dart';
 import '../../../Core/Utils/Models/data_model.dart';
 
 import '../../../Core/Services/Firebase/analysis_data.dart';
@@ -27,6 +28,9 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
     final Map<String, dynamic> data = response.data;
     final model = UserModel.fromJson(data);
+    for (var element in model.subscribedTopics) {
+      await NotificationServices.subscribeToTopic(element);
+    }
     emit(state.copyWith(model: model));
     final options = await analyzedData();
     emit(state.copyWith(loading: false, options: options));

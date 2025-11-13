@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:smart_text_thief/Core/Utils/Models/notification_model.dart';
 
 import 'Config/setting.dart';
 import 'Core/Services/Firebase/firebase_service.dart';
 import 'Core/Services/Firebase/real_time_firbase.dart';
+import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/Storage/Local/local_storage_service.dart';
 import 'Features/Notifications/cubit/notifications_cubit.dart';
@@ -33,15 +35,12 @@ void main() async {
 
 @pragma('vm:entry-point')
 Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
-  // if (notification != null) {
-  //   final title = notification.title ?? 'No Title';
-  //   final body = notification.body ?? 'No Body';
+  final NotificationModel message = NotificationModel.fromJson(onData.data);
 
-  //  await LocalNotificationService.showNotification(
-  //     title: title,
-  //     body: body,
-  //   );
-  // }
+  await LocalNotificationService.showNotification(
+    title: message.body,
+    body: "",
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -56,7 +55,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppScreenOrientationHelper.lockPortrait();
-
+      NotificationServices.onMessageOpenedAppCallback = (onData) {
+        if (onData) {
+          AppRouter.goNamedByPath(context, NameRoutes.notification);
+        }
+      };
     });
     super.initState();
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../Config/setting.dart';
+import '../../../../Core/Services/screenshot_protection_service.dart';
 import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/exam_result_q_a.dart';
 import '../../../../Core/Resources/app_colors.dart';
@@ -33,7 +34,99 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    // ✅ تفعيل حماية Screenshot
+    // _enableScreenshotProtection();
   }
+
+  // // ✅ تفعيل الحماية مع Callbacks
+  // void _enableScreenshotProtection() {
+  //   ScreenshotProtectionService.enableProtection(
+  //     onFirstScreenshot: () {
+  //       if (mounted) {
+  //         _showScreenshotWarningDialog();
+  //       }
+  //     },
+  //     onSecondScreenshot: () {
+  //       if (mounted && _cubit != null) {
+  //         _handleSecondScreenshot();
+  //       }
+  //     },
+  //   );
+  // }
+
+  // // ✅ تحذير المرة الأولى
+  // void _showScreenshotWarningDialog() {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => AlertDialog(
+  //       backgroundColor: AppColors.colorsBackGround2,
+  //       icon: Icon(Icons.warning_amber_rounded, color: Colors.red, size: 60),
+  //       title: AppCustomText.generate(
+  //         text: '⚠️ تحذير أمني',
+  //         textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.red),
+  //       ),
+  //       content: AppCustomText.generate(
+  //         text:
+  //             'تم رصد محاولة أخذ Screenshot!\n\nهذا مخالف لقواعد الامتحان.\n\n⚠️ في حالة التكرار سيتم إنهاء الامتحان تلقائياً.',
+  //         textStyle: AppTextStyles.bodyMediumMedium,
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.of(context).pop(),
+  //           child: AppCustomText.generate(
+  //             text: 'فهمت',
+  //             textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+  //               color: AppColors.colorPrimary,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // // ✅ إنهاء الامتحان عند Screenshot الثاني
+  // Future<void> _handleSecondScreenshot() async {
+  //   // إنهاء الامتحان مباشرة
+  //   await _cubit?.forceFinishExam();
+
+  //   if (mounted) {
+  //     // عرض رسالة وإغلاق الصفحة
+  //     showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       builder: (context) => AlertDialog(
+  //         backgroundColor: AppColors.colorsBackGround2,
+  //         icon: Icon(Icons.block, color: Colors.red, size: 60),
+  //         title: AppCustomText.generate(
+  //           text: '❌ تم إنهاء الامتحان',
+  //           textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.red),
+  //         ),
+  //         content: AppCustomText.generate(
+  //           text:
+  //               'تم إنهاء الامتحان بسبب محاولات أخذ Screenshot متكررة.\n\nتم حفظ إجاباتك الحالية.',
+  //           textStyle: AppTextStyles.bodyMediumMedium,
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // إغلاق الـ Dialog
+  //               Navigator.of(context).pop(); // إغلاق صفحة الامتحان
+  //             },
+  //             child: AppCustomText.generate(
+  //               text: 'حسناً',
+  //               textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+  //                 color: Colors.red,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -43,6 +136,9 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     if (_cubit != null && !_cubit!.state.isExamFinished) {
       _cubit!.forceFinishExam();
     }
+
+    // ✅ إلغاء حماية Screenshot
+    ScreenshotProtectionService.disableProtection();
 
     // Restore navigation bar when exiting exam
     SystemChrome.setEnabledSystemUIMode(

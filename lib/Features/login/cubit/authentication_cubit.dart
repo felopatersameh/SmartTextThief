@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:smart_text_thief/Features/Notifications/cubit/notifications_cubit.dart';
 
 import '../../Subjects/cubit/subjects_cubit.dart';
 import '../../Profile/cubit/profile_cubit.dart';
@@ -39,20 +40,22 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   }
 
   Future<void> loginByFacebook() async {
-    emit(state.copyWith(loading: true, message: "", success: null));
-    await Future.delayed(Duration(seconds: 2));
-    emit(
-      state.copyWith(
-        message: "success Login By Facebook",
-        success: true,
-        loading: false,
-      ),
-    );
+    // emit(state.copyWith(loading: true, message: "", success: null));
+    // await Future.delayed(Duration(seconds: 2));
+    // emit(
+    //   state.copyWith(
+    //     message: "success Login By Facebook",
+    //     success: true,
+    //     loading: false,
+    //   ),
+    // );
   }
 
   Future<void> getDataWhenLogin(BuildContext context) async {
     final user = await context.read<ProfileCubit>().init();
     if (!context.mounted) return;
     await context.read<SubjectCubit>().init(user.userEmail, user.isStu);
+    if (!context.mounted) return;
+    await context.read<NotificationsCubit>().init(user.subscribedTopics);
   }
 }

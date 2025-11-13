@@ -103,6 +103,7 @@ class FirebaseServices {
   Future<void> logOut() async {
     await _auth?.signOut();
     await _googleSignIn.signOut();
+    _isInitialized = false;
   }
   //================================================================================================
   //* Add / Get / Update / Delete Data
@@ -436,62 +437,67 @@ class FirebaseServices {
     }
   }
 
-Stream<ResponseModel> findDocsInListStream(
-  String collectionName,
-  String field, {
-  String nameField = '',
-  int? limit,
-  List<String>? subCollections,
-  List<String>? subIds,
-}) {
-  try {
-    CollectionReference<Map<String, dynamic>> ref = firestore!.collection(
-      collectionName,
-    );
-    if (subCollections != null && subCollections.isNotEmpty) {
-      for (int i = 0; i < subCollections.length; i++) {
-        final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
-        ref = id != null
-            ? ref.doc(id).collection(subCollections[i])
-            : ref.doc(subCollections[i]).collection(subCollections[i]);
+  Stream<ResponseModel> findDocsInListStream(
+    String collectionName,
+    String field, {
+    String nameField = '',
+    int? limit,
+    List<String>? subCollections,
+    List<String>? subIds,
+  }) {
+    try {
+      CollectionReference<Map<String, dynamic>> ref = firestore!.collection(
+        collectionName,
+      );
+      if (subCollections != null && subCollections.isNotEmpty) {
+        for (int i = 0; i < subCollections.length; i++) {
+          final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
+          ref = id != null
+              ? ref.doc(id).collection(subCollections[i])
+              : ref.doc(subCollections[i]).collection(subCollections[i]);
+        }
       }
-    }
-    Query<Map<String, dynamic>> query = ref.where(
-      nameField,
-      isEqualTo: field,
-    );
-    if (limit != null && limit > 0) {
-      query = query.limit(limit);
-    }
-
-    return query.snapshots().map((snapshot) {
-      final List<Map<String, dynamic>> results = snapshot.docs
-          .map((d) => d.data())
-          .toList();
-      return ResponseModel.success(
-        message: results.isEmpty
-            ? 'No documents found for $field in $collectionName'
-            : 'Found ${results.length} documents',
-        data: results,
+      Query<Map<String, dynamic>> query = ref.where(
+        nameField,
+        isEqualTo: field,
       );
-    }).handleError((error) {
+      if (limit != null && limit > 0) {
+        query = query.limit(limit);
+      }
+
+      return query
+          .snapshots()
+          .map((snapshot) {
+            final List<Map<String, dynamic>> results = snapshot.docs
+                .map((d) => d.data())
+                .toList();
+            return ResponseModel.success(
+              message: results.isEmpty
+                  ? 'No documents found for $field in $collectionName'
+                  : 'Found ${results.length} documents',
+              data: results,
+            );
+          })
+          .handleError((error) {
+            final failure = FailureModel(
+              message: 'Error streaming $collectionName by $nameField',
+              error: error,
+            );
+            return ResponseModel.error(
+              message: failure.message,
+              failure: failure,
+            );
+          });
+    } catch (e) {
       final failure = FailureModel(
-        message: 'Error streaming $collectionName by $nameField',
-        error: error,
+        message: 'Error setting up stream for $collectionName by $nameField',
+        error: e,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
-    });
-  } catch (e) {
-    final failure = FailureModel(
-      message: 'Error setting up stream for $collectionName by $nameField',
-      error: e,
-    );
-    return Stream.value(
-      ResponseModel.error(message: failure.message, failure: failure),
-    );
+      return Stream.value(
+        ResponseModel.error(message: failure.message, failure: failure),
+      );
+    }
   }
-}
-
 
   //================================================================================================
   //* Verification
@@ -553,116 +559,100 @@ Stream<ResponseModel> findDocsInListStream(
   //================================================================================================
   // أضف هذه الدالة داخل class FirebaseServices
 
-/// Add or update notification in user's notifications array
-/// If notification with same ID exists, it will be updated
-/// If not, it will be added
-Future<ResponseModel> addOrUpdateNotification(
-  String userId,
-  Map<String, dynamic> notificationData,
-  String notificationKey,
-) async {
-  try {
-    final docRef = firestore!.collection(CollectionKey.users.key).doc(userId);
+  /// Add or update notification in user's notifications array
+  /// If notification with same ID exists, it will be updated
+  /// If not, it will be added
+  Future<ResponseModel> addOrUpdateNotification(
+    String userId,
+    Map<String, dynamic> notificationData,
+    String notificationKey,
+  ) async {
+    try {
+      final docRef = firestore!.collection(CollectionKey.users.key).doc(userId);
 
-    // Get current document
-    final docSnapshot = await docRef.get();
-    
-    if (!docSnapshot.exists) {
-      return ResponseModel.error(
-        message: 'User document not found',
-      );
-    }
+      // Get current document
+      final docSnapshot = await docRef.get();
 
-    // Get current notifications list
-    final data = docSnapshot.data();
-    List<dynamic> notifications = List.from(data?[notificationKey] ?? []);
+      if (!docSnapshot.exists) {
+        return ResponseModel.error(message: 'User document not found');
+      }
 
-    // Get notification ID
-    final notificationId = notificationData['id_notification'];
+      // Get current notifications list
+      final data = docSnapshot.data();
+      List<dynamic> notifications = List.from(data?[notificationKey] ?? []);
 
-    // Remove old notification if exists
-    notifications.removeWhere(
-      (n) => n['id_notification'] == notificationId,
-    );
-
-    // Add new/updated notification
-    notifications.add(notificationData);
-
-    // Update document
-    await docRef.update({
-      notificationKey: notifications,
-    });
-
-    return ResponseModel.success(
-      message: 'Notification updated successfully',
-      data: notificationId,
-    );
-  } catch (e) {
-    final failure = FailureModel(
-      message: 'Error updating notification',
-      error: e,
-    );
-    return ResponseModel.error(
-      message: failure.message,
-      failure: failure,
-    );
-  }
-}
-
-Future<ResponseModel> addOrUpdateNotifications(
-  String userId,
-  List<Map<String, dynamic>> notificationsData,
-  String notificationKey,
-) async {
-  try {
-    final docRef = firestore!.collection(CollectionKey.users.key).doc(userId);
-
-    // Get current document
-    final docSnapshot = await docRef.get();
-    
-    if (!docSnapshot.exists) {
-      return ResponseModel.error(
-        message: 'User document not found',
-      );
-    }
-
-    // Get current notifications list
-    final data = docSnapshot.data();
-    List<dynamic> notifications = List.from(data?[notificationKey] ?? []);
-
-    // Update each notification
-    for (final notificationData in notificationsData) {
+      // Get notification ID
       final notificationId = notificationData['id_notification'];
-      
+
       // Remove old notification if exists
-      notifications.removeWhere(
-        (n) => n['id_notification'] == notificationId,
-      );
-      
+      notifications.removeWhere((n) => n['id_notification'] == notificationId);
+
       // Add new/updated notification
       notifications.add(notificationData);
+
+      // Update document
+      await docRef.update({notificationKey: notifications});
+
+      return ResponseModel.success(
+        message: 'Notification updated successfully',
+        data: notificationId,
+      );
+    } catch (e) {
+      final failure = FailureModel(
+        message: 'Error updating notification',
+        error: e,
+      );
+      return ResponseModel.error(message: failure.message, failure: failure);
     }
-
-    // Update document
-    await docRef.update({
-      notificationKey: notifications,
-    });
-
-    return ResponseModel.success(
-      message: 'Notifications updated successfully',
-      data: notificationsData.length,
-    );
-  } catch (e) {
-    final failure = FailureModel(
-      message: 'Error updating notifications',
-      error: e,
-    );
-    return ResponseModel.error(
-      message: failure.message,
-      failure: failure,
-    );
   }
-}
+
+  Future<ResponseModel> addOrUpdateNotifications(
+    String userId,
+    List<Map<String, dynamic>> notificationsData,
+    String notificationKey,
+  ) async {
+    try {
+      final docRef = firestore!.collection(CollectionKey.users.key).doc(userId);
+
+      // Get current document
+      final docSnapshot = await docRef.get();
+
+      if (!docSnapshot.exists) {
+        return ResponseModel.error(message: 'User document not found');
+      }
+
+      // Get current notifications list
+      final data = docSnapshot.data();
+      List<dynamic> notifications = List.from(data?[notificationKey] ?? []);
+
+      // Update each notification
+      for (final notificationData in notificationsData) {
+        final notificationId = notificationData['id_notification'];
+
+        // Remove old notification if exists
+        notifications.removeWhere(
+          (n) => n['id_notification'] == notificationId,
+        );
+
+        // Add new/updated notification
+        notifications.add(notificationData);
+      }
+
+      // Update document
+      await docRef.update({notificationKey: notifications});
+
+      return ResponseModel.success(
+        message: 'Notifications updated successfully',
+        data: notificationsData.length,
+      );
+    } catch (e) {
+      final failure = FailureModel(
+        message: 'Error updating notifications',
+        error: e,
+      );
+      return ResponseModel.error(message: failure.message, failure: failure);
+    }
+  }
 }
 
 Map<String, dynamic> calculateGpaWithLevel(

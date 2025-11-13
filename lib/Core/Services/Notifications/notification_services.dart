@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
@@ -10,13 +11,15 @@ import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
 import '../../Storage/Local/local_storage_keys.dart';
 import '../../Storage/Local/local_storage_service.dart';
 import '../../Utils/Enums/data_key.dart';
+import '../../Utils/Models/notification_model.dart';
+import 'flutter_local_notifications.dart';
 
 class NotificationServices {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
   static final Dio _dio = Dio();
 
-  static Function(RemoteMessage)? onMessageOpenedAppCallback;
+  static Function(bool)? onMessageOpenedAppCallback;
   static Function(RemoteMessage)? onMessageCallback;
 
   static Future<void> initFCM() async {
@@ -29,24 +32,34 @@ class NotificationServices {
       defaultValue: null,
     );
 
-    if (tokenIn == null || tokenIn == '' && tokenFCM.toString() != tokenIn.toString()) {
+    if (tokenIn == null ||
+        tokenIn == '' && tokenFCM.toString() != tokenIn.toString()) {
       await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
     }
 
-    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+    FirebaseMessaging.onMessageOpenedApp.listen((onData) async {
       //debugPrint("📲 onMessageOpenedApp:: ${message.notification?.toMap()}");
       //debugPrint("📲 data:: ${message.data}");
-      if (onMessageOpenedAppCallback != null) {
-        onMessageOpenedAppCallback!(message);
+      final NotificationModel message = NotificationModel.fromJson(onData.data);
+
+      if (message.topicId.isEmpty) {
+        onMessageOpenedAppCallback!(false);
+      } else {
+        onMessageOpenedAppCallback!(true);
       }
     });
 
-    FirebaseMessaging.onMessage.listen((message) async {
+    FirebaseMessaging.onMessage.listen((onData) async {
       //debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
       //debugPrint("📥 data:: ${message.data}");
+      final NotificationModel message = NotificationModel.fromJson(onData.data);
 
+      await LocalNotificationService.showNotification(
+        title: message.body,
+        body: "",
+      );
       if (onMessageCallback != null) {
-        onMessageCallback!(message);
+        onMessageCallback!(onData);
       }
     });
   }
@@ -63,19 +76,21 @@ class NotificationServices {
     // log("response subscribeToTopic  ::${response.toJson()}");
     if (!response.status) return;
     await _firebaseMessaging.subscribeToTopic(topic);
+    log(topic.toString());
   }
 
   static Future<void> unSubscribeToTopic(String topic) async {
-    final id = GetLocalStorage.getIdUser();
-    final response = await FirebaseServices.instance.updateData(
-      CollectionKey.notification.key,
-      id,
-      {
-        DataKey.subscribedTopics.key: FieldValue.arrayRemove([topic]),
-      },
-    );
-    if (!response.status) return;
+    // final id = GetLocalStorage.getIdUser();
+    // final response = await FirebaseServices.instance.updateData(
+    //   CollectionKey.notification.key,
+    //   id,
+    //   {
+    //     DataKey.subscribedTopics.key: FieldValue.arrayRemove([topic]),
+    //   },
+    // );
+    // if (!response.status) return;
     await _firebaseMessaging.unsubscribeFromTopic(topic);
+    log(topic.toString());
   }
 
   static Future<ServiceAccountCredentials> _loadServiceAccount() async {
@@ -133,7 +148,7 @@ class NotificationServices {
           //debugPrint('✅ Notification sent to token');
         } else {
           //debugPrint(
-            // '❌ Error sending notification: ${response.statusCode} - ${response.data}',
+          // '❌ Error sending notification: ${response.statusCode} - ${response.data}',
           // );
         }
       } catch (e) {
@@ -144,18 +159,18 @@ class NotificationServices {
 
   /// Send notification to a topic
   static Future<bool> sendNotificationToTopic({
-    required String topic,
     String? image,
+    String? id,
     Map<String, dynamic>? data,
     Map<String, String>? stringData,
   }) async {
     try {
       final accessToken = await _getAccessToken();
       const projectId = 'smarttextthief';
-
+      final String id0 = id ?? data?['id'];
       final payload = {
         "message": {
-          "topic": topic,
+          "topic": data?[DataKey.topicId.key],
           "notification": {
             "title": stringData?['titleTopic'] ?? "No Title",
             "body": stringData?['body'] ?? "No Body",
@@ -184,13 +199,13 @@ class NotificationServices {
         //debugPrint('✅ Notification sent to topic: $topic');
         FirebaseServices.instance.addData(
           CollectionKey.notification.key,
-          data?["topicId"],
+          id0,
           data ?? {},
         );
         return true;
       } else {
         //debugPrint(
-          // '❌ Error sending to topic: ${response.statusCode} - ${response.data}',
+        // '❌ Error sending to topic: ${response.statusCode} - ${response.data}',
         // );
         return false;
       }
@@ -201,13 +216,4 @@ class NotificationServices {
   }
 
   /// Send notification to multiple topics
-  static Future<void> sendNotificationToMultipleTopics({
-    required List<String> topics,
-    String? image,
-    Map<String, String>? data,
-  }) async {
-    for (final topic in topics) {
-      await sendNotificationToTopic(topic: topic, image: image, data: data);
-    }
-  }
 }

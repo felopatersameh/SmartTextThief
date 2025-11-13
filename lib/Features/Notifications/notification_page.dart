@@ -15,8 +15,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Future.delayed(Duration(seconds: 1));
-      context.read<NotificationsCubit>().readout();
+     await context.read<NotificationsCubit>().readout();
     });
 
     super.initState();
@@ -69,9 +68,9 @@ class _NotificationPageState extends State<NotificationPage> {
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return NotificationCard(
                           notification: notifications[index],
-                          onTap: () {
-                            context.read<NotificationsCubit>().readIn(
-                              notifications[index].topicId,
+                          onTap: () async{
+                          await  context.read<NotificationsCubit>().readIn(
+                              notifications[index].id,
                             );
                           },
                         );

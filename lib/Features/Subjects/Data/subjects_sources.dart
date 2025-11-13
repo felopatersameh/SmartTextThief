@@ -213,14 +213,14 @@ class SubjectsSources {
             ? ""
             : "and ${data.subjectEmailSts.length} members";
         final NotificationModel model = NotificationModel(
-          topicId: "${data.subjectId}_admin",
+          topicId: data.subscribeToTopicForAdmin,
           type: NotificationType.joinedSubject,
           body: "$name has joined ${data.subjectName} $and",
         );
         await NotificationServices.sendNotificationToTopic(
-          topic: data.subscribeToTopicForAdmin,
+          id: "joined_${data.subjectId}",
           data: model.toJson(),
-          stringData: model.toJsonString()
+          stringData: model.toJsonString(),
         );
         return right(data);
       } else {

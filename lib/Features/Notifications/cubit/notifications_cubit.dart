@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
 import '../../../Core/Storage/Local/get_local_storage.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
@@ -37,7 +39,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         if (response.status) {
           for (final element in response.data) {
             final data = NotificationModel.fromJson(element);
-            if (!notificationsList.any((n) => n.topicId == data.topicId)) {
+            if (!notificationsList.any((n) => n.id == data.id)) {
               notificationsList.add(data);
               if (!data.readOut) {
                 newBadgeCount++;
@@ -47,7 +49,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         }
         emit(
           state.copyWith(
-            notificationsList: notificationsList,
+            notificationsList: notificationsList.reversed.toList(),
             badgeCount: newBadgeCount,
           ),
         );
@@ -58,10 +60,11 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     emit(state.copyWith(loading: false));
   }
 
-  void disposeSubscriptions() {
+  Future<void> disposeSubscriptions() async {
     for (final subscription in state.streamSubscriptions.values) {
-      subscription.cancel();
+      await subscription.cancel();
     }
+   
   }
 
   Future<void> readout() async {
@@ -76,7 +79,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     for (var element in updatedList) {
       await FirebaseServices.instance.updateData(
         CollectionKey.notification.key,
-        element.topicId,
+        element.id,
         {DataKey.readOut.key: FieldValue.arrayUnion(element.listReadOut)},
       );
     }
@@ -88,7 +91,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     final email = GetLocalStorage.getEmailUser();
     NotificationModel? updatedNotification;
     final updatedList = state.notificationsList.map((e) {
-      if (!e.readIn && notificationId == e.topicId) {
+      if (!e.readIn && notificationId == e.id) {
         final readIn = e.listReadIn;
         updatedNotification = e.copyWith(readIn: [email, ...readIn]);
         return updatedNotification!;
@@ -97,29 +100,35 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }).toList();
 
     if (updatedNotification != null) {
-      await FirebaseServices.instance.updateData(
-        CollectionKey.notification.key,
-        updatedNotification!.topicId,
-        {
-          DataKey.readIn.key: FieldValue.arrayUnion(
-            updatedNotification!.listReadIn,
-          ),
-        },
-      );
+      final re = await FirebaseServices.instance
+          .updateData(CollectionKey.notification.key, updatedNotification!.id, {
+            DataKey.readIn.key: FieldValue.arrayUnion(
+              updatedNotification!.listReadIn,
+            ),
+          });
+      log(re.toJson().toString());
     }
-
     emit(state.copyWith(notificationsList: updatedList));
   }
 
-
   Future<void> clear() async {
-    disposeSubscriptions();
-    emit(NotificationsState());
+    await disposeSubscriptions();
+     for (var element in state.subscribedTopics) {
+      await NotificationServices.unSubscribeToTopic(element);
+    }
+    emit(
+      state.copyWith(
+        badgeCount: 0,
+        notificationsList: [],
+        streamSubscriptions: {},
+        subscribedTopics: [],
+      ),
+    );
   }
 
   @override
-  Future<void> close() {
-    disposeSubscriptions();
+  Future<void> close() async {
+    await disposeSubscriptions();
     return super.close();
   }
 }

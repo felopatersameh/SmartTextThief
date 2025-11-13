@@ -4,6 +4,7 @@ import 'package:smart_text_thief/Core/Storage/Local/get_local_storage.dart';
 import '../Enums/notification_type.dart';
 
 class NotificationModel extends Equatable {
+  final String _id;
   final String _topicId;
   final NotificationType _titleTopic;
   final String _body;
@@ -13,6 +14,7 @@ class NotificationModel extends Equatable {
   final List<String> _readIn;
 
   const NotificationModel._internal({
+    String? id,
     required String topicId,
     required NotificationType type,
     required String body,
@@ -20,15 +22,17 @@ class NotificationModel extends Equatable {
     required DateTime? updatedAt,
     List<String>? readOut,
     List<String>? readIn,
-  }) : _topicId = topicId,
-       _titleTopic = type,
-       _body = body,
-       _createdAt = createdAt,
-       _updatedAt = updatedAt,
-       _readOut = readOut ?? const [],
-       _readIn = readIn ?? const [];
+  })  : _id = id ?? '',
+        _topicId = topicId,
+        _titleTopic = type,
+        _body = body,
+        _createdAt = createdAt,
+        _updatedAt = updatedAt,
+        _readOut = readOut ?? const [],
+        _readIn = readIn ?? const [];
 
   factory NotificationModel({
+    String? id,
     required String topicId,
     required NotificationType type,
     required String body,
@@ -36,6 +40,7 @@ class NotificationModel extends Equatable {
     List<String>? readIn,
   }) {
     return NotificationModel._internal(
+      id: id,
       topicId: topicId,
       type: type,
       body: body,
@@ -47,6 +52,7 @@ class NotificationModel extends Equatable {
   }
 
   // Getters
+  String get id => _id;
   String get topicId => _topicId;
   NotificationType get titleTopic => _titleTopic;
   String get title => _titleTopic.title;
@@ -88,6 +94,7 @@ class NotificationModel extends Equatable {
   bool get isRead => readIn || readOut;
 
   NotificationModel copyWith({
+    String? id,
     String? topicId,
     NotificationType? type,
     String? body,
@@ -95,6 +102,7 @@ class NotificationModel extends Equatable {
     List<String>? readIn,
   }) {
     return NotificationModel._internal(
+      id: id ?? _id,
       topicId: topicId ?? _topicId,
       type: type ?? _titleTopic,
       body: body ?? _body,
@@ -107,14 +115,15 @@ class NotificationModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    _topicId,
-    _titleTopic,
-    _body,
-    _createdAt,
-    _updatedAt,
-    _readOut,
-    _readIn,
-  ];
+        _id,
+        _topicId,
+        _titleTopic,
+        _body,
+        _createdAt,
+        _updatedAt,
+        _readOut,
+        _readIn,
+      ];
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     // معالجة createdAt
@@ -156,7 +165,6 @@ class NotificationModel extends Equatable {
       }
     }
 
-    // معالجة readIn
     List<String> readIn = [];
     if (json['readIn'] != null) {
       if (json['readIn'] is List) {
@@ -172,6 +180,7 @@ class NotificationModel extends Equatable {
     }
 
     return NotificationModel._internal(
+      id: json['id']?.toString(),
       topicId: json['topicId']?.toString() ?? '',
       type: NotificationType.fromString(json['titleTopic']?.toString() ?? ''),
       body: json['body']?.toString() ?? '',
@@ -184,14 +193,13 @@ class NotificationModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': _id,
       'topicId': _topicId,
       'titleTopic': _titleTopic.name,
       'body': _body,
-      'createdAt':
-          _createdAt?.millisecondsSinceEpoch ??
+      'createdAt': _createdAt?.millisecondsSinceEpoch ??
           DateTime.now().millisecondsSinceEpoch,
-      'updatedAt':
-          _updatedAt?.millisecondsSinceEpoch ??
+      'updatedAt': _updatedAt?.millisecondsSinceEpoch ??
           DateTime.now().millisecondsSinceEpoch,
       'readOut': _readOut,
       'readIn': _readIn,
@@ -200,17 +208,16 @@ class NotificationModel extends Equatable {
 
   Map<String, String> toJsonString() {
     return {
+      'id': _id,
       'topicId': _topicId,
       'titleTopic': _titleTopic.name,
       'body': _body,
-      'createdAt':
-          (_createdAt?.millisecondsSinceEpoch ??
-                  DateTime.now().millisecondsSinceEpoch)
-              .toString(),
-      'updatedAt':
-          (_updatedAt?.millisecondsSinceEpoch ??
-                  DateTime.now().millisecondsSinceEpoch)
-              .toString(),
+      'createdAt': (_createdAt?.millisecondsSinceEpoch ??
+              DateTime.now().millisecondsSinceEpoch)
+          .toString(),
+      'updatedAt': (_updatedAt?.millisecondsSinceEpoch ??
+              DateTime.now().millisecondsSinceEpoch)
+          .toString(),
       'readOut': _readOut.join(','),
       'readIn': _readIn.join(','),
     };

@@ -25,15 +25,14 @@ class ExamSource {
       );
       if (response.status) {
         final NotificationModel model = NotificationModel(
-          topicId: examModel.examId,
+          topicId: examModel.examIdSubject,
           type: NotificationType.createdExam,
           body:
               "New Exam Created ${examModel.specialIdLiveExam} in $nameSubject",
         );
         NotificationServices.sendNotificationToTopic(
-          topic: examModel.examIdSubject,
           data: model.toJson(),
-          stringData: model.toJsonString()
+          stringData: model.toJsonString(),
         );
         return right(response.status);
       } else {

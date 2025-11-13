@@ -181,14 +181,21 @@ class DoExamCubit extends Cubit<DoExamState> {
       final name = nameParts.length >= 2
           ? "${nameParts[0]} ${nameParts[1]}"
           : GetLocalStorage.getNameUser();
-
+        final length =
+            model.examResult.isEmpty ||
+            model.examResult.length - 1 == 0;
+        final String and = length
+            ? ""
+            : "and ${model.examResult.length} members";
       final notification = NotificationModel(
+        id: "doExam_${model.examId}",
         topicId: "${model.examIdSubject}_admin",
         type: NotificationType.submit,
-        body: "$name Submitted Exam ${model.examStatic.typeExam} ${model.specialIdLiveExam}  ",
+        body:
+            "$name Submitted Exam ${model.examStatic.typeExam} ${model.specialIdLiveExam} $and",
       );
-    await  NotificationServices.sendNotificationToTopic(
-        topic: "${model.examIdSubject}_admin",
+      await NotificationServices.sendNotificationToTopic(
+        id: notification.id,
         data: notification.toJson(),
         stringData: notification.toJsonString(),
       );
