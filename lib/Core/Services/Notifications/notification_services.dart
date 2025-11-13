@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -24,28 +22,28 @@ class NotificationServices {
   static Future<void> initFCM() async {
     await _firebaseMessaging.requestPermission();
     final tokenFCM = await _firebaseMessaging.getToken();
-    debugPrint("✅ tokenFCM:: $tokenFCM");
+    //debugPrint("✅ tokenFCM:: $tokenFCM");
 
     final tokenIn = await LocalStorageService.getValue(
       LocalStorageKeys.tokenFCM,
       defaultValue: null,
     );
 
-    if (tokenIn == null || tokenIn == '' && tokenFCM != tokenIn) {
+    if (tokenIn == null || tokenIn == '' && tokenFCM.toString() != tokenIn.toString()) {
       await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
     }
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) async {
-      debugPrint("📲 onMessageOpenedApp:: ${message.notification?.toMap()}");
-      debugPrint("📲 data:: ${message.data}");
+      //debugPrint("📲 onMessageOpenedApp:: ${message.notification?.toMap()}");
+      //debugPrint("📲 data:: ${message.data}");
       if (onMessageOpenedAppCallback != null) {
         onMessageOpenedAppCallback!(message);
       }
     });
 
     FirebaseMessaging.onMessage.listen((message) async {
-      debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
-      debugPrint("📥 data:: ${message.data}");
+      //debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
+      //debugPrint("📥 data:: ${message.data}");
 
       if (onMessageCallback != null) {
         onMessageCallback!(message);
@@ -62,7 +60,7 @@ class NotificationServices {
         DataKey.subscribedTopics.key: FieldValue.arrayUnion([topic]),
       },
     );
-    log("response subscribeToTopic  ::${response.toJson()}");
+    // log("response subscribeToTopic  ::${response.toJson()}");
     if (!response.status) return;
     await _firebaseMessaging.subscribeToTopic(topic);
   }
@@ -82,7 +80,7 @@ class NotificationServices {
 
   static Future<ServiceAccountCredentials> _loadServiceAccount() async {
     final jsonStr = await rootBundle.loadString('assets/service_account.json');
-    log("jsonStr:: $jsonStr");
+    // log("jsonStr:: $jsonStr");
     return ServiceAccountCredentials.fromJson(jsonStr);
   }
 
@@ -90,7 +88,7 @@ class NotificationServices {
     final credentials = await _loadServiceAccount();
     final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
     final authClient = await clientViaServiceAccount(credentials, scopes);
-    log("authClient:: ${authClient.credentials.accessToken.data}");
+    // log("authClient:: ${authClient.credentials.accessToken.data}");
     return authClient.credentials.accessToken.data;
   }
 
@@ -132,14 +130,14 @@ class NotificationServices {
         );
 
         if (response.statusCode == 200) {
-          debugPrint('✅ Notification sent to token');
+          //debugPrint('✅ Notification sent to token');
         } else {
-          debugPrint(
-            '❌ Error sending notification: ${response.statusCode} - ${response.data}',
-          );
+          //debugPrint(
+            // '❌ Error sending notification: ${response.statusCode} - ${response.data}',
+          // );
         }
       } catch (e) {
-        debugPrint('❌ Dio error: $e');
+        //debugPrint('❌ Dio error: $e');
       }
     }
   }
@@ -183,7 +181,7 @@ class NotificationServices {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('✅ Notification sent to topic: $topic');
+        //debugPrint('✅ Notification sent to topic: $topic');
         FirebaseServices.instance.addData(
           CollectionKey.notification.key,
           data?["topicId"],
@@ -191,13 +189,13 @@ class NotificationServices {
         );
         return true;
       } else {
-        debugPrint(
-          '❌ Error sending to topic: ${response.statusCode} - ${response.data}',
-        );
+        //debugPrint(
+          // '❌ Error sending to topic: ${response.statusCode} - ${response.data}',
+        // );
         return false;
       }
     } catch (e) {
-      debugPrint('❌ Error sending notification to topic: $e');
+      //debugPrint('❌ Error sending notification to topic: $e');
       return false;
     }
   }

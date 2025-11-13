@@ -102,7 +102,6 @@ class ProfileScreen extends StatelessWidget {
                         await FirebaseServices.instance.logOut();
                         if (!context.mounted) return;
                         await context.read<NotificationsCubit>().clear();
-                        await context.read<NotificationsCubit>().clear();
                         if (!context.mounted) return;
                         AppRouter.goNamedByPath(context, NameRoutes.login);
                       },

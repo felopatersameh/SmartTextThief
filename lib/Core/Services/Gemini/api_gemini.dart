@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:google_generative_ai/google_generative_ai.dart';
 
@@ -28,7 +27,7 @@ class ApiGemini {
       final response = await _model.generateContent(content);
       return response.text ?? 'No reply found. Please try again.';
     } catch (e) {
-      log('Gemini API error: $e');
+      // log('Gemini API error: $e');
       rethrow;
     }
   }

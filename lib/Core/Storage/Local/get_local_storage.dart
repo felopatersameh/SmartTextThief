@@ -5,5 +5,7 @@ class GetLocalStorage {
   static String getIdUser() =>
       LocalStorageService.getValue(LocalStorageKeys.id, defaultValue: "");
   static String getEmailUser() =>
-      LocalStorageService.getValue(LocalStorageKeys.email, defaultValue: "");
+      LocalStorageService.getValue(LocalStorageKeys.email, defaultValue: "");  
+      static String getNameUser() =>
+      LocalStorageService.getValue(LocalStorageKeys.name, defaultValue: "");
 }

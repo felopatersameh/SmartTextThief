@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -246,7 +245,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         randomQuestions: state.canOpenQuestions,
       ),
     );
-    log("generated::: ${exam.toJson()}");
+    // log("generated::: ${exam.toJson()}");
     if (!context.mounted) return;
     if (!response.isSuccess) throw ("error");
     await showMessageSnackBar(

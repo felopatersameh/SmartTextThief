@@ -3,8 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Widgets/notification_card.dart';
 import 'cubit/notifications_cubit.dart';
 import '../../Config/Routes/name_routes.dart';
-class NotificationPage extends StatelessWidget {
+
+class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
+
+  @override
+  State<NotificationPage> createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Future.delayed(Duration(seconds: 1));
+      context.read<NotificationsCubit>().readout();
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +31,9 @@ class NotificationPage extends StatelessWidget {
           if (state.loading) {
             return const Center(child: CircularProgressIndicator());
           }
-      
+
           final notifications = state.notificationsList;
-          
+
           return CustomScrollView(
             slivers: [
               // Notifications list
@@ -61,7 +77,7 @@ class NotificationPage extends StatelessWidget {
                         );
                       }, childCount: notifications.length),
                     ),
-      
+
               // Bottom spacing
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
             ],

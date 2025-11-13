@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
-import 'dart:developer' as developer;
+// import 'dart:developer' as developer;
 
 class RealtimeFirebase {
   static FirebaseDatabase? _database;
@@ -19,10 +19,10 @@ class RealtimeFirebase {
         );
         _database!.setPersistenceEnabled(true);
         _initialized = true;
-        developer.log('RealtimeFirebase initialized successfully');
+        //developer\.log\('RealtimeFirebase initialized successfully');
       }
     } catch (e) {
-      developer.log('RealtimeFirebase initialization failed: $e');
+      //developer\.log\('RealtimeFirebase initialization failed: $e');
       throw Exception('Firebase initialization failed: $e');
     }
   }
@@ -57,7 +57,7 @@ class RealtimeFirebase {
       await newRef.set(dataWithTimestamps);
       return newRef.key!;
     } catch (e) {
-      developer.log('Create operation failed: $e');
+      //developer\.log\('Create operation failed: $e');
       throw Exception('Create operation failed: $e');
     }
   }
@@ -70,7 +70,7 @@ class RealtimeFirebase {
       final dataWithTimestamp = {...data};
       await ref.set(dataWithTimestamp);
     } catch (e) {
-      developer.log('Set operation failed: $e');
+      //developer\.log\('Set operation failed: $e');
       throw Exception('Set operation failed: $e');
     }
   }
@@ -84,7 +84,7 @@ class RealtimeFirebase {
       final snapshot = await ref.get();
       return snapshot.exists ? snapshot.value : null;
     } catch (e) {
-      developer.log('Get operation failed: $e');
+      //developer\.log\('Get operation failed: $e');
       throw Exception('Get operation failed: $e');
     }
   }
@@ -105,7 +105,7 @@ class RealtimeFirebase {
       };
       await ref.update(updatesWithTimestamp);
     } catch (e) {
-      developer.log('Update operation failed: $e');
+      //developer\.log\('Update operation failed: $e');
       throw Exception('Update operation failed: $e');
     }
   }
@@ -117,7 +117,7 @@ class RealtimeFirebase {
       final ref = _database!.ref(path);
       await ref.remove();
     } catch (e) {
-      developer.log('Delete operation failed: $e');
+      //developer\.log\('Delete operation failed: $e');
       throw Exception('Delete operation failed: $e');
     }
   }
@@ -142,7 +142,7 @@ class RealtimeFirebase {
           onData(data, event.snapshot.key);
         },
         onError: (error) {
-          developer.log('Listen operation failed: $error');
+          //developer\.log\('Listen operation failed: $error');
           if (onError != null) {
             onError(error);
           }
@@ -152,7 +152,7 @@ class RealtimeFirebase {
       _listeners[id] = subscription;
       return id;
     } catch (e) {
-      developer.log('Listen setup failed: $e');
+      //developer\.log\('Listen setup failed: $e');
       throw Exception('Listen setup failed: $e');
     }
   }
@@ -221,7 +221,7 @@ class RealtimeFirebase {
       final snapshot = await query.get();
       return snapshot.exists ? snapshot.value : null;
     } catch (e) {
-      developer.log('Query operation failed: $e');
+      //developer\.log\('Query operation failed: $e');
       throw Exception('Query operation failed: $e');
     }
   }
@@ -281,7 +281,7 @@ class RealtimeFirebase {
           onData(data, event.snapshot.key);
         },
         onError: (error) {
-          developer.log('Query listen operation failed: $error');
+          //developer\.log\('Query listen operation failed: $error');
           if (onError != null) {
             onError(error);
           }
@@ -291,7 +291,7 @@ class RealtimeFirebase {
       _listeners[id] = subscription;
       return id;
     } catch (e) {
-      developer.log('Query listen setup failed: $e');
+      //developer\.log\('Query listen setup failed: $e');
       throw Exception('Query listen setup failed: $e');
     }
   }
@@ -316,7 +316,7 @@ class RealtimeFirebase {
 
       await ref.update(timestampedUpdates);
     } catch (e) {
-      developer.log('Batch update failed: $e');
+      //developer\.log\('Batch update failed: $e');
       throw Exception('Batch update failed: $e');
     }
   }
@@ -329,7 +329,7 @@ class RealtimeFirebase {
       final snapshot = await ref.get();
       return snapshot.exists;
     } catch (e) {
-      developer.log('Exists check failed: $e');
+      //developer\.log\('Exists check failed: $e');
       throw Exception('Exists check failed: $e');
     }
   }
@@ -355,7 +355,7 @@ class RealtimeFirebase {
           callback(isConnected);
         },
         onError: (error) {
-          developer.log('Connection state listener error: $error');
+          //developer\.log\('Connection state listener error: $error');
           callback(false);
         },
       );
@@ -363,7 +363,7 @@ class RealtimeFirebase {
       _listeners[id] = subscription;
       return id;
     } catch (e) {
-      developer.log('Connection state listener setup failed: $e');
+      //developer\.log\('Connection state listener setup failed: $e');
       throw Exception('Connection state listener setup failed: $e');
     }
   }
@@ -423,7 +423,7 @@ class RealtimeFirebase {
       });
       return result.snapshot.value as T?;
     } catch (e) {
-      developer.log('Transaction failed: $e');
+      //developer\.log\('Transaction failed: $e');
       throw Exception('Transaction failed: $e');
     }
   }
@@ -451,7 +451,7 @@ class RealtimeFirebase {
 
       return keys;
     } catch (e) {
-      developer.log('Push multiple failed: $e');
+      //developer\.log\('Push multiple failed: $e');
       throw Exception('Push multiple failed: $e');
     }
   }

@@ -6,6 +6,7 @@ class LocalStorageKeys {
   static const String token = 'token';
   static const String id = 'id';
   static const String email = 'email  ';
+  static const String name = 'name';
   static const String isFirstTime = 'isFirstTime';
   static const String isLoggedIn = 'isLoggedIn';
   static const String setData = 'data';

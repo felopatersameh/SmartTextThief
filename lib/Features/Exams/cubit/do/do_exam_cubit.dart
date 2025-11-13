@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import '../../../../Core/Services/Notifications/notification_services.dart';
+import '../../../../Core/Utils/Models/notification_model.dart';
 import '../../../../Core/Services/Firebase/firebase_service.dart';
 import '../../../../Core/Storage/Local/get_local_storage.dart';
 import '../../../../Core/Utils/Enums/collection_key.dart';
 import '../../../../Core/Utils/Enums/data_key.dart';
+import '../../../../Core/Utils/Enums/notification_type.dart';
 import '../../../../Core/Utils/Models/exam_exam_result.dart';
 import '../../../../Core/Utils/Models/exam_model.dart';
 
@@ -24,17 +26,17 @@ class DoExamCubit extends Cubit<DoExamState> {
   ExamModel? currentExam;
   DateTime? startTime;
   ExamModel? examModel;
-  
+
   Future<void> init(ExamModel model) async {
     examModel = model;
     currentExam = model;
     startTime = DateTime.now();
     final totalQuestions = model.examStatic.examResultQA.length;
-    
+
     // Convert minutes to Duration
     final examDurationMinutes = int.tryParse(model.examStatic.time) ?? 10;
     final examDuration = Duration(minutes: examDurationMinutes);
-    
+
     emit(
       state.copyWith(
         totalQuestions: totalQuestions,
@@ -42,33 +44,31 @@ class DoExamCubit extends Cubit<DoExamState> {
         loading: false,
       ),
     );
-    
+
     await createData(model);
     await createListeningExam(model);
-    
+
     // Start exam timer
     examTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       seconds++;
-      
+
       // Calculate remaining time
       final now = DateTime.now();
       final elapsed = now.difference(startTime!);
       final remaining = examDuration - elapsed;
-      
+
       if (remaining.isNegative || remaining.inSeconds <= 0) {
         // Exam time finished
         timer.cancel();
         await finishExam(model);
         return;
       }
-      
-      emit(state.copyWith(
-        timerExam: seconds, 
-        remainingTime: remaining,
-      ));
+
+      emit(state.copyWith(timerExam: seconds, remainingTime: remaining));
       updateData(model);
     });
   }
+
   void selectAnswer(String questionId, String answer) {
     final updatedAnswers = Map<String, String>.from(state.userAnswers);
     updatedAnswers[questionId] = answer;
@@ -99,10 +99,10 @@ class DoExamCubit extends Cubit<DoExamState> {
           updateData,
         );
 
-        log("✅ Answer updated for question $questionId: $answer");
+        //log\("✅ Answer updated for question $questionId: $answer");
       }
     } catch (e) {
-      log("❌ Error updating answer: $e");
+      //log\("❌ Error updating answer: $e");
     }
   }
 
@@ -162,25 +162,36 @@ class DoExamCubit extends Cubit<DoExamState> {
           numberOfQuestions: examModel!.examStatic.numberOfQuestions,
           typeExam: examModel!.examStatic.typeExam,
         );
-        // log("lastModel:${lastModel.toJson().toString()}");
-      await RealtimeFirebase.unListen(listenerId!);
+        await RealtimeFirebase.unListen(listenerId!);
         await FirebaseServices.instance.updateData(
           CollectionKey.subjects.key,
           model.examIdSubject,
           {
             DataKey.examExamResult.key: FieldValue.arrayUnion([
               lastModel.toJson(),
-            ])
+            ]),
           },
           subCollections: [CollectionKey.exams.key],
-          subIds: [model.examId,],
+          subIds: [model.examId],
         );
-          
       }
-      
-      await RealtimeFirebase.deleteData("Exam_Live/${model.specialIdLiveExam}");
-  
 
+      await RealtimeFirebase.deleteData("Exam_Live/${model.specialIdLiveExam}");
+      final nameParts = GetLocalStorage.getNameUser().split(" ");
+      final name = nameParts.length >= 2
+          ? "${nameParts[0]} ${nameParts[1]}"
+          : GetLocalStorage.getNameUser();
+
+      final notification = NotificationModel(
+        topicId: "${model.examIdSubject}_admin",
+        type: NotificationType.submit,
+        body: "$name Submitted Exam ${model.examStatic.typeExam} ${model.specialIdLiveExam}  ",
+      );
+    await  NotificationServices.sendNotificationToTopic(
+        topic: "${model.examIdSubject}_admin",
+        data: notification.toJson(),
+        stringData: notification.toJsonString(),
+      );
     }
   }
 
@@ -210,9 +221,9 @@ class DoExamCubit extends Cubit<DoExamState> {
 
   Future<void> forceFinishExam() async {
     if (currentExam != null && !state.isExamFinished) {
-      log(
-        '⚠️ Forcing exam finish - user exited without completing all questions',
-      );
+      //log\(
+      //   '⚠️ Forcing exam finish - user exited without completing all questions',
+      // );
       await finishExam(currentExam!);
     }
   }
@@ -266,11 +277,11 @@ class DoExamCubit extends Cubit<DoExamState> {
     listenerId = RealtimeFirebase.listen(
       "Exam_Live/${model.specialIdLiveExam}",
       (data, key) {
-        log("key::$key");
-        log("data::${data['time'].toString()}");
+        //log\("key::$key");
+        //log\("data::${data['time'].toString()}");
       },
       onError: (error) {
-        log("error listen '${model.specialIdLiveExam}' :: $error");
+        //log\("error listen '${model.specialIdLiveExam}' :: $error");
       },
     );
   }

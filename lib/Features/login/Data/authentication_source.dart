@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
@@ -25,22 +24,21 @@ class AuthenticationSource {
     try {
       final account = await FirebaseServices.instance.google();
       final isExist = await checkIsHave(account.email);
-       final fcm = await LocalStorageService.getValue(
-          LocalStorageKeys.tokenFCM,
-          defaultValue: "",
-        );
+      final fcm = await LocalStorageService.getValue(
+        LocalStorageKeys.tokenFCM,
+        defaultValue: "",
+      );
       if (isExist == false) {
-       
         final UserModel model = UserModel(
           userId: account.id,
           userTokensFcm: [fcm],
           userName: account.displayName.toString(),
           userEmail: account.email,
-          photo: account.photoUrl??"",
+          photo: account.photoUrl ?? "",
           userPassword: '',
           userPhone: '',
           userType: UserType.te,
-          userCreatedAt: DateTime.now()
+          userCreatedAt: DateTime.now(),
         );
 
         final response = await FirebaseServices.instance.createAccount(
@@ -49,16 +47,20 @@ class AuthenticationSource {
         );
         if (response.data == null) return Left(response.failure!);
       }
-          await FirebaseServices.instance.updateData(
-      CollectionKey.users.key,
-      account.id,
-      {
-        DataKey.userTokensFCM.key: FieldValue.arrayUnion([fcm]),
-      },
-    );
+      await FirebaseServices.instance.updateData(
+        CollectionKey.users.key,
+        account.id,
+        {
+          DataKey.userTokensFCM.key: FieldValue.arrayUnion([fcm]),
+        },
+      );
       await LocalStorageService.setValue(LocalStorageKeys.id, account.id);
       await LocalStorageService.setValue(LocalStorageKeys.isLoggedIn, true);
       await LocalStorageService.setValue(LocalStorageKeys.email, account.email);
+      await LocalStorageService.setValue(
+        LocalStorageKeys.name,
+        account.displayName,
+      );
       return Right(true);
     } catch (error) {
       final FailureModel model = FailureModel(

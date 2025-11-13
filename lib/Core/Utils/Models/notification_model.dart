@@ -51,6 +51,8 @@ class NotificationModel extends Equatable {
   NotificationType get titleTopic => _titleTopic;
   String get title => _titleTopic.title;
   String get body => _body;
+  List<String> get listReadIn => _readIn;
+  List<String> get listReadOut => _readOut;
   DateTime? get createdAt => _createdAt;
   DateTime? get updatedAt => _updatedAt;
   bool get readOut {
@@ -67,13 +69,11 @@ class NotificationModel extends Equatable {
   Color get iconColor => _titleTopic.iconColor;
   Color get backgroundColor => _titleTopic.backgroundColor;
 
-  Duration? get timeSinceCreation => _createdAt == null
-      ? null
-      : DateTime.now().difference(_createdAt);
+  Duration? get timeSinceCreation =>
+      _createdAt == null ? null : DateTime.now().difference(_createdAt);
 
-  Duration? get timeSinceUpdate => _updatedAt == null
-      ? null
-      : DateTime.now().difference(_updatedAt);
+  Duration? get timeSinceUpdate =>
+      _updatedAt == null ? null : DateTime.now().difference(_updatedAt);
 
   String get formattedTime {
     if (_updatedAt == null) return '';
@@ -121,7 +121,9 @@ class NotificationModel extends Equatable {
     DateTime? createdAt;
     if (json['createdAt'] != null) {
       if (json['createdAt'] is int) {
-        createdAt = DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int);
+        createdAt = DateTime.fromMillisecondsSinceEpoch(
+          json['createdAt'] as int,
+        );
       } else if (json['createdAt'] is String) {
         createdAt = DateTime.tryParse(json['createdAt'] as String);
       }
@@ -131,7 +133,9 @@ class NotificationModel extends Equatable {
     DateTime? updatedAt;
     if (json['updatedAt'] != null) {
       if (json['updatedAt'] is int) {
-        updatedAt = DateTime.fromMillisecondsSinceEpoch(json['updatedAt'] as int);
+        updatedAt = DateTime.fromMillisecondsSinceEpoch(
+          json['updatedAt'] as int,
+        );
       } else if (json['updatedAt'] is String) {
         updatedAt = DateTime.tryParse(json['updatedAt'] as String);
       }
@@ -141,9 +145,14 @@ class NotificationModel extends Equatable {
     List<String> readOut = [];
     if (json['readOut'] != null) {
       if (json['readOut'] is List) {
-        readOut = List<String>.from(json['readOut'].map((item) => item.toString()));
+        readOut = List<String>.from(
+          json['readOut'].map((item) => item.toString()),
+        );
       } else if (json['readOut'] is String) {
-        readOut = (json['readOut'] as String).split(',').map((e) => e.trim()).toList();
+        readOut = (json['readOut'] as String)
+            .split(',')
+            .map((e) => e.trim())
+            .toList();
       }
     }
 
@@ -151,9 +160,14 @@ class NotificationModel extends Equatable {
     List<String> readIn = [];
     if (json['readIn'] != null) {
       if (json['readIn'] is List) {
-        readIn = List<String>.from(json['readIn'].map((item) => item.toString()));
+        readIn = List<String>.from(
+          json['readIn'].map((item) => item.toString()),
+        );
       } else if (json['readIn'] is String) {
-        readIn = (json['readIn'] as String).split(',').map((e) => e.trim()).toList();
+        readIn = (json['readIn'] as String)
+            .split(',')
+            .map((e) => e.trim())
+            .toList();
       }
     }
 
@@ -173,8 +187,12 @@ class NotificationModel extends Equatable {
       'topicId': _topicId,
       'titleTopic': _titleTopic.name,
       'body': _body,
-      'createdAt': _createdAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
-      'updatedAt': _updatedAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+      'createdAt':
+          _createdAt?.millisecondsSinceEpoch ??
+          DateTime.now().millisecondsSinceEpoch,
+      'updatedAt':
+          _updatedAt?.millisecondsSinceEpoch ??
+          DateTime.now().millisecondsSinceEpoch,
       'readOut': _readOut,
       'readIn': _readIn,
     };
@@ -185,8 +203,14 @@ class NotificationModel extends Equatable {
       'topicId': _topicId,
       'titleTopic': _titleTopic.name,
       'body': _body,
-      'createdAt': (_createdAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch).toString(),
-      'updatedAt': (_updatedAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch).toString(),
+      'createdAt':
+          (_createdAt?.millisecondsSinceEpoch ??
+                  DateTime.now().millisecondsSinceEpoch)
+              .toString(),
+      'updatedAt':
+          (_updatedAt?.millisecondsSinceEpoch ??
+                  DateTime.now().millisecondsSinceEpoch)
+              .toString(),
       'readOut': _readOut.join(','),
       'readIn': _readIn.join(','),
     };
