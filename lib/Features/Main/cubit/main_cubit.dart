@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Features/Notifications/cubit/notifications_cubit.dart';
-import '../../../Core/Storage/Local/get_local_storage.dart';
+import 'package:smart_text_thief/Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../Config/Routes/app_router.dart';
 import '../../../Config/Routes/name_routes.dart';
 import '../../../Core/Resources/app_icons.dart';

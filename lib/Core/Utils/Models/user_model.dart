@@ -27,6 +27,22 @@ class UserModel extends Equatable {
   final DateTime userCreatedAt;
   final List<String> subscribedTopics;
 
+  /// Creates an empty UserModel with default values.
+  factory UserModel.empty() {
+    return UserModel(
+      userId: '-#',
+      userTokensFcm: const [],
+      userName: '',
+      userEmail: '',
+      userPassword: '',
+      userPhone: '',
+      photo: '',
+      userType: UserType.non,
+      userCreatedAt: DateTime.now(),
+      subscribedTopics: const [],
+    );
+  }
+
   UserModel copyWith({
     String? userId,
     List<String>? userTokensFcm,

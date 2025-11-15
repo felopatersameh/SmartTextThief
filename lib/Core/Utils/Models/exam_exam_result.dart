@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../Storage/Local/get_local_storage.dart';
+import '../../LocalStorage/get_local_storage.dart';
 import '../Enums/data_key.dart';
 import '../Enums/level_exam.dart';
 

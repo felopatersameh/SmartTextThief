@@ -6,12 +6,12 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
-import 'package:smart_text_thief/Core/Storage/Local/get_local_storage.dart';
+import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
-import '../../Storage/Local/local_storage_keys.dart';
-import '../../Storage/Local/local_storage_service.dart';
+import '../../LocalStorage/local_storage_keys.dart';
+import '../../LocalStorage/local_storage_service.dart';
 import '../../Utils/Enums/data_key.dart';
-import '../../Utils/Models/notification_model.dart';
+import 'notification_model.dart';
 import 'flutter_local_notifications.dart';
 
 class NotificationServices {

@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:smart_text_thief/Core/Utils/Models/notification_model.dart';
+import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
 
 import 'Config/setting.dart';
 import 'Core/Services/Firebase/firebase_service.dart';
 import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
-import 'Core/Storage/Local/local_storage_service.dart';
-import 'Features/Notifications/cubit/notifications_cubit.dart';
-import 'Features/Profile/cubit/profile_cubit.dart';
-import 'Features/Subjects/cubit/subjects_cubit.dart';
+import 'Core/LocalStorage/local_storage_service.dart';
+import 'Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import 'Features/Profile/Persentation/cubit/profile_cubit.dart';
+import 'Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -36,7 +36,6 @@ void main() async {
 @pragma('vm:entry-point')
 Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
   final NotificationModel message = NotificationModel.fromJson(onData.data);
-
   await LocalNotificationService.showNotification(
     title: message.body,
     body: "",

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../Storage/Local/get_local_storage.dart';
+import '../../LocalStorage/get_local_storage.dart';
 import '../Enums/data_key.dart';
 import '../Extensions/date_time_extension.dart';
 import 'subject_teacher.dart';

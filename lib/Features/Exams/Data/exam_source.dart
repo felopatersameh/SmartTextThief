@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
+import '../../../Core/Utils/Enums/notification_type.dart';
 import '../../../Core/Services/Firebase/firebase_service.dart';
 import '../../../Core/Services/Notifications/notification_services.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
@@ -8,7 +8,7 @@ import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Utils/Models/exam_result_q_a.dart';
 
 import '../../../Core/Utils/Models/exam_model.dart';
-import '../../../Core/Utils/Models/notification_model.dart';
+import '../../../Core/Services/Notifications/notification_model.dart';
 
 class ExamSource {
   static Future<Either<String, bool>> createExam(
@@ -28,7 +28,7 @@ class ExamSource {
           topicId: examModel.examIdSubject,
           type: NotificationType.createdExam,
           body:
-              "New Exam Created ${examModel.specialIdLiveExam} in $nameSubject",
+              "New Exam Created ${examModel.specialIdLiveExam} in $nameSubject\n${examModel.durationBeforeStarted} and ${examModel.durationAfterStarted}",
         );
         NotificationServices.sendNotificationToTopic(
           data: model.toJson(),

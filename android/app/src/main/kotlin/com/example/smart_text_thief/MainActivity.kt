@@ -1,4 +1,4 @@
-package com.example.smart_text_thief
+package "com.smart.tt"
 
 import android.os.Bundle
 import android.view.WindowManager

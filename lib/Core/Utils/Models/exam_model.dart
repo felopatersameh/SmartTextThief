@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../Storage/Local/get_local_storage.dart';
+import '../../LocalStorage/get_local_storage.dart';
 import '../Enums/data_key.dart';
 import '../Extensions/date_time_extension.dart';
 import 'exam_exam_result.dart';
@@ -135,6 +135,10 @@ class ExamModel extends Equatable {
 
   String get durationBeforeStarted {
     final text = "Started in ";
+    final now = DateTime.now();
+    if (now.isAfter(startedAt) && now.isBefore(examFinishAt)) {
+      return "$text today";
+    }
     final hours = examFinishAt.difference(startedAt).inHours;
     final day = examFinishAt.difference(startedAt).inDays;
     if (hours >= 24) return "$text $day Days";

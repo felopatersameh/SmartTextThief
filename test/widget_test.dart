@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Features/login/cubit/authentication_cubit.dart';
+import 'package:smart_text_thief/Features/login/Persentation/Cubit/authentication_cubit.dart';
 import 'package:smart_text_thief/Core/Resources/strings.dart';
 
 void main() {

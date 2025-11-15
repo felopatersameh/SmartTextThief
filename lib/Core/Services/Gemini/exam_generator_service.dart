@@ -1,3 +1,4 @@
+import '../../../Features/Exams/Persentation/widgets/upload_option_section.dart';
 import 'api_gemini.dart';
 import '../../../Core/Services/Gemini/exam_generation_result_model.dart';
 import '../../../Core/Services/Gemini/exam_prompt_generator.dart';
@@ -5,7 +6,6 @@ import '../../../Core/Services/Gemini/exam_response_parser.dart';
 import '../../../Core/Services/Gemini/file_text_extractor.dart';
 import '../../../Core/Utils/Enums/level_exam.dart';
 
-import '../../../Features/Exams/View/widgets/upload_option_section.dart';
 
 class ExamGeneratorService {
   final ApiGemini _apiGemini;

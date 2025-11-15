@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Features/Notifications/cubit/notifications_cubit.dart';
-import '../../Core/Storage/Local/local_storage_keys.dart';
-import '../../Core/Storage/Local/local_storage_service.dart';
+import 'package:smart_text_thief/Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../../Core/LocalStorage/local_storage_keys.dart';
+import '../../Core/LocalStorage/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
 import '../../Config/Routes/name_routes.dart';
 
-import '../Subjects/cubit/subjects_cubit.dart';
-import '../Profile/cubit/profile_cubit.dart';
+import '../Subjects/Persentation/cubit/subjects_cubit.dart';
+import '../Profile/Persentation/cubit/profile_cubit.dart';
 import 'loading_indicator.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -35,12 +35,14 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       _controller.value = 0.1;
 
-
       final bool isLoggedIn = LocalStorageService.getValue(
-          LocalStorageKeys.isLoggedIn,
-          defaultValue: "",
-        );
-      final String id =  LocalStorageService.getValue(LocalStorageKeys.id, defaultValue: "") ;
+        LocalStorageKeys.isLoggedIn,
+        defaultValue: "",
+      );
+      final String id = LocalStorageService.getValue(
+        LocalStorageKeys.id,
+        defaultValue: "",
+      );
       _controller.value = 0.2;
 
       if (id.isEmpty || !isLoggedIn) {
@@ -53,7 +55,11 @@ class _SplashScreenState extends State<SplashScreen>
       _controller.value = 0.4;
 
       if (!mounted) return;
-      final user = await context.read<ProfileCubit>().init();
+      final  user = await context.read<ProfileCubit>().init() ;
+      if (user.userId == "-#") {
+        if (!mounted) return;
+        AppRouter.goNamedByPath(context, NameRoutes.login);
+      }
       await Future.delayed(const Duration(milliseconds: 300));
       _controller.value = 0.5;
 

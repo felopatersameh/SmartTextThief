@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
-import 'package:smart_text_thief/Core/Utils/Models/notification_model.dart';
+import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
 import '../../../Core/Services/Notifications/notification_services.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Services/Firebase/firebase_service.dart';

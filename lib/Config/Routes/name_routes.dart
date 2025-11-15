@@ -1,5 +1,5 @@
-import '../../Core/Storage/Local/local_storage_keys.dart';
-import '../../Core/Storage/Local/local_storage_service.dart';
+import '../../Core/LocalStorage/local_storage_keys.dart';
+import '../../Core/LocalStorage/local_storage_service.dart';
 
 class NameRoutes {
   static const String splash = '/';

@@ -24,9 +24,9 @@ class ScreenshotProtectionService {
       
       platform.setMethodCallHandler(_handleMethodCall);
       
-      print('🔒 Screenshot protection enabled');
+      ////print('🔒 Screenshot protection enabled');
     } catch (e) {
-      print('Error enabling protection: $e');
+      //print('Error enabling protection: $e');
     }
   }
 
@@ -36,9 +36,9 @@ class ScreenshotProtectionService {
       await platform.invokeMethod('disableSecureMode');
       platform.setMethodCallHandler(null);
       _iosScreenshotCount = 0;
-      print('🔓 Screenshot protection disabled');
+      //print('🔓 Screenshot protection disabled');
     } catch (e) {
-      print('Error disabling protection: $e');
+      //print('Error disabling protection: $e');
     }
   }
 
@@ -47,7 +47,7 @@ class ScreenshotProtectionService {
     if (call.method == 'onScreenshot') {
       _iosScreenshotCount++;
       
-      print('📸 Screenshot detected! Count: $_iosScreenshotCount');
+      //print('📸 Screenshot detected! Count: $_iosScreenshotCount');
       
       if (_iosScreenshotCount == 1) {
         // المرة الأولى: تحذير

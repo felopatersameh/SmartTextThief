@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:231951979413:android:f21639d0e0d0f0e1ec5c9c",
         "android_client_info": {
-          "package_name": "com.example.smart_text_thief"
+          "package_name": "com.smart.tt"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "231951979413-1ohb6ib1l73argf5c7fhebb13u7t7uol.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.smart_text_thief",
+            "package_name": "com.smart.tt",
             "certificate_hash": "35102575f0f724edbf09f329556ddef8a2558be9"
           }
         },
