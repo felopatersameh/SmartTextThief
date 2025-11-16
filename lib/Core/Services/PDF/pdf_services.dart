@@ -10,15 +10,21 @@ import '../../Utils/Models/exam_result_q_a.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
+  // دالة للكشف عن النص العربي
+  static bool _isArabic(String text) {
+    if (text.isEmpty) return false;
+    final arabicRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]');
+    return arabicRegex.hasMatch(text);
+  }
+
   static Future<void> createExamPdf({
     required ExamModel examData,
     required SubjectModel examInfo,
   }) async {
     try {
-      String fileName =
-          'Exam_${examData.specialIdLiveExam}';
+      String fileName = 'Exam_${examData.specialIdLiveExam}';
       Directory downloadsDirectory = Directory(
-        '/storage/emulated/0/Download/Exams',
+        '/storage/emulated/0/Download/Exams/${examInfo.subjectName}',
       );
 
       // Create directory if it doesn't exist
@@ -29,11 +35,19 @@ class ExamPdfUtil {
       // Define the PDF file path
       File pdfFile = File('${downloadsDirectory.path}/$fileName.pdf');
 
-      // Load font and image assets
+      // Load fonts
       final fontData = await rootBundle.load("assets/Fonts/Roboto-Regular.ttf");
       final fontBold = await rootBundle.load("assets/Fonts/Roboto-Bold.ttf");
+      
+      // تحميل الخطوط العربية - تأكد من إضافتها في assets
+      final fontArabicData = await rootBundle.load("assets/Fonts/Cairo-Regular.ttf");
+      final fontArabicBoldLoaded = await rootBundle.load("assets/Fonts/Cairo-Bold.ttf");
+      
       final font = pw.Font.ttf(fontData);
       final fontBoldTtf = pw.Font.ttf(fontBold);
+      final fontArabic = pw.Font.ttf(fontArabicData);
+      final fontArabicBold = pw.Font.ttf(fontArabicBoldLoaded);
+      
       final imageData = await rootBundle.load("assets/Image/logo.png");
       final logoImage = pw.MemoryImage(imageData.buffer.asUint8List());
 
@@ -53,7 +67,14 @@ class ExamPdfUtil {
             children: [
               pw.Image(logoImage, width: 200, height: 200),
               pw.Spacer(flex: 2),
-              _buildExamHeader(font, fontBoldTtf, examInfo, examData),
+              _buildExamHeader(
+                font,
+                fontBoldTtf,
+                fontArabic,
+                fontArabicBold,
+                examInfo,
+                examData,
+              ),
               pw.Spacer(),
               pw.Spacer(),
             ],
@@ -81,7 +102,14 @@ class ExamPdfUtil {
             ...questions.asMap().entries.map((entry) {
               int index = entry.key;
               var question = entry.value;
-              return _buildQuestion(question, index + 1, font, fontBoldTtf);
+              return _buildQuestion(
+                question,
+                index + 1,
+                font,
+                fontBoldTtf,
+                fontArabic,
+                fontArabicBold,
+              );
             }),
           ],
         ),
@@ -107,17 +135,26 @@ class ExamPdfUtil {
             ...questions.asMap().entries.map((entry) {
               int index = entry.key;
               var question = entry.value;
-              return _buildAnswerKey(question, index + 1, font, fontBoldTtf);
+              return _buildAnswerKey(
+                question,
+                index + 1,
+                font,
+                fontBoldTtf,
+                fontArabic,
+                fontArabicBold,
+              );
             }),
           ],
         ),
       );
 
       // Save and open the PDF file
+      if (await pdfFile.exists()) {
+        await pdfFile.delete();
+      }
       await pdfFile.writeAsBytes(await pdf.save());
       await OpenFile.open(pdfFile.path);
     } catch (e) {
-      // print('Error creating exam PDF: $e');
       rethrow;
     }
   }
@@ -139,7 +176,6 @@ class ExamPdfUtil {
               margin: pw.EdgeInsets.all(10),
               color: PdfColor.fromInt(0xFFF5EDE2),
             ),
-            // Watermark
             isShow
                 ? pw.Positioned(
                     top: 10,
@@ -160,6 +196,8 @@ class ExamPdfUtil {
   static pw.Widget _buildExamHeader(
     pw.Font font,
     pw.Font fontBold,
+    pw.Font fontArabic,
+    pw.Font fontArabicBold,
     SubjectModel subInfo,
     ExamModel examInfo,
   ) {
@@ -189,6 +227,8 @@ class ExamPdfUtil {
                 subInfo.subjectName,
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
@@ -196,6 +236,8 @@ class ExamPdfUtil {
                 examInfo.examStatic.typeExam,
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
@@ -203,6 +245,8 @@ class ExamPdfUtil {
                 examInfo.examStatic.levelExam.name,
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
@@ -210,6 +254,8 @@ class ExamPdfUtil {
                 examInfo.examStatic.numberOfQuestions.toString(),
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
@@ -217,6 +263,8 @@ class ExamPdfUtil {
                 examInfo.started,
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
@@ -224,6 +272,8 @@ class ExamPdfUtil {
                 examInfo.ended,
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
@@ -231,12 +281,13 @@ class ExamPdfUtil {
                 examInfo.created,
                 font,
                 fontBold,
+                fontArabic,
+                fontArabicBold,
               ),
             ],
           ),
         ),
         pw.SizedBox(height: 200),
-
         pw.Container(
           width: 450,
           child: pw.Row(
@@ -245,14 +296,6 @@ class ExamPdfUtil {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  // pw.Text(
-                  //   'Teacher',
-                  //   style: pw.TextStyle(
-                  //     font: font,
-                  //     fontSize: 12,
-                  //     color: PdfColors.grey700,
-                  //   ),
-                  // ),
                   pw.SizedBox(height: 15),
                   pw.Container(
                     padding: pw.EdgeInsets.symmetric(
@@ -267,13 +310,20 @@ class ExamPdfUtil {
                         ),
                       ),
                     ),
-                    child: pw.Text(
-                      "Dr.${subInfo.subjectTeacher.teacherName}",
-                      style: pw.TextStyle(
-                        font: fontBold,
-                        fontSize: 16,
-                        color: PdfColors.blue900,
-                        fontStyle: pw.FontStyle.italic,
+                    child: pw.Directionality(
+                      textDirection: _isArabic(subInfo.subjectTeacher.teacherName)
+                          ? pw.TextDirection.rtl
+                          : pw.TextDirection.ltr,
+                      child: pw.Text(
+                        "Dr.${subInfo.subjectTeacher.teacherName}",
+                        style: pw.TextStyle(
+                          font: _isArabic(subInfo.subjectTeacher.teacherName)
+                              ? fontArabicBold
+                              : fontBold,
+                          fontSize: 16,
+                          color: PdfColors.blue900,
+                          fontStyle: pw.FontStyle.italic,
+                        ),
                       ),
                     ),
                   ),
@@ -293,7 +343,11 @@ class ExamPdfUtil {
     String value,
     pw.Font font,
     pw.Font fontBold,
+    pw.Font fontArabic,
+    pw.Font fontArabicBold,
   ) {
+    bool isValueArabic = _isArabic(value);
+    
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.center,
       children: [
@@ -306,15 +360,20 @@ class ExamPdfUtil {
           ),
         ),
         pw.SizedBox(width: 10),
-        pw.Text(
-          value,
-          style: pw.TextStyle(font: font, fontSize: 14, color: PdfColors.black),
+        pw.Directionality(
+          textDirection: isValueArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+          child: pw.Text(
+            value,
+            style: pw.TextStyle(
+              font: isValueArabic ? fontArabic : font,
+              fontSize: 14,
+              color: PdfColors.black,
+            ),
+          ),
         ),
       ],
     );
   }
-
-  // Build info row
 
   // Build question widget
   static pw.Widget _buildQuestion(
@@ -322,10 +381,13 @@ class ExamPdfUtil {
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
+    pw.Font fontArabic,
+    pw.Font fontArabicBold,
   ) {
     String questionText = question.questionText;
     String questionType = question.questionType;
     List<dynamic> options = question.options;
+    bool isQuestionArabic = _isArabic(questionText);
 
     return pw.Container(
       margin: pw.EdgeInsets.only(bottom: 20),
@@ -336,58 +398,76 @@ class ExamPdfUtil {
         color: PdfColors.grey100,
       ),
       child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        crossAxisAlignment: isQuestionArabic
+            ? pw.CrossAxisAlignment.end
+            : pw.CrossAxisAlignment.start,
         children: [
           // Question number and text
-          pw.RichText(
-            text: pw.TextSpan(
-              children: [
-                pw.TextSpan(
-                  text: 'Q$questionNumber. ',
-                  style: pw.TextStyle(
-                    font: fontBold,
-                    fontSize: 14,
-                    color: PdfColors.blue900,
+          pw.Directionality(
+            textDirection: isQuestionArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+            child: pw.RichText(
+              text: pw.TextSpan(
+                children: [
+                  pw.TextSpan(
+                    text: isQuestionArabic ? ' .س$questionNumber' : 'Q$questionNumber. ',
+                    style: pw.TextStyle(
+                      font: isQuestionArabic ? fontArabicBold : fontBold,
+                      fontSize: 14,
+                      color: PdfColors.blue900,
+                    ),
                   ),
-                ),
-                pw.TextSpan(
-                  text: questionText,
-                  style: pw.TextStyle(
-                    font: font,
-                    fontSize: 14,
-                    color: PdfColors.black,
+                  pw.TextSpan(
+                    text: questionText,
+                    style: pw.TextStyle(
+                      font: isQuestionArabic ? fontArabic : font,
+                      fontSize: 14,
+                      color: PdfColors.black,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           pw.SizedBox(height: 10),
 
-          // Options (if available)
+          // Options
           if (options.isNotEmpty) ...[
             pw.SizedBox(height: 10),
             ...options.asMap().entries.map((entry) {
               int index = entry.key;
               String option = entry.value.toString();
-              String optionLabel = String.fromCharCode(
-                65 + index,
-              ); // A, B, C, D...
+              String optionLabel = String.fromCharCode(65 + index);
+              bool isOptionArabic = _isArabic(option);
+
               return pw.Padding(
-                padding: pw.EdgeInsets.only(left: 20, top: 5),
-                child: pw.Row(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      '$optionLabel) ',
-                      style: pw.TextStyle(font: fontBold, fontSize: 12),
-                    ),
-                    pw.Expanded(
-                      child: pw.Text(
-                        option,
-                        style: pw.TextStyle(font: font, fontSize: 12),
+                padding: pw.EdgeInsets.only(
+                  left: isOptionArabic ? 0 : 20,
+                  right: isOptionArabic ? 20 : 0,
+                  top: 5,
+                ),
+                child: pw.Directionality(
+                  textDirection: isOptionArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+                  child: pw.Row(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        isOptionArabic ? '($optionLabel ' : '$optionLabel) ',
+                        style: pw.TextStyle(
+                          font: isOptionArabic ? fontArabicBold : fontBold,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                  ],
+                      pw.Expanded(
+                        child: pw.Text(
+                          option,
+                          style: pw.TextStyle(
+                            font: isOptionArabic ? fontArabic : font,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }),
@@ -427,8 +507,11 @@ class ExamPdfUtil {
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
+    pw.Font fontArabic,
+    pw.Font fontArabicBold,
   ) {
     String correctAnswer = question.correctAnswer;
+    bool isAnswerArabic = _isArabic(correctAnswer);
 
     return pw.Container(
       margin: pw.EdgeInsets.only(bottom: 10),
@@ -438,31 +521,34 @@ class ExamPdfUtil {
         borderRadius: pw.BorderRadius.circular(6),
         color: PdfColors.green50,
       ),
-      child: pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.SizedBox(
-            width: 60,
-            child: pw.Text(
-              'Q$questionNumber:',
-              style: pw.TextStyle(
-                font: fontBold,
-                fontSize: 12,
-                color: PdfColors.green900,
+      child: pw.Directionality(
+        textDirection: isAnswerArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+        child: pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.SizedBox(
+              width: 60,
+              child: pw.Text(
+                isAnswerArabic ? ':س$questionNumber' : 'Q$questionNumber:',
+                style: pw.TextStyle(
+                  font: isAnswerArabic ? fontArabicBold : fontBold,
+                  fontSize: 12,
+                  color: PdfColors.green900,
+                ),
               ),
             ),
-          ),
-          pw.Expanded(
-            child: pw.Text(
-              correctAnswer,
-              style: pw.TextStyle(
-                font: font,
-                fontSize: 12,
-                color: PdfColors.black,
+            pw.Expanded(
+              child: pw.Text(
+                correctAnswer,
+                style: pw.TextStyle(
+                  font: isAnswerArabic ? fontArabic : font,
+                  fontSize: 12,
+                  color: PdfColors.black,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

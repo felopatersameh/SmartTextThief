@@ -54,9 +54,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDElFn76oYbwWMe_aspmb0d_KUbkM0JUZ4',
-    appId: '1:231951979413:android:f21639d0e0d0f0e1ec5c9c',
+    appId: '1:231951979413:android:47e535deec779f90ec5c9c',
     messagingSenderId: '231951979413',
     projectId: 'smarttextthief',
+    databaseURL: 'https://smarttextthief-default-rtdb.firebaseio.com',
     storageBucket: 'smarttextthief.firebasestorage.app',
   );
 

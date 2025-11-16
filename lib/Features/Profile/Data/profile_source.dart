@@ -12,7 +12,7 @@ import '../../../Core/Utils/Models/user_model.dart';
 class ProfileSource {
   static Future<Either<FailureModel, (UserModel, List<DataModel>)>> getDataUser() async {
     try {
-      final String userId = GetLocalStorage.getNameUser();
+      final String userId = GetLocalStorage.getIdUser();
 
       final response = await FirebaseServices.instance.getData(
         userId,
