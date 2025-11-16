@@ -1,4 +1,4 @@
-package "com.smart.tt"
+package com.smart.tt
 
 import android.os.Bundle
 import android.view.WindowManager
