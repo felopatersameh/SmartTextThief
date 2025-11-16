@@ -74,7 +74,7 @@ class SubjectModel extends Equatable {
     subjectCreatedAt,
   ];
 
-  get createdAt => subjectCreatedAt.shortMonthYear;
+  String get createdAt => subjectCreatedAt.shortMonthYear;
   bool get isME =>
       (subjectTeacher.teacherEmail) == (GetLocalStorage.getEmailUser());
 
