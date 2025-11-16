@@ -43,7 +43,7 @@ dependencies:
   icon_broken: ^1.1.0
   icons_plus: ^5.0.0
   sahih_validator: ^0.0.6
-  meta: ^1.17.0
+  meta: ^1.16.0
   equatable: ^2.0.7
   firebase_core: ^4.2.1
   google_sign_in: ^7.2.0
