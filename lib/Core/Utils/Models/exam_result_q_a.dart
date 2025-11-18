@@ -22,15 +22,29 @@ class ExamResultQA  extends Equatable {
   });
 
   factory ExamResultQA.fromJson(Map<String, dynamic> json) {
+    String? rawStudentAnswer = json[DataKey.studentAnswer.key];
+    String questionType = json[DataKey.questionType.key] ?? "";
+    String studentAnswer;
+
+    if (rawStudentAnswer == null || rawStudentAnswer == "") {
+      if (questionType == "short_answer") {
+        studentAnswer = "No Answer";
+      } else {
+        studentAnswer = "";
+      }
+    } else {
+      studentAnswer = rawStudentAnswer;
+    }
+
     return ExamResultQA(
       questionId: json[DataKey.questionId.key] ?? "",
-      questionType: json[DataKey.questionType.key] ?? "",
+      questionType: questionType,
       questionText: json[DataKey.questionText.key] ?? "",
       options: json[DataKey.options.key] == null
           ? []
           : List<String>.from((json[DataKey.options.key] as List).map((x) => x.toString())),
       correctAnswer: json[DataKey.correctAnswer.key] ?? "",
-      studentAnswer: json[DataKey.studentAnswer.key] ?? "",
+      studentAnswer: studentAnswer,
       score: json[DataKey.score.key]?.toString(),
     );
   }

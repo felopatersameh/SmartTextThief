@@ -41,6 +41,7 @@ class LocalNotificationService {
       ticker: 'ticker',
       playSound: true,
       icon: '@mipmap/ic_launcher',
+      
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(

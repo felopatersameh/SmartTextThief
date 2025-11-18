@@ -25,8 +25,8 @@ class ExamCard extends StatelessWidget {
     final Color primary = AppColors.colorPrimary;
     final Color background = primary.withValues(alpha: 0.13);
     final Color titleColor = Colors.white;
-    final Color buttonBg = primary.withValues(alpha: 0.1);
-    final Color pdfButtonBg = primary.withValues(alpha: 0.1);
+    // final Color buttonBg = primary.withValues(alpha: 0.1);
+    // final Color pdfButtonBg = primary.withValues(alpha: 0.1);
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
@@ -57,23 +57,12 @@ class ExamCard extends StatelessWidget {
                           textAlign: TextAlign.start,
                           specialText: "#${exam.examId.substring(5, 10)}",
                         ),
-                        AppCustomText.generate(
-                          text: exam.isEnded
-                              ? "Ended"
-                              : exam.isStart
-                                  ? exam.durationAfterStarted
-                                  : exam.durationBeforeStarted,
-                          textStyle: AppTextStyles.bodyExtraSmallMedium.copyWith(
-                            color: exam.isEnded
-                                ? Colors.redAccent.shade400
-                                : exam.isStart
-                                    ? Colors.green.shade400
-                                    : Colors.amberAccent.shade400,
-                          ),
-                        ),
+                        SizedBox(width: 8.w),
+                        // Exam status badge
+                        _buildExamStatusBadge(),
                       ],
                     ),
-                    
+
                     // Enhanced Info Section - Horizontal Scroll Chips
                     SizedBox(height: 12.h),
                     SingleChildScrollView(
@@ -115,104 +104,251 @@ class ExamCard extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 12.w),
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: showQA,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonBg,
-                      elevation: 0,
-                      foregroundColor: primary,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 12.h,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          AppIcons.showQuestions,
-                          size: 24.sp,
-                          color: primary,
-                        ),
-                        SizedBox(height: 4.h),
-                        AppCustomText.generate(
-                          text: exam.isTeacher
-                              ? 'View'
-                              : exam.isEnded
-                                  ? 'Result'
-                                  : exam.doExam
-                                      ? 'Done'
-                                      : 'Pending',
-                          textStyle: AppTextStyles.bodyExtraSmallSemiBold.copyWith(
-                            color: primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
           SizedBox(height: 16.h),
 
-          // Bottom buttons row
-          Row(
-            children: [
-              if (exam.isTeacher)
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: pdf,
-                    icon: Icon(AppIcons.download, color: primary, size: 18.sp),
-                    label: AppCustomText.generate(
-                      text: 'Download PDF',
-                      textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                        color: primary,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: pdfButtonBg,
-                      side: BorderSide.none,
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                  ),
-                ),
-              if (exam.isTeacher) SizedBox(width: 8.w),
-              if (!exam.isTeacher && !(exam.showResult))
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: againTest,
-                    icon: Icon(AppIcons.quiz, size: 18.sp, color: Colors.white),
-                    label: AppCustomText.generate(
-                      text: 'Take Test',
-                      textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          // Exam status message and action button
+          _buildExamStatusSection(),
         ],
       ),
     );
+  }
+
+  Widget _buildExamStatusBadge() {
+    if (exam.isEnded) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: Colors.redAccent.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.4)),
+        ),
+        child: AppCustomText.generate(
+          text: "Ended",
+          textStyle: AppTextStyles.bodyExtraSmallMedium.copyWith(
+            color: Colors.redAccent.shade400,
+          ),
+        ),
+      );
+    } else if (exam.isStart) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
+        ),
+        child: AppCustomText.generate(
+          text: "Live",
+          textStyle: AppTextStyles.bodyExtraSmallMedium.copyWith(
+            color: Colors.green.shade400,
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: Colors.amberAccent.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(6.r),
+          border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.4)),
+        ),
+        child: AppCustomText.generate(
+          text: "Upcoming",
+          textStyle: AppTextStyles.bodyExtraSmallMedium.copyWith(
+            color: Colors.amberAccent.shade400,
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildExamStatusSection() {
+    final Color primary = AppColors.colorPrimary;
+
+    if (exam.isTeacher) {
+      return Row(
+        children: [
+          // View Results Button
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: showQA,
+              icon: Icon(
+                AppIcons.showQuestions,
+                size: 18.sp,
+                color: Colors.white,
+              ),
+              label: AppCustomText.generate(
+                text: 'View Results',
+                textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 8.w),
+          // Download PDF Button
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: pdf,
+              icon: Icon(AppIcons.download, color: primary, size: 18.sp),
+              label: AppCustomText.generate(
+                text: 'Download PDF',
+                textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                  color: primary,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                backgroundColor: primary.withValues(alpha: 0.1),
+                side: BorderSide.none,
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // For students
+    if (!exam.isStart) {
+      // Exam hasn't started yet
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppCustomText.generate(
+            text: 'Starts in: ${exam.durationBeforeStarted}',
+            textStyle: AppTextStyles.bodySmallMedium.copyWith(
+              color: Colors.amberAccent.shade400,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.4)),
+            ),
+            child: AppCustomText.generate(
+              text: 'Waiting for exam to start...',
+              textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                color: Colors.grey.shade400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    } else if (exam.isStart && !exam.isEnded) {
+      // Exam is ongoing
+      if (exam.doExam) {
+        // Student has taken the exam
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppCustomText.generate(
+              text: 'Time remaining: ${exam.durationAfterStarted}',
+              textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                color: Colors.green.shade400,
+              ),
+            ),
+            SizedBox(height: 12.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.4)),
+              ),
+              child: AppCustomText.generate(
+                text: 'Waiting for results after exam ends...',
+                textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                  color: Colors.blue.shade400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        );
+      } else {
+        // Student hasn't taken the exam yet
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppCustomText.generate(
+              text: 'Time remaining: ${exam.durationAfterStarted}',
+              textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                color: Colors.green.shade400,
+              ),
+            ),
+            SizedBox(height: 12.h),
+            ElevatedButton.icon(
+              onPressed: againTest,
+              icon: Icon(AppIcons.quiz, size: 18.sp, color: Colors.white),
+              label: AppCustomText.generate(
+                text: 'Start Exam',
+                textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                minimumSize: Size(double.infinity, 0),
+              ),
+            ),
+          ],
+        );
+      }
+    } else {
+      // Exam has ended
+      return Row(
+        children: [
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: showQA,
+              icon: Icon(
+                AppIcons.showQuestions,
+                size: 18.sp,
+                color: Colors.white,
+              ),
+              label: AppCustomText.generate(
+                text: 'Show Result',
+                textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 
   Widget _buildCompactChip({
@@ -224,18 +360,12 @@ class ExamCard extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            color.withValues(alpha: 0.2),
-            color.withValues(alpha: 0.1),
-          ],
+          colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.1)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: color.withValues(alpha: 0.4),
-          width: 1.5,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

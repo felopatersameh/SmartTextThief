@@ -4,7 +4,8 @@ import '../../../../Core/Resources/app_colors.dart';
 import '../../../../Core/Resources/app_fonts.dart';
 
 class ExamsHeaderCard extends StatelessWidget {
-  const ExamsHeaderCard({super.key});
+  final void Function(String)? onChanged;
+  const ExamsHeaderCard({super.key, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class ExamsHeaderCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: TextField(
+            onChanged: onChanged,
             style: AppTextStyles.bodyMediumMedium.copyWith(color: Colors.white),
             cursorColor: primary,
             decoration: InputDecoration(
@@ -105,7 +107,6 @@ class ExamsHeaderCard extends StatelessWidget {
         //     ),
         //   ],
         // ),
-     
       ],
     );
   }

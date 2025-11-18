@@ -48,11 +48,8 @@ class SubjectCubit extends Cubit<SubjectState> {
         listDataOfExams = [];
       },
       (list) async {
-        final reversedList = list.reversed.toList();
-        emit(
-          state.copyWith(listDataOfExams: reversedList, loadingExams: false),
-        );
-        listDataOfExams = reversedList;
+        emit(state.copyWith(listDataOfExams: list, loadingExams: false));
+        listDataOfExams = list;
       },
     );
     return listDataOfExams;
@@ -95,7 +92,7 @@ class SubjectCubit extends Cubit<SubjectState> {
     String name,
   ) async {
     final oldList = state.listDataOfSubjects;
-    final response = await SubjectsSources.joinSubject(code, email,name);
+    final response = await SubjectsSources.joinSubject(code, email, name);
     response.fold(
       (error) async {
         emit(state.copyWith(error: error.message, listDataOfSubjects: oldList));
@@ -117,7 +114,6 @@ class SubjectCubit extends Cubit<SubjectState> {
           title: 'join Subject "${model.subjectName}" successfully!',
           type: MessageType.success,
         );
-        
       },
     );
   }
@@ -137,7 +133,6 @@ class SubjectCubit extends Cubit<SubjectState> {
         Navigator.of(context).pop();
       },
       (name) async {
-
         // await NotificationServices.subscribeToTopic(
         //   model.subscribeToTopicForMembers,
         // );
@@ -160,8 +155,6 @@ class SubjectCubit extends Cubit<SubjectState> {
 
         list.removeWhere((p0) => p0.subjectId == model.subjectId);
         emit(state.copyWith(listDataOfSubjects: list));
-
-
 
         if (!context.mounted) return;
         Navigator.of(context).pop();
@@ -206,4 +199,51 @@ class SubjectCubit extends Cubit<SubjectState> {
       },
     );
   }
+
+Future<void> searchSubject(String query) async {
+  final list = state.listDataOfSubjects;
+  
+  if (query.isEmpty) {
+    emit(state.copyWith(filteredSubjects: list));
+    return;
+  }
+  
+  final searchQuery = query.toLowerCase().trim();
+  
+  final filteredList = list.where((subject) {
+    // Search by subject name
+    final matchesName = subject.subjectName.toLowerCase().contains(searchQuery);
+    
+    // Search by subject code
+    final matchesCode = subject.subjectCode.toLowerCase().contains(searchQuery);
+    
+    // Search by number of students
+    final studentCount = subject.subjectEmailSts.length.toString();
+    final matchesStudentCount = studentCount.contains(searchQuery);
+    
+    // Search by teacher email
+    final matchesTeacherEmail = subject.subjectTeacher.teacherEmail
+        .toLowerCase()
+        .contains(searchQuery);
+    
+    // Search by teacher name (if available in SubjectTeacher model)
+    final matchesTeacherName = subject.subjectTeacher.teacherName
+        .toLowerCase()
+        .contains(searchQuery);
+    
+    // Search by any student email
+    final matchesStudentEmail = subject.subjectEmailSts.any(
+      (email) => email.toLowerCase().contains(searchQuery),
+    );
+    
+    return matchesName ||
+        matchesCode ||
+        matchesStudentCount ||
+        matchesTeacherEmail ||
+        matchesTeacherName ||
+        matchesStudentEmail;
+  }).toList();
+  
+  emit(state.copyWith(filteredSubjects: filteredList));
+}
 }

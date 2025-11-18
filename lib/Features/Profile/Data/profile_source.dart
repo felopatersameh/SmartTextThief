@@ -21,13 +21,11 @@ class ProfileSource {
 
       final Map<String, dynamic> data = response.data;
       final UserModel userModel = UserModel.fromJson(data);
-
       for (var topic in userModel.subscribedTopics) {
         await NotificationServices.subscribeToTopic(topic);
       }
 
       final List<DataModel> analysis = await _analyzeUser(userModel);
-
       return Right((userModel, analysis));
     } catch (error) {
       final FailureModel model = FailureModel(

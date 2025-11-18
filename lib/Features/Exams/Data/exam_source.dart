@@ -29,7 +29,8 @@ class ExamSource {
           type: NotificationType.createdExam,
           body:
               "New Exam Created ${examModel.specialIdLiveExam} in $nameSubject\n${examModel.durationBeforeStarted} and ${examModel.durationAfterStarted}",
-        );
+        );        
+       
         NotificationServices.sendNotificationToTopic(
           data: model.toJson(),
           stringData: model.toJsonString(),

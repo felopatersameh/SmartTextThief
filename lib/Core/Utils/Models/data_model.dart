@@ -10,4 +10,5 @@ class DataModel {
        _valueNum = valueNum;
 
   String get value => (_valueNum == -1) ? _valueString : _valueNum.toString();
+
 }

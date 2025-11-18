@@ -22,7 +22,7 @@ class ExamDateSection extends StatelessWidget {
 
   Future<void> _pickDate(BuildContext context, bool isStart) async {
     if (!isEditMode) return;
-
+    final year = DateTime.now().year +2;
     final initialDate = isStart
         ? (startDate ?? DateTime.now())
         : (endDate ?? DateTime.now());
@@ -30,8 +30,8 @@ class ExamDateSection extends StatelessWidget {
     final picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: DateTime(2024),
-      lastDate: DateTime(2035),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(year),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -45,7 +45,10 @@ class ExamDateSection extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.colorPrimary,
               ),
-            ), dialogTheme: DialogThemeData(backgroundColor: AppColors.colorsBackGround2),
+            ),
+            dialogTheme: DialogThemeData(
+              backgroundColor: AppColors.colorsBackGround2,
+            ),
           ),
           child: child!,
         );

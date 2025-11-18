@@ -104,7 +104,7 @@ class _QuestionCardState extends State<_QuestionCard> {
     final options = widget.question.options;
     _selectedAnswer = widget.question.correctAnswer;
     _questionController = TextEditingController(
-      text: widget.question.questionText,
+      text: widget.question.questionText ,
     );
     return Container(
       padding: EdgeInsets.all(16.w),

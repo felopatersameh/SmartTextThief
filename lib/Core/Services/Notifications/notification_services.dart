@@ -215,5 +215,4 @@ class NotificationServices {
     }
   }
 
-  /// Send notification to multiple topics
 }

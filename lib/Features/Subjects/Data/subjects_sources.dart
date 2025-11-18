@@ -27,7 +27,11 @@ class SubjectsSources {
         for (var element in response.data as List) {
           model.add(ExamModel.fromJson(element));
         }
-
+         model.sort((a, b) {
+          final DateTime aDate =  a.examCreatedAt;
+          final DateTime bDate =  b.examCreatedAt;
+          return aDate.compareTo(bDate);
+        });
         return right(model);
       } else {
         return left(response.message);
@@ -64,7 +68,11 @@ class SubjectsSources {
         for (var element in data) {
           model.add(SubjectModel.fromJson(element));
         }
-        model.reversed;
+        model.sort((a, b) {
+          final DateTime aDate =  DateTime.tryParse(a.subjectCreatedAt.toString())!;
+          final DateTime bDate =  DateTime.tryParse(b.subjectCreatedAt.toString())!;
+          return aDate.compareTo(bDate);
+        });
         return right(model);
       }
 

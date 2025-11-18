@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
                 locale: state.locale,
                 themeMode: state.themeMode,
                 theme: lightThemes(),
-                darkTheme: darkThemes(),
+                darkTheme: darkThemes(),  
                 routerConfig: AppRouter.router,
               );
             },
