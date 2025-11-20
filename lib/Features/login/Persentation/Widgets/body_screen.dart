@@ -152,20 +152,20 @@ class _BodyScreenState extends State<BodyScreen> {
                     text: AppStrings.orSignInWithGoogle,
                     textIcon: "",
                   ),
-                  SizedBox(height: 16.h),
-                  BuildButtonAppWithIcon(
-                    actions: () async => await showMessageSnackBar(
-                      context,
-                      title: "loading ${AppStrings.orSignInWithFacebook}",
-                      type: MessageType.loading,
-                      onLoading: () async => await context
-                          .read<AuthenticationCubit>()
-                          .loginByFacebook(),
-                    ),
-                    iconErrorBuilder: AppIcons.facebook,
-                    text: AppStrings.orSignInWithFacebook,
-                    textIcon: "",
-                  ),
+                  SizedBox(height: 30.h),
+                  // BuildButtonAppWithIcon(
+                  //   actions: () async => await showMessageSnackBar(
+                  //     context,
+                  //     title: "loading ${AppStrings.orSignInWithFacebook}",
+                  //     type: MessageType.loading,
+                  //     onLoading: () async => await context
+                  //         .read<AuthenticationCubit>()
+                  //         .loginByFacebook(),
+                  //   ),
+                  //   iconErrorBuilder: AppIcons.facebook,
+                  //   text: AppStrings.orSignInWithFacebook,
+                  //   textIcon: "",
+                  // ),
                 ],
               ),
             ),

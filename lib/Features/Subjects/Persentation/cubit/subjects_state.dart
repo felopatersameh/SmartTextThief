@@ -12,7 +12,7 @@ class SubjectState extends Equatable {
     this.loading,
     this.loadingExams,
     this.listDataOfSubjects = const [],
-    this.filteredSubjects = const [],
+    this.filteredSubjects ,
     this.listDataOfExams = const [],
     this.error,
   });

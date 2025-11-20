@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../Config/app_config.dart';
 import '../widgets/create_button.dart';
 import '../widgets/questions_list.dart';
 import '../widgets/exam_info_card.dart';
@@ -39,6 +40,7 @@ class _ViewExamContent extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: Text(state.exam.examStatic.typeExam)),
           body: CustomScrollView(
+              physics: AppConfig.physicsCustomScrollView,
             slivers: [
               SliverPadding(
                 padding: EdgeInsets.all(16.w),

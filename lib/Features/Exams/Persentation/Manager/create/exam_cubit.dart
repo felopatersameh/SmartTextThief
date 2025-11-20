@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +28,15 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     emit(state.copyWith(selectedLevel: level));
   }
 
-  void changeType(String value) {
+  void changeName(String value) {
     if (state.loadingCreating) return;
-    emit(state.copyWith(type: value));
+    emit(state.copyWith(name: value));
+  }
+
+  void changeContent(String value) {
+    if (state.loadingCreating) return;
+    log(value);
+    emit(state.copyWith(content: value));
   }
 
   void toggleCanOpenQuestions(bool value) {
@@ -152,7 +160,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     final currentState = state;
     try {
       if (currentState.selectedLevel.toString().isEmpty ||
-          currentState.type.trim().isEmpty) {
+          currentState.name.trim().isEmpty) {
         await showMessageSnackBar(
           context,
           title: "All fields must be filled",
@@ -207,6 +215,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         }
       }
     } catch (e) {
+      log(e.toString());
       emit(state.copyWith(loadingCreating: false));
     }
   }
@@ -225,6 +234,9 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       trueFalseCount: numTF,
       shortAnswerCount: numQA,
       uploadedFiles: state.uploadedFiles,
+      examDurationMinutes: state.time,
+      contentContext: state.content,
+      manualText: state.uploadText,
     );
     final userId = GetLocalStorage.getIdUser();
     final exam = ExamModel(
@@ -240,7 +252,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         levelExam: state.selectedLevel!,
         numberOfQuestions: sum,
         time: state.time.toString(),
-        typeExam: state.type,
+        typeExam: state.name,
         randomQuestions: state.canOpenQuestions,
       ),
     );

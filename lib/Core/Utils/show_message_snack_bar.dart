@@ -45,7 +45,7 @@ Future<void> showMessageSnackBar(
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(10).r,
-      duration: const Duration(seconds: 30),
+      duration: const Duration(days: 1),
     );
 
     messenger
@@ -61,7 +61,6 @@ Future<void> showMessageSnackBar(
     return;
   }
 
-  // حالات غير loading
   final snackBar = SnackBar(
     content: Row(
       children: [

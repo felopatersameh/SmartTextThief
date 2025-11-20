@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../Config/app_config.dart';
 import 'Widgets/notification_card.dart';
 import 'cubit/notifications_cubit.dart';
 import '../../../Config/Routes/name_routes.dart';
@@ -34,6 +35,7 @@ class _NotificationPageState extends State<NotificationPage> {
           final notifications = state.notificationsList;
 
           return CustomScrollView(
+              physics: AppConfig.physicsCustomScrollView,
             slivers: [
               // Notifications list
               notifications.isEmpty

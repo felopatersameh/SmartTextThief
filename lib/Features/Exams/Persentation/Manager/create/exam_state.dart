@@ -3,7 +3,8 @@ part of 'exam_cubit.dart';
 class CreateExamState extends Equatable {
   final SubjectModel subject;
   final LevelExam? selectedLevel;
-  final String type;
+  final String name;
+  final String content;
   final bool canOpenQuestions;
   final String numMultipleChoice;
   final String numTrueFalse;
@@ -19,11 +20,12 @@ class CreateExamState extends Equatable {
   const CreateExamState({
     required this.subject,
     this.selectedLevel,
-    this.type = '',
+    this.name = '',
+    this.content = '',
     this.canOpenQuestions = false,
-    this.numMultipleChoice = '',
-    this.numTrueFalse = '',
-    this.numQA = '',
+    this.numMultipleChoice = '0',
+    this.numTrueFalse = '0',
+    this.numQA = '0',
     this.time = 0,
     this.uploadOption = UploadOption.file,
     this.uploadedFiles = const [],
@@ -36,7 +38,8 @@ class CreateExamState extends Equatable {
   CreateExamState copyWith({
     SubjectModel? subject,
     LevelExam? selectedLevel,
-    String? type,
+    String? name,
+    String? content,
     bool? canOpenQuestions,
     String? numMultipleChoice,
     String? numTrueFalse,
@@ -52,7 +55,8 @@ class CreateExamState extends Equatable {
     return CreateExamState(
       subject: subject ?? this.subject,
       selectedLevel: selectedLevel ?? this.selectedLevel,
-      type: type ?? this.type,
+      name: name ?? this.name,
+      content: content ?? this.content,
       canOpenQuestions: canOpenQuestions ?? this.canOpenQuestions,
       numMultipleChoice: numMultipleChoice ?? this.numMultipleChoice,
       numTrueFalse: numTrueFalse ?? this.numTrueFalse,
@@ -71,7 +75,8 @@ class CreateExamState extends Equatable {
   List<Object?> get props => [
     subject,
     selectedLevel,
-    type,
+    name,
+    content,
     canOpenQuestions,
     numMultipleChoice,
     numTrueFalse,

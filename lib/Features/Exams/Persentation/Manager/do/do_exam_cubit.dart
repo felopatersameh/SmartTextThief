@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,6 +27,24 @@ class DoExamCubit extends Cubit<DoExamState> {
   ExamModel? currentExam;
   DateTime? startTime;
   ExamModel? examModel;
+List<ExamResultQA> _shuffleExam(List<ExamResultQA> questions, bool shouldShuffle) {
+  if (!shouldShuffle) return questions;
+  
+  final random = Random();
+  
+  final shuffledQuestions = List<ExamResultQA>.from(questions)..shuffle(random);
+  
+  return shuffledQuestions.map((question) {
+    if (question.questionType == 'multiple_choice' && question.options.length > 1) {
+      final shuffledOptions = List<String>.from(question.options)..shuffle(random);
+      return question.copyWith(
+        options: shuffledOptions,
+        questionId: question.questionId,
+      );
+    }
+    return question;
+  }).toList();
+}
 
   Future<void> init(ExamModel model) async {
     examModel = model;
@@ -36,12 +55,15 @@ class DoExamCubit extends Cubit<DoExamState> {
     // Convert minutes to Duration
     final examDurationMinutes = int.tryParse(model.examStatic.time) ?? 10;
     final examDuration = Duration(minutes: examDurationMinutes);
+      final checkRandom = model.examStatic.randomQuestions;
+          final questions = _shuffleExam(model.examStatic.examResultQA, checkRandom);
 
     emit(
       state.copyWith(
         totalQuestions: totalQuestions,
         remainingTime: examDuration,
         loading: false,
+        questions: questions
       ),
     );
 

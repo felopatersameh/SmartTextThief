@@ -200,50 +200,53 @@ class SubjectCubit extends Cubit<SubjectState> {
     );
   }
 
-Future<void> searchSubject(String query) async {
-  final list = state.listDataOfSubjects;
-  
-  if (query.isEmpty) {
-    emit(state.copyWith(filteredSubjects: list));
-    return;
+  Future<void> searchSubject(String query) async {
+    final list = state.listDataOfSubjects;
+    final searchQuery = query.toLowerCase().trim();
+
+    if (searchQuery.isEmpty) {
+      emit(state.copyWith(filteredSubjects: list));
+      return;
+    }
+
+    final filteredList = list.where((subject) {
+      // Search by subject name
+      final matchesName = subject.subjectName.toLowerCase().contains(
+        searchQuery,
+      );
+
+      // Search by subject code
+      final matchesCode = subject.subjectCode.toLowerCase().contains(
+        searchQuery,
+      );
+
+      // Search by number of students
+      final studentCount = subject.subjectEmailSts.length.toString();
+      final matchesStudentCount = studentCount.contains(searchQuery);
+
+      // Search by teacher email
+      final matchesTeacherEmail = subject.subjectTeacher.teacherEmail
+          .toLowerCase()
+          .contains(searchQuery);
+
+      // Search by teacher name (if available in SubjectTeacher model)
+      final matchesTeacherName = subject.subjectTeacher.teacherName
+          .toLowerCase()
+          .contains(searchQuery);
+
+      // Search by any student email
+      final matchesStudentEmail = subject.subjectEmailSts.any(
+        (email) => email.toLowerCase().contains(searchQuery),
+      );
+
+      return matchesName ||
+          matchesCode ||
+          matchesStudentCount ||
+          matchesTeacherEmail ||
+          matchesTeacherName ||
+          matchesStudentEmail;
+    }).toList();
+
+    emit(state.copyWith(filteredSubjects: filteredList));
   }
-  
-  final searchQuery = query.toLowerCase().trim();
-  
-  final filteredList = list.where((subject) {
-    // Search by subject name
-    final matchesName = subject.subjectName.toLowerCase().contains(searchQuery);
-    
-    // Search by subject code
-    final matchesCode = subject.subjectCode.toLowerCase().contains(searchQuery);
-    
-    // Search by number of students
-    final studentCount = subject.subjectEmailSts.length.toString();
-    final matchesStudentCount = studentCount.contains(searchQuery);
-    
-    // Search by teacher email
-    final matchesTeacherEmail = subject.subjectTeacher.teacherEmail
-        .toLowerCase()
-        .contains(searchQuery);
-    
-    // Search by teacher name (if available in SubjectTeacher model)
-    final matchesTeacherName = subject.subjectTeacher.teacherName
-        .toLowerCase()
-        .contains(searchQuery);
-    
-    // Search by any student email
-    final matchesStudentEmail = subject.subjectEmailSts.any(
-      (email) => email.toLowerCase().contains(searchQuery),
-    );
-    
-    return matchesName ||
-        matchesCode ||
-        matchesStudentCount ||
-        matchesTeacherEmail ||
-        matchesTeacherName ||
-        matchesStudentEmail;
-  }).toList();
-  
-  emit(state.copyWith(filteredSubjects: filteredList));
-}
 }

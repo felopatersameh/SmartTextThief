@@ -23,10 +23,13 @@ class ExamGeneratorService {
     List<InformationFileModel>? uploadedFiles,
 
     // Question settings
+    
     required LevelExam level,
     required String multipleChoiceCount,
     required String trueFalseCount,
     required String shortAnswerCount,
+        required int examDurationMinutes, 
+    String? contentContext, 
   }) async {
     try {
       // Step 1: Get educational text
@@ -63,6 +66,8 @@ class ExamGeneratorService {
         multipleChoiceCount: multipleChoiceCount,
         trueFalseCount: trueFalseCount,
         shortAnswerCount: shortAnswerCount,
+        examDurationMinutes: examDurationMinutes,
+        contentContext: contentContext 
       );
 
       // Step 3: Send to Gemini API

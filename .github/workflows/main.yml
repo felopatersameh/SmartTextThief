@@ -49,8 +49,8 @@ jobs:
     - name: Build Android APK
       run: flutter build apk --release --dart-define=APP_ENV=production
     
-    # - name: Build Android App Bundle
-    #   run: flutter build appbundle --release --dart-define=APP_ENV=production
+    - name: Build Android App Bundle
+      run: flutter build appbundle --release --dart-define=APP_ENV=production
     
     - name: Upload Android Artifacts
       uses: actions/upload-artifact@v4
@@ -58,7 +58,7 @@ jobs:
         name: android-builds
         path: |
           build/app/outputs/flutter-apk/app-release.apk
-
+          build/app/outputs/bundle/release/app-release.aab
   create_release:
     needs: build_android
     runs-on: ubuntu-latest
@@ -114,7 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-#          build/app/outputs/bundle/release/app-release.aab
+
 # build_ios_appetize:
 #   name: 🍎 Build iOS for Appetize
 #   runs-on: macos-latest

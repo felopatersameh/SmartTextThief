@@ -55,7 +55,18 @@ class _CreateExamBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LevelDropdown(state: state),
-            TypeExamField(state: state),
+            ExamField(
+              hint: 'Enter exam Name',
+              initialValue: state.name,
+              title: "Name of Exam",
+              onChanged: cubit.changeName,
+            ),
+            ExamField(
+              hint: 'e.g., Religious, Scientific, Training, etc.',
+              initialValue: state.content,
+              title: "Content Context",
+              onChanged: cubit.changeContent,
+            ),
             Row(
               children: [
                 Checkbox(
@@ -78,8 +89,8 @@ class _CreateExamBody extends StatelessWidget {
             ExamDateSection(
               startDate: state.startDate,
               endDate: state.endDate,
-              onStartChanged:(date) =>  cubit.changeStartDate(date),
-              onEndChanged:(date) => cubit.changeEndDate(date),
+              onStartChanged: (date) => cubit.changeStartDate(date),
+              onEndChanged: (date) => cubit.changeEndDate(date),
             ),
             SizedBox(height: 5.h),
             UploadOptionSection(state: state),

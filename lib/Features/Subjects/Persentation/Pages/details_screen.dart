@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
+
 import '../../../../Config/Routes/app_router.dart';
 import '../../../../Config/Routes/name_routes.dart';
-
 import '../../../../Config/app_config.dart';
+import '../../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../../Core/Resources/app_colors.dart';
 import '../../../../Core/Resources/app_icons.dart';
 import '../../../../Core/Services/PDF/pdf_services.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
-import '../cubit/subjects_cubit.dart';
 import '../Widgets/centered_section.dart';
 import '../Widgets/empty_list_exams.dart';
 import '../Widgets/exam_card.dart';
 import '../Widgets/subject_info_card.dart';
+import '../cubit/subjects_cubit.dart';
 
 class DetailsScreen extends StatelessWidget {
   const DetailsScreen({super.key, required this.subjectModel});
@@ -75,11 +75,15 @@ class DetailsScreen extends StatelessWidget {
                         final email = GetLocalStorage.getEmailUser()
                             .split("@")
                             .first;
-                        
+
                         AppRouter.nextScreenNoPath(
                           context,
                           NameRoutes.result,
-                          extra: {"exam": exam, "isEditMode": false,"nameSubject":subjectModel.subjectName},
+                          extra: {
+                            "exam": exam,
+                            "isEditMode": false,
+                            "nameSubject": subjectModel.subjectName,
+                          },
                           pathParameters: {
                             "exam": exam.examId,
                             "id": exam.examIdSubject,

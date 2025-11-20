@@ -1,35 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../Core/Resources/app_colors.dart';
 import '../../../../../../Core/Resources/app_fonts.dart';
 import '../../../../../../Core/Utils/Widget/custom_text_app.dart';
-import '../Manager/create/exam_cubit.dart';
 
-class TypeExamField extends StatelessWidget {
-  const TypeExamField({super.key, required this.state});
-  final CreateExamState state;
+class ExamField extends StatelessWidget {
+  const ExamField({
+    super.key,
+    required this.title,
+    required this.hint,
+    required this.initialValue,
+    this.onChanged,
+  });
+  final String title;
+  final String hint;
+  final String initialValue;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<CreateExamCubit>();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppCustomText.generate(
-          text: "Type of Exam",
+          text: title,
           textStyle: AppTextStyles.h6SemiBold.copyWith(
             color: AppColors.colorPrimary,
           ),
         ),
         SizedBox(height: 6.h),
         TextFormField(
-          initialValue: state.type,
-          onChanged: cubit.changeType,
+          initialValue: initialValue,
+          onChanged: onChanged,
           style: AppTextStyles.bodyMediumMedium,
           decoration: InputDecoration(
-            hintText: 'Enter exam type',
+            hintText: hint,
             hintStyle: AppTextStyles.bodySmallMedium.copyWith(
               color: Colors.grey,
             ),

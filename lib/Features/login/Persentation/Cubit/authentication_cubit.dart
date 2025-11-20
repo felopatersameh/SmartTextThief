@@ -55,8 +55,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   Future<void> getDataWhenLogin(BuildContext context) async {
     final user = await context.read<ProfileCubit>().init();
     if (!context.mounted) return;
-    await context.read<SubjectCubit>().init(user.userEmail, user.isStu);
-    if (!context.mounted) return;
-    await context.read<NotificationsCubit>().init(user.subscribedTopics);
+    await Future.wait([
+      context.read<SubjectCubit>().init(user.userEmail, user.isStu),
+      context.read<NotificationsCubit>().init(user.subscribedTopics),
+    ]);
   }
 }

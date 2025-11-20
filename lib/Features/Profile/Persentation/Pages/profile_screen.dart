@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Features/Notifications/Persentation/cubit/notifications_cubit.dart';
 import '../../../../Core/Utils/Enums/enum_user.dart';
 import '/Core/Services/Firebase/firebase_service.dart';
@@ -37,76 +38,94 @@ class ProfileScreen extends StatelessWidget {
           }
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              children: [
-                SizedBox(height: 20.h),
-                ProfileAvatar(
-                  name: state.model!.userName,
-                  imageUrl: state.model!.photo,
-                  email: state.model!.userEmail,
-                  // isAdmin: true,
-                ),
-                SizedBox(height: 24.h),
-                Wrap(
-                  runSpacing: 20.h,
-                  spacing: 10.w,
-                  children: [
-                    ...(state.options ?? []).map(
-                      (option) =>
-                          InfoCard(title: option.value, subtitle: option.name),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30.h),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: AppCustomText.generate(
-                    text: 'Manage Account',
-                    textStyle: AppTextStyles.h7Medium.copyWith(
-                      color: Colors.white70,
-                    ),
+            child: CustomScrollView(
+              physics: AppConfig.physicsCustomScrollView,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20.h),
+                      ProfileAvatar(
+                        name: state.model!.userName,
+                        imageUrl: state.model!.photo,
+                        email: state.model!.userEmail,
+                        // isAdmin: true,
+                      ),
+                      SizedBox(height: 24.h),
+                      Wrap(
+                        runSpacing: 20.h,
+                        spacing: 10.w,
+                        children: [
+                          ...(state.options ?? []).map(
+                            (option) => InfoCard(
+                                title: option.value, subtitle: option.name),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 30.h),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: AppCustomText.generate(
+                          text: 'Manage Account',
+                          textStyle: AppTextStyles.h7Medium.copyWith(
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                    ],
                   ),
                 ),
-                SizedBox(height: 12.h),
-                OptionTile(
-                  title: 'Switch to $typeConverting',
-                  onTap: () async {
-                    await showMessageSnackBar(
-                      context,
-                      title: "Waiting...",
-                      type: MessageType.loading,
-                      onLoading: () async {
-                        final userType = checkType ? UserType.te : UserType.st;
-                        final isDone = await context
-                            .read<ProfileCubit>()
-                            .updateType(userType);
-                        if (isDone) {
-                          await Restart.restartApp();
-                        }
-                      },
-                    );
-                  },
-                ),
-                OptionTile(title: 'Settings'),
-                OptionTile(title: 'Help'),
-                OptionTile(
-                  title: 'logOut',
-                  color: Colors.redAccent.withValues(alpha: .3),
-                  onTap: () async {
-                    await showMessageSnackBar(
-                      context,
-                      title: "Waiting...",
-                      type: MessageType.loading,
-                      onLoading: () async {
-                        await LocalStorageService.clear();
-                        await FirebaseServices.instance.logOut();
-                        if (!context.mounted) return;
-                        await context.read<NotificationsCubit>().clear();
-                        if (!context.mounted) return;
-                        AppRouter.goNamedByPath(context, NameRoutes.login);
-                      },
-                    );
-                  },
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      OptionTile(
+                        title: 'Switch to $typeConverting',
+                        onTap: () async {
+                          await showMessageSnackBar(
+                            context,
+                            title: "Waiting...",
+                            type: MessageType.loading,
+                            onLoading: () async {
+                              final userType =
+                                  checkType ? UserType.te : UserType.st;
+                              final isDone = await context
+                                  .read<ProfileCubit>()
+                                  .updateType(userType);
+                              if (isDone) {
+                                await Restart.restartApp();
+                              }
+                            },
+                          );
+                        },
+                      ),
+                      OptionTile(title: 'Settings'),
+                      OptionTile(title: 'About'),
+                      OptionTile(title: 'Help'),
+                      OptionTile(
+                        title: 'logOut',
+                        color: Colors.redAccent.withValues(alpha: .3),
+                        onTap: () async {
+                          await showMessageSnackBar(
+                            context,
+                            title: "Waiting...",
+                            type: MessageType.loading,
+                            onLoading: () async {
+                              await LocalStorageService.clear();
+                              await FirebaseServices.instance.logOut();
+                              if (!context.mounted) return;
+                              await context.read<NotificationsCubit>().clear();
+                              if (!context.mounted) return;
+                              AppRouter.goNamedByPath(
+                                  context, NameRoutes.login);
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

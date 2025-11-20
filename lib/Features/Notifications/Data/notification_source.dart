@@ -38,12 +38,15 @@ class NotificationSource {
               if (!buffer.any((e) => e.id == model.id)) {
                 buffer.add(model);
               }
+           
             }
-
-            controller.add(
-              Right(buffer.reversed.toList()),
-            );
-          } else {
+                  buffer.sort((a, b) {
+                    final DateTime aDate = a.createdAt!;
+                    final DateTime bDate = b.createdAt!;
+                    return bDate.compareTo(aDate);
+                  });
+                  controller.add(Right(buffer));
+                } else {
             controller.add(
               Left(FailureModel(
                 error: "Firestore Error",

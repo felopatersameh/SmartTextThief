@@ -188,7 +188,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         },
         builder: (context, state) {
           final cubit = BlocProvider.of<DoExamCubit>(context);
-          final questions = widget.model.examStatic.examResultQA;
+          final questions =state.questions;
 
           // Safety check: handle empty questions
           if (questions.isEmpty) {

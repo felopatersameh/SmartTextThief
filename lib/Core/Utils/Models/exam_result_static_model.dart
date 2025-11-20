@@ -17,7 +17,7 @@ class ExamStaticModel extends Equatable {
   final List<ExamResultQA> examResultQA;
   final LevelExam levelExam;
   final int numberOfQuestions;
-  final bool randomQuestions;
+  final bool  randomQuestions;
   final String typeExam;
   final String time;
 

@@ -1,4 +1,4 @@
-part of 'do_exam_cubit.dart';
+  part of 'do_exam_cubit.dart';
 
 class DoExamState extends Equatable {
   final int timerExam;
@@ -8,6 +8,7 @@ class DoExamState extends Equatable {
   final bool isExamFinished;
   final Duration remainingTime;
   final int totalQuestions;
+  final List<ExamResultQA> questions;
 
   const DoExamState({
     this.timerExam = 0,
@@ -17,6 +18,7 @@ class DoExamState extends Equatable {
     this.isExamFinished = false,
     this.remainingTime = Duration.zero,
     this.totalQuestions = 0,
+    this.questions = const [],
   });
 
   DoExamState copyWith({
@@ -27,6 +29,7 @@ class DoExamState extends Equatable {
     bool? isExamFinished,
     Duration? remainingTime,
     int? totalQuestions,
+    List<ExamResultQA>? questions,
   }) {
     return DoExamState(
       timerExam: timerExam ?? this.timerExam,
@@ -36,6 +39,7 @@ class DoExamState extends Equatable {
       isExamFinished: isExamFinished ?? this.isExamFinished,
       remainingTime: remainingTime ?? this.remainingTime,
       totalQuestions: totalQuestions ?? this.totalQuestions,
+      questions: questions ?? this.questions,
     );
   }
 
@@ -48,5 +52,6 @@ class DoExamState extends Equatable {
     isExamFinished,
     remainingTime,
     totalQuestions,
+    questions,
   ];
 }
