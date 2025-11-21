@@ -9,8 +9,12 @@ import '../../../../Core/Utils/Widget/custom_text_app.dart';
 class SubjectsCard extends StatelessWidget {
   final SubjectModel model;
   final VoidCallback? openSubjectDetails;
-
-  const SubjectsCard({super.key, this.openSubjectDetails, required this.model});
+  
+  const SubjectsCard({
+    super.key,
+    this.openSubjectDetails,
+    required this.model,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,7 @@ class SubjectsCard extends StatelessWidget {
     final String title = model.subjectName;
     final String date = model.createdAt;
     final int lengthStudent = model.subjectEmailSts.length;
-    // final int examsStudent = model.subjectEmailSts.length;
+
     return GestureDetector(
       onTap: openSubjectDetails,
       child: Container(
@@ -44,61 +48,45 @@ class SubjectsCard extends StatelessWidget {
                     textStyle: AppTextStyles.bodyLargeBold.copyWith(
                       color: titleColor,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                SizedBox(width: 8.w),
                 Icon(AppIcons.arrowForward, color: subtitleColor, size: 16.sp),
               ],
             ),
             SizedBox(height: 8.h),
-
             // Date
             Row(
               children: [
                 Icon(AppIcons.calendar, size: 14.sp, color: subtitleColor),
                 SizedBox(width: 6.w),
-                AppCustomText.generate(
-                  text: 'Created on: $date',
-                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                    color: subtitleColor,
+                Flexible(
+                  child: AppCustomText.generate(
+                    text: 'Created on: $date',
+                    textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                      color: subtitleColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
             SizedBox(height: 12.h),
-
             // Stats row
             Row(
               children: [
                 // Students
-                Expanded(
-                  child: Row(
-                    children: [
-                      Icon(AppIcons.people, size: 16.sp, color: primary),
-                      SizedBox(width: 6.w),
-                      AppCustomText.generate(
-                        text: '$lengthStudent Students',
-                        textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                          color: primary,
-                        ),
-                      ),
-                    ],
+                Icon(AppIcons.people, size: 16.sp, color: primary),
+                SizedBox(width: 6.w),
+                AppCustomText.generate(
+                  text: '$lengthStudent Students',
+                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                    color: primary,
                   ),
                 ),
-                // Exams
-                // Expanded(
-                //   child: Row(
-                //     children: [
-                //       Icon(AppIcons.quiz, size: 16.sp, color: primary),
-                //       SizedBox(width: 6.w),
-                //       AppCustomText.generate(
-                //         text: '$examsStudent Exams',
-                //         textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                //           color: primary,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
               ],
             ),
           ],

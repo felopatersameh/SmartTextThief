@@ -86,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
                         onTap: () async {
                           await showMessageSnackBar(
                             context,
-                            title: "Waiting...",
+                            title: "Waiting Will Be Restarting....",
                             type: MessageType.loading,
                             onLoading: () async {
                               final userType =
@@ -101,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
                           );
                         },
                       ),
-                      OptionTile(title: 'Settings'),
+                      // OptionTile(title: 'Settings'),
                       OptionTile(title: 'About'),
                       OptionTile(title: 'Help'),
                       OptionTile(

@@ -9,6 +9,7 @@ import 'info_row.dart';
 class SubjectInfoCard extends StatelessWidget {
   final SubjectModel subjectModel;
   final int? examLength;
+  
   const SubjectInfoCard({
     super.key,
     required this.subjectModel,
@@ -18,137 +19,231 @@ class SubjectInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.colorPrimary.withValues(alpha: 0.13),
-          borderRadius: BorderRadius.circular(14.r),
+          gradient: LinearGradient(
+            colors: [
+              AppColors.colorPrimary.withValues(alpha: 0.15),
+              AppColors.colorPrimary.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.1),
+            width: 1,
+          ),
         ),
-        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context),
-            SizedBox(height: 12.h),
-            Row(
-              children: [
-                Expanded(
-                  child: InfoRow(
-                    icon: AppIcons.calendar,
-                    label: 'Created on: ${subjectModel.createdAt}',
+            // Header
+            _buildHeader(),
+            
+            Divider(
+              color: Colors.white.withValues(alpha: 0.08),
+              thickness: 1,
+              height: 1,
+            ),
+            
+            // Content
+            Padding(
+              padding: EdgeInsets.all(14.w),
+              child: Column(
+                children: [
+                  // Instructor Info
+                  InfoRow(
+                    icon: AppIcons.profile,
+                    label: 'Instructor',
+                    value: subjectModel.subjectTeacher.teacherName,
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  
+                  InfoRow(
+                    icon: AppIcons.email,
+                    label: 'Email',
+                    value: subjectModel.subjectTeacher.teacherEmail,
+                  ),
+                  
+                  SizedBox(height: 4.h),
+                  
+                  // Stats Row
+                  Row(
                     children: [
-                      InfoRow(
-                        icon: AppIcons.profile,
-                        label:
-                            'Teacher: ${subjectModel.subjectTeacher.teacherName}',
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: AppIcons.students,
+                          label: 'Students',
+                          value: '${subjectModel.subjectEmailSts.length}',
+                        ),
                       ),
-
-                      InfoRow(
-                        icon: AppIcons.email,
-                        label:
-                            'Email: ${subjectModel.subjectTeacher.teacherEmail}',
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: AppIcons.exam,
+                          label: 'Exams',
+                          value: '$examLength',
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: AppIcons.calendar,
+                          label: 'Created',
+                          value: subjectModel.createdAt,
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  
+                  SizedBox(height: 12.h),
+                  
+                  // Code with Copy
+                  _buildCodeSection(),
+                ],
+              ),
             ),
-            SizedBox(height: 12.h),
-            Row(
-              children: [
-                Expanded(
-                  child: InfoRow(
-                    icon: AppIcons.students,
-                    label: 'Students: ${subjectModel.subjectEmailSts.length}',
-                  ),
-                ),
-                Expanded(
-                  child: InfoRow(
-                    icon: AppIcons.exam,
-                    label: 'Exams: $examLength',
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-            Row(
-              children: [
-                InfoRow(
-                  icon: AppIcons.code,
-                  label: 'code: ${subjectModel.subjectCode}',
-                ),
-                SizedBox(width: 10.w),
-                GestureDetector(
-                  onTap: () =>
-                      Clipboard.setData(
-                        ClipboardData(text: subjectModel.subjectCode),
-                      ).then((_) {
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("subject Code copied")),
-                        );
-                      }),
-                  child: Icon(AppIcons.copy, size: 20.w),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 20.h),
-            if(subjectModel.isME)
-            _buildShowGraphButton(),
           ],
         ),
       ),
     );
   }
 
-  Row _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: AppCustomText.generate(
-            text: subjectModel.subjectName,
-            textStyle: AppTextStyles.bodyLargeBold.copyWith(
-              color: Colors.white,
-            ),
-          ),
+  Widget _buildHeader() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      child: AppCustomText.generate(
+        text: subjectModel.subjectName,
+        textStyle: AppTextStyles.bodyLargeBold.copyWith(
+          color: Colors.white,
+          fontSize: 16.sp,
         ),
-        GestureDetector(
-          onTap: () {},
-          child: Icon(AppIcons.share, color: Colors.grey.shade600, size: 18.sp),
-        ),
-        SizedBox(width: 10.w),
-      ],
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
-  Widget _buildShowGraphButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: AppColors.colorPrimary.withValues(alpha: 0.86),
-          padding: EdgeInsets.symmetric(vertical: 12.h),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.r),
-          ),
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
         ),
-        icon: Icon(AppIcons.chart, size: 18.sp, color: Colors.white),
-        label: Text(
-          "Show Graph",
-          style: AppTextStyles.bodyMediumBold.copyWith(
-            letterSpacing: 0.2,
-            color: Colors.white,
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.colorPrimary, size: 18.sp),
+          SizedBox(height: 4.h),
+          AppCustomText.generate(
+            text: value,
+            textStyle: AppTextStyles.bodyMediumBold.copyWith(
+              color: Colors.white,
+              fontSize: 14.sp,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
+          SizedBox(height: 2.h),
+          AppCustomText.generate(
+            text: label,
+            textStyle: AppTextStyles.bodySmallMedium.copyWith(
+              color: Colors.grey.shade400,
+              fontSize: 10.sp,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCodeSection() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(
+          color: AppColors.colorPrimary.withValues(alpha: 0.3),
+          width: 1.2,
         ),
-        onPressed: () {},
+      ),
+      child: Row(
+        children: [
+          Icon(AppIcons.code, color: AppColors.colorPrimary, size: 16.sp),
+          SizedBox(width: 8.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppCustomText.generate(
+                  text: 'Subject Code',
+                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                    color: Colors.grey.shade400,
+                    fontSize: 10.sp,
+                  ),
+                ),
+                AppCustomText.generate(
+                  text: subjectModel.subjectCode,
+                  textStyle: AppTextStyles.bodyMediumBold.copyWith(
+                    color: Colors.white,
+                    fontSize: 14.sp,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Builder(
+            builder: (context) => InkWell(
+              onTap: () => _copyCode(context),
+              borderRadius: BorderRadius.circular(8.r),
+              child: Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Icon(
+                  AppIcons.copy,
+                  color: AppColors.colorPrimary,
+                  size: 16.sp,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _copyCode(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: subjectModel.subjectCode));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.check_circle, color: Colors.white, size: 18.sp),
+            SizedBox(width: 8.w),
+            Text('Code copied', style: TextStyle(fontSize: 13.sp)),
+          ],
+        ),
+        backgroundColor: AppColors.colorPrimary,
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        margin: EdgeInsets.all(16.w),
       ),
     );
   }

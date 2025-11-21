@@ -64,7 +64,6 @@ class BodySubjectPage extends StatelessWidget {
               ),
             )
           else
-            // عرض القائمة
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => Padding(

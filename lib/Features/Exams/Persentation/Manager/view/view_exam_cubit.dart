@@ -16,16 +16,19 @@ import '../../../Data/exam_source.dart';
 part 'view_exam_state.dart';
 
 class ViewExamCubit extends Cubit<ViewExamState> {
-  ViewExamCubit({required ExamModel exam, required bool isEditMode,required String nameSubject})
-    : super(
-        ViewExamState(
-          exam: exam,
-          isEditMode: isEditMode,
-          startDate: exam.startedAt,
-          endDate: exam.examFinishAt,
-          nameSubject: nameSubject
-        ),
-      );
+  ViewExamCubit({
+    required ExamModel exam,
+    required bool isEditMode,
+    required String nameSubject,
+  }) : super(
+         ViewExamState(
+           exam: exam,
+           isEditMode: isEditMode,
+           startDate: exam.startedAt,
+           endDate: exam.examFinishAt,
+           nameSubject: nameSubject,
+         ),
+       );
   Future<void> init() async {
     if (state.exam.isTeacher) return;
     if (state.isEditMode) return;
@@ -43,7 +46,7 @@ class ViewExamCubit extends Cubit<ViewExamState> {
         numberOfQuestions: state.exam.examStatic.numberOfQuestions,
         typeExam: state.exam.examStatic.typeExam,
       );
-     final response = await FirebaseServices.instance.updateData(
+      final response = await FirebaseServices.instance.updateData(
         CollectionKey.subjects.key,
         state.exam.examIdSubject,
         {
@@ -54,17 +57,16 @@ class ViewExamCubit extends Cubit<ViewExamState> {
         subCollections: [CollectionKey.exams.key],
         subIds: [state.exam.examId],
       );
-      
+
       if (response.status) {
-         emit(
-        state.copyWith(
-          exam: state.exam.copyWith(
-            examResult: [lastModel ,...state.exam.examResult, ],
+        emit(
+          state.copyWith(
+            exam: state.exam.copyWith(
+              examResult: [lastModel, ...state.exam.examResult],
+            ),
           ),
-        ),
-      );
+        );
       }
-     
     }
   }
 
@@ -112,13 +114,17 @@ class ViewExamCubit extends Cubit<ViewExamState> {
   }
 
   void selectStudentResult(String studentEmail) {
+    if (studentEmail == state.selectedStudentEmail) {
+      emit(state.copyWith(selectedStudentEmail: ""));
+      return;
+    }
     emit(state.copyWith(selectedStudentEmail: studentEmail));
   }
 
-  Future<void> saveSubmit(BuildContext context,) async {
+  Future<void> saveSubmit(BuildContext context) async {
     final model = state.exam;
     emit(state.copyWith(loadingSave: true));
-    final response = await ExamSource.createExam( model,state.nameSubject);
+    final response = await ExamSource.createExam(model, state.nameSubject);
     response.fold(
       (error) async {
         await showMessageSnackBar(

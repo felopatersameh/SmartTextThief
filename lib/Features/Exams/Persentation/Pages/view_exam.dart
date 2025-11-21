@@ -91,7 +91,7 @@ class _ViewExamContent extends StatelessWidget {
                     QuestionsList(
                       questions: state.exam.examStatic.examResultQA,
                       isEditMode: state.isEditMode,
-                      studentAnswers: state.selectedStudentEmail != null
+                      studentAnswers: state.selectedStudentEmail != null && state.selectedStudentEmail !="" 
                           ? state.exam.examResult
                                 .firstWhere(
                                   (result) =>

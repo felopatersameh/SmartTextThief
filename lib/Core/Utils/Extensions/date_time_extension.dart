@@ -8,7 +8,7 @@ extension DateFormatting on DateTime {
 
 
   String get fullDateTime {
-    final formatter = DateFormat('d MMM yyyy (hh:mm a)',);
+    final formatter = DateFormat('d MMM yyyy',);// (hh:mm a)
     return formatter.format(this);
   }
 } 
