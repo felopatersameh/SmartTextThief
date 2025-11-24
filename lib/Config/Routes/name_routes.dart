@@ -15,6 +15,9 @@ class NameRoutes {
   static const String view = 'view';
   static const String result = 'result';
 
+  static const String about = 'about';
+  static const String help = 'help';
+
   static final Map<String, String> titleAppBar = {
     profile: "profile",
     notification: "Notifications",
@@ -22,6 +25,8 @@ class NameRoutes {
     createExam: "Create Exam",
     subjectDetails: "Detail",
     doExam: "Exam Live",
+    about: "About Smart Text Thief",
+    help: "Help & Support",
   };
 }
 

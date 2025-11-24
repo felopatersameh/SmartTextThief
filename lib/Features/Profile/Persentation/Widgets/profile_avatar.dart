@@ -54,7 +54,7 @@ class ProfileAvatar extends StatelessWidget {
                               filterQuality: FilterQuality.high,
                               width: 250.w,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, _, _) {
+                              errorBuilder: (context, error, stackTrace) {
                                 return _buildFallbackAvatar();
                               },
                             ),

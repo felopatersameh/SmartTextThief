@@ -1,8 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../Features/Profile/Persentation/Pages/about_screen.dart';
+import '../../Features/Profile/Persentation/Pages/help_screen.dart';
 
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
@@ -67,6 +67,22 @@ class AppRouter {
             path: "${NameRoutes.profile.ensureWithSlash()}/:email",
             pageBuilder: (context, state) =>
                 NoTransitionPage(child: const ProfileScreen()),
+            routes: [
+              GoRoute(
+                name: NameRoutes.help,
+                path: NameRoutes.help.ensureWithSlash(),
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: HelpScreen());
+                },
+              ),
+              GoRoute(
+                name: NameRoutes.about,
+                path: NameRoutes.about.ensureWithSlash(),
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(child: AboutScreen());
+                },
+              ),
+            ],
           ),
           GoRoute(
             name: NameRoutes.subject,
@@ -161,7 +177,7 @@ class AppRouter {
     },
     redirect: (context, state) {
       final internet = context.read<SettingsCubit>().getConnectivity();
-      log("location::${state.matchedLocation.toString()}");
+      // log("location::${state.matchedLocation.toString()}");
       if (!internet) throw "NoConnectionScreen";
       return null;
     },

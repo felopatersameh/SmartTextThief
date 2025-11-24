@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -35,7 +34,6 @@ class CreateExamCubit extends Cubit<CreateExamState> {
 
   void changeContent(String value) {
     if (state.loadingCreating) return;
-    log(value);
     emit(state.copyWith(content: value));
   }
 
@@ -215,7 +213,6 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         }
       }
     } catch (e) {
-      log(e.toString());
       emit(state.copyWith(loadingCreating: false));
     }
   }

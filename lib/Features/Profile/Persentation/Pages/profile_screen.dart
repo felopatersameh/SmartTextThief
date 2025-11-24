@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Config/app_config.dart';
-import 'package:smart_text_thief/Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../../../../Config/app_config.dart';
+import '../../../Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../../Core/Utils/Enums/enum_user.dart';
 import '/Core/Services/Firebase/firebase_service.dart';
 import '../../../../Core/LocalStorage/local_storage_service.dart';
@@ -58,7 +59,9 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           ...(state.options ?? []).map(
                             (option) => InfoCard(
-                                title: option.value, subtitle: option.name),
+                              title: option.value,
+                              subtitle: option.name,
+                            ),
                           ),
                         ],
                       ),
@@ -89,8 +92,9 @@ class ProfileScreen extends StatelessWidget {
                             title: "Waiting Will Be Restarting....",
                             type: MessageType.loading,
                             onLoading: () async {
-                              final userType =
-                                  checkType ? UserType.te : UserType.st;
+                              final userType = checkType
+                                  ? UserType.te
+                                  : UserType.st;
                               final isDone = await context
                                   .read<ProfileCubit>()
                                   .updateType(userType);
@@ -102,8 +106,30 @@ class ProfileScreen extends StatelessWidget {
                         },
                       ),
                       // OptionTile(title: 'Settings'),
-                      OptionTile(title: 'About'),
-                      OptionTile(title: 'Help'),
+                      OptionTile(
+                        title: 'About',
+                        onTap: () async => AppRouter.nextScreenNoPath(
+                          context,
+                          NameRoutes.about,
+                          pathParameters: {
+                            "email": GetLocalStorage.getEmailUser()
+                                .split("@")
+                                .first,
+                          },
+                        ),
+                      ),
+                      OptionTile(
+                        title: 'Help',
+                        onTap: () async => AppRouter.nextScreenNoPath(
+                          context,
+                          NameRoutes.help,
+                          pathParameters: {
+                            "email": GetLocalStorage.getEmailUser()
+                                .split("@")
+                                .first,
+                          },
+                        ),
+                      ),
                       OptionTile(
                         title: 'logOut',
                         color: Colors.redAccent.withValues(alpha: .3),
@@ -119,7 +145,9 @@ class ProfileScreen extends StatelessWidget {
                               await context.read<NotificationsCubit>().clear();
                               if (!context.mounted) return;
                               AppRouter.goNamedByPath(
-                                  context, NameRoutes.login);
+                                context,
+                                NameRoutes.login,
+                              );
                             },
                           );
                         },

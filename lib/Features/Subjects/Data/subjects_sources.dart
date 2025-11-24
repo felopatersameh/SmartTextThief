@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
+import '../../../Core/Utils/Enums/notification_type.dart';
+import '../../../Core/Services/Notifications/notification_model.dart';
 import '../../../Core/Services/Notifications/notification_services.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Services/Firebase/firebase_service.dart';
@@ -27,10 +27,10 @@ class SubjectsSources {
         for (var element in response.data as List) {
           model.add(ExamModel.fromJson(element));
         }
-         model.sort((a, b) {
+        model.sort((a, b) {
           final DateTime aDate =  a.examCreatedAt;
           final DateTime bDate =  b.examCreatedAt;
-          return aDate.compareTo(bDate);
+          return bDate.compareTo(aDate);
         });
         return right(model);
       } else {
@@ -69,8 +69,8 @@ class SubjectsSources {
           model.add(SubjectModel.fromJson(element));
         }
         model.sort((a, b) {
-          final DateTime aDate =  DateTime.tryParse(a.subjectCreatedAt.toString())!;
-          final DateTime bDate =  DateTime.tryParse(b.subjectCreatedAt.toString())!;
+          final DateTime aDate =  a.subjectCreatedAt;
+          final DateTime bDate =  b.subjectCreatedAt;
           return aDate.compareTo(bDate);
         });
         return right(model);

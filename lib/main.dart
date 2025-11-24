@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
+import 'Core/Services/Notifications/notification_model.dart';
 
 import 'Config/setting.dart';
 import 'Core/Services/Firebase/firebase_service.dart';
@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
                 locale: state.locale,
                 themeMode: state.themeMode,
                 theme: lightThemes(),
-                darkTheme: darkThemes(),  
+                darkTheme: darkThemes(),
                 routerConfig: AppRouter.router,
               );
             },

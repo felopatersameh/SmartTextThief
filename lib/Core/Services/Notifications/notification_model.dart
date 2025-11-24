@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
+import '../../LocalStorage/get_local_storage.dart';
 import '../../Utils/Enums/notification_type.dart';
 
 class NotificationModel extends Equatable {
@@ -76,14 +76,14 @@ class NotificationModel extends Equatable {
   Color get backgroundColor => _titleTopic.backgroundColor;
 
   Duration? get timeSinceCreation =>
-      _createdAt == null ? null : DateTime.now().difference(_createdAt);
+      _createdAt == null ? null : DateTime.now().difference(_createdAt!);
 
   Duration? get timeSinceUpdate =>
-      _updatedAt == null ? null : DateTime.now().difference(_updatedAt);
+      _updatedAt == null ? null : DateTime.now().difference(_updatedAt!);
 
   String get formattedTime {
     if (_updatedAt == null) return '';
-    final duration = DateTime.now().difference(_updatedAt);
+    final duration = DateTime.now().difference(_updatedAt!);
     if (duration.inMinutes < 1) return 'Just now';
     if (duration.inMinutes < 60) return '${duration.inMinutes}m ago';
     if (duration.inHours < 24) return '${duration.inHours}h ago';

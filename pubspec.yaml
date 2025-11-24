@@ -1,5 +1,5 @@
 name: smart_text_thief
-description: "A new Flutter project."
+description: "Smart Text Thief is a revolutionary educational platform that enables instructors to create comprehensive exams faster than traditional methods using AI technology. The system bridges the gap between instructors and students, providing a complete exam lifecycle management solution."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,10 +16,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
-  sdk: ^3.9.2
+  sdk: '>=3.0.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -56,7 +56,7 @@ dependencies:
   intl: ^0.20.2
   dropdown_button2: ^2.3.9
   file_picker: ^10.3.6
-  google_generative_ai: ^0.4.7  
+  google_generative_ai: ^0.4.7
   google_mlkit_text_recognition: ^0.15.0
   syncfusion_flutter_pdf: ^31.2.10
   pdf: ^3.11.3

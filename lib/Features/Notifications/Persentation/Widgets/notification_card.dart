@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
+import '../../../../Core/Services/Notifications/notification_model.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationModel notification;

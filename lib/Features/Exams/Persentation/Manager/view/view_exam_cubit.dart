@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
+import '../../../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../../../Config/setting.dart';
 import '../../../../../Core/Services/Firebase/firebase_service.dart';
 import '../../../../../Core/Utils/Enums/collection_key.dart';

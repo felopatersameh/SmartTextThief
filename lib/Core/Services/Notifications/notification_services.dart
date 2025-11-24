@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
-import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
+import '../Firebase/firebase_service.dart';
+import '../../LocalStorage/get_local_storage.dart';
+import '../../Utils/Enums/collection_key.dart';
 import '../../LocalStorage/local_storage_keys.dart';
 import '../../LocalStorage/local_storage_service.dart';
 import '../../Utils/Enums/data_key.dart';
@@ -76,7 +75,6 @@ class NotificationServices {
     // log("response subscribeToTopic  ::${response.toJson()}");
     if (!response.status) return;
     await _firebaseMessaging.subscribeToTopic(topic);
-    log(topic.toString());
   }
 
   static Future<void> unSubscribeToTopic(String topic) async {
@@ -90,7 +88,6 @@ class NotificationServices {
     // );
     // if (!response.status) return;
     await _firebaseMessaging.unsubscribeFromTopic(topic);
-    log(topic.toString());
   }
 
   static Future<ServiceAccountCredentials> _loadServiceAccount() async {

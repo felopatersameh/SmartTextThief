@@ -86,9 +86,9 @@ class ExamCard extends StatelessWidget {
               children: [
                 // Info Grid
                 _buildInfoGrid(),
-                
+
                 SizedBox(height: 14.h),
-                
+
                 // Action Section
                 _buildActionSection(),
               ],
@@ -150,21 +150,29 @@ class ExamCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            Expanded(
-              child: _buildInfoItem(
-                icon: Icons.calendar_today,
-                label: 'Created',
-                value: exam.created,
-                color: Colors.blue,
-              ),
-            ),
-            SizedBox(width: 8.w),
+            // Expanded(
+            //   child: _buildInfoItem(
+            //     icon: Icons.calendar_today,
+            //     label: 'Created',
+            //     value: exam.created,
+            //     color: Colors.blue,
+            //   ),
+            // ),
             Expanded(
               child: _buildInfoItem(
                 icon: Icons.play_circle_outline,
                 label: 'Start',
                 value: exam.started,
                 color: Colors.green,
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: _buildInfoItem(
+                icon: Icons.stop_circle_outlined,
+                label: 'End',
+                value: exam.ended,
+                color: Colors.red,
               ),
             ),
           ],
@@ -174,10 +182,10 @@ class ExamCard extends StatelessWidget {
           children: [
             Expanded(
               child: _buildInfoItem(
-                icon: Icons.stop_circle_outlined,
-                label: 'End',
-                value: exam.ended,
-                color: Colors.red,
+                icon: Icons.repeat,
+                label: 'Attempts',
+                value: '${exam.examResult.length}',
+                color: Colors.purple,
               ),
             ),
             SizedBox(width: 8.w),
@@ -190,14 +198,6 @@ class ExamCard extends StatelessWidget {
               ),
             ),
           ],
-        ),
-        SizedBox(height: 8.h),
-        _buildInfoItem(
-          icon: Icons.repeat,
-          label: 'Attempts',
-          value: '${exam.examResult.length}',
-          color: Colors.purple,
-          fullWidth: true,
         ),
       ],
     );
@@ -215,10 +215,7 @@ class ExamCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
       ),
       child: Row(
         mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -388,10 +385,7 @@ class ExamCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 1.2,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.2),
       ),
       child: Row(
         children: [

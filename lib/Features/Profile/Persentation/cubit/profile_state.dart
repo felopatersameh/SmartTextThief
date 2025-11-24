@@ -7,7 +7,7 @@ class ProfileState extends Equatable {
   const ProfileState({this.model, this.loading, this.options = const []});
 
   @override
-  List<Object> get props => [?model, ?loading, ?options];
+  List<Object?> get props => [model, loading, options];
 
   ProfileState copyWith({
     UserModel? model,

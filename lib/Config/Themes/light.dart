@@ -8,7 +8,8 @@ ThemeData lightThemes() {
   return ThemeData(
     scaffoldBackgroundColor: AppColors.colorsBackGround,
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.colorsBackGround,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       iconTheme: IconThemeData(
         color: Colors.white,
         shadows: [
