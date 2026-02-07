@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   //----------------------------------------------- For App
-  static const Color colorPrimary =  Color(0xFF2196F3);
+  static const Color colorPrimary = Color(0xFF2196F3);
   static const Color colorSecond = Color(0xFFF0ECFF);
-  static const Color colorsBackGround =  Color(0xFF0A1929);
-  static const Color colorsBackGround2 =  Color.fromARGB(255, 25, 35, 52);
+  static const Color colorsBackGround = Color(0xFF0A1929);
+  static const Color colorsBackGround2 = Color.fromARGB(255, 25, 35, 52);
   //------------------------------------------------------------- for Texts
   static const Color textCoolGray = Color(0xff8CAAB9);
   static const Color textWhite = Colors.white;
@@ -16,7 +16,7 @@ class AppColors {
   static const Color colorBackgroundCardProjects = Color(0xFF455A64);
   // static const Color colorTextFieldBorder = Color(0xFFBABABA);
   // static const Color colorsControlTextField = Colors.transparent;
-  static const Color colorTextFieldBackGround =  Color(0xFF132F40);
+  static const Color colorTextFieldBackGround = Color(0xFF132F40);
   static const Color colorIcons = Colors.white;
   static const Color colorUnActiveIcons = Color(0xff617D8A);
   //------------------------------------------------------- For Buttons

@@ -16,7 +16,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-     await context.read<NotificationsCubit>().readout();
+      await context.read<NotificationsCubit>().readout();
     });
 
     super.initState();
@@ -35,7 +35,7 @@ class _NotificationPageState extends State<NotificationPage> {
           final notifications = state.notificationsList;
 
           return CustomScrollView(
-              physics: AppConfig.physicsCustomScrollView,
+            physics: AppConfig.physicsCustomScrollView,
             slivers: [
               // Notifications list
               notifications.isEmpty
@@ -52,13 +52,17 @@ class _NotificationPageState extends State<NotificationPage> {
                             const SizedBox(height: 16),
                             Text(
                               'No notifications yet',
-                              style: Theme.of(context).textTheme.titleLarge
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
                                   ?.copyWith(color: Colors.white70),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'We\'ll let you know when something new happens.',
-                              style: Theme.of(context).textTheme.bodyMedium
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
                                   ?.copyWith(color: Colors.white54),
                               textAlign: TextAlign.center,
                             ),
@@ -70,10 +74,10 @@ class _NotificationPageState extends State<NotificationPage> {
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return NotificationCard(
                           notification: notifications[index],
-                          onTap: () async{
-                          await  context.read<NotificationsCubit>().readIn(
-                              notifications[index].id,
-                            );
+                          onTap: () async {
+                            await context.read<NotificationsCubit>().readIn(
+                                  notifications[index].id,
+                                );
                           },
                         );
                       }, childCount: notifications.length),

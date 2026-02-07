@@ -36,6 +36,12 @@ class NotificationsState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [loading, notificationsList, badgeCount, subscribedTopics, streamSubscriptions, errorMessage];
+  List<Object?> get props => [
+        loading,
+        notificationsList,
+        badgeCount,
+        subscribedTopics,
+        streamSubscriptions,
+        errorMessage
+      ];
 }

@@ -68,9 +68,8 @@ class StudentSelector extends StatelessWidget {
                       AppCustomText.generate(
                         text: result.examResultEmailSt,
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                          color: isSelected
-                              ? Colors.white
-                              : AppColors.textWhite,
+                          color:
+                              isSelected ? Colors.white : AppColors.textWhite,
                           fontSize: 12.sp,
                         ),
                       ),

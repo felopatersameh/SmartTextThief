@@ -17,7 +17,7 @@ class ExamStaticModel extends Equatable {
   final List<ExamResultQA> examResultQA;
   final LevelExam levelExam;
   final int numberOfQuestions;
-  final bool  randomQuestions;
+  final bool randomQuestions;
   final String typeExam;
   final String time;
 
@@ -51,7 +51,7 @@ class ExamStaticModel extends Equatable {
       levelExam: LevelExam.fromString(json[DataKey.levelExam.key]),
       numberOfQuestions:
           int.tryParse(json[DataKey.numberOfQuestions.key]?.toString() ?? '') ??
-          0,
+              0,
       randomQuestions: json[DataKey.randomQuestions.key] ?? false,
       typeExam: json[DataKey.typeExam.key] ?? "Quiz",
       time: json[DataKey.time.key] ?? '',
@@ -59,7 +59,8 @@ class ExamStaticModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        DataKey.examResultQandA.key: examResultQA.map((x) => x.toJson()).toList(),
+        DataKey.examResultQandA.key:
+            examResultQA.map((x) => x.toJson()).toList(),
         DataKey.levelExam.key: levelExam.name,
         DataKey.numberOfQuestions.key: numberOfQuestions,
         DataKey.randomQuestions.key: randomQuestions,

@@ -1,252 +1,157 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import '/Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 
-import '../../../../Core/Utils/show_message_snack_bar.dart';
 import '../../Data/subjects_sources.dart';
 
 part 'subjects_state.dart';
-
 class SubjectCubit extends Cubit<SubjectState> {
-  SubjectCubit() : super(SubjectState());
+  SubjectCubit() : super(const SubjectState());
 
   Future<void> init(String email, bool stu) async {
     emit(state.copyWith(loading: true));
+
     final response = await SubjectsSources.getSubjects(email, stu);
     response.fold(
-      (error) async => emit(
+      (error) => emit(
         state.copyWith(
-          error: error.message,
-          listDataOfSubjects: [],
           loading: false,
+          error: error.message,
+          listDataOfSubjects: const [],
         ),
       ),
-      (list) async => emit(
+      (list) => emit(
         state.copyWith(
-          listDataOfSubjects: list.reversed.toList(),
           loading: false,
+          listDataOfSubjects: list.reversed.toList(),
         ),
       ),
     );
   }
 
-  Future<List<ExamModel>> getExams(String idSubject) async {
+  // ✅ Exams بدون return
+  Future<void> getExams(String subjectId) async {
     emit(state.copyWith(loadingExams: true));
-    List<ExamModel> listDataOfExams = [];
-    final response = await SubjectsSources.getExam(idSubject);
+
+    final response = await SubjectsSources.getExam(subjectId);
     response.fold(
-      (error) async {
+      (error) => emit(
+        state.copyWith(
+          loadingExams: false,
+          error: error,
+          listDataOfExams: const [],
+        ),
+      ),
+      (list) => emit(
+        state.copyWith(
+          loadingExams: false,
+          listDataOfExams: list,
+        ),
+      ),
+    );
+  }
+
+  Future<void> addSubject(SubjectModel model) async {
+    final response = await SubjectsSources.addSubject(model);
+
+    response.fold(
+      (error) => emit(
+        state.copyWith(error: error.message),
+      ),
+      (_) {
+        final newList = [model, ...state.listDataOfSubjects];
         emit(
           state.copyWith(
-            error: error,
-            listDataOfExams: [],
-            loadingExams: false,
+            listDataOfSubjects: newList,
+            action: SubjectAction.added,
           ),
-        );
-        listDataOfExams = [];
-      },
-      (list) async {
-        emit(state.copyWith(listDataOfExams: list, loadingExams: false));
-        listDataOfExams = list;
-      },
-    );
-    return listDataOfExams;
-  }
-
-  Future<void> addSubject(BuildContext context, SubjectModel model) async {
-    final oldList = state.listDataOfSubjects;
-    final response = await SubjectsSources.addSubject(model);
-    response.fold(
-      (error) async {
-        emit(state.copyWith(error: error.message, listDataOfSubjects: oldList));
-        await showMessageSnackBar(
-          context,
-          title: error.message,
-          type: MessageType.error,
-        );
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-      },
-      (name) async {
-        final newListData = [model, ...oldList];
-        emit(state.copyWith(listDataOfSubjects: newListData));
-
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-
-        await showMessageSnackBar(
-          context,
-          title: 'Subject "$name" created successfully!',
-          type: MessageType.success,
         );
       },
     );
   }
 
   Future<void> joinSubject(
-    BuildContext context,
     String code,
     String email,
     String name,
   ) async {
-    final oldList = state.listDataOfSubjects;
     final response = await SubjectsSources.joinSubject(code, email, name);
+
     response.fold(
-      (error) async {
-        emit(state.copyWith(error: error.message, listDataOfSubjects: oldList));
-        await showMessageSnackBar(
-          context,
-          title: error.message,
-          type: MessageType.error,
-        );
-      },
-      (model) async {
-        final newListData = [model, ...oldList];
-        emit(state.copyWith(listDataOfSubjects: newListData));
-
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-
-        await showMessageSnackBar(
-          context,
-          title: 'join Subject "${model.subjectName}" successfully!',
-          type: MessageType.success,
+      (error) => emit(state.copyWith(error: error.message)),
+      (model) {
+        final newList = [model, ...state.listDataOfSubjects];
+        emit(
+          state.copyWith(
+            listDataOfSubjects: newList,
+            action: SubjectAction.joined,
+          ),
         );
       },
     );
   }
 
-  Future<void> removeSubject(BuildContext context, SubjectModel model) async {
-    final list = state.listDataOfSubjects;
+  Future<void> removeSubject(SubjectModel model) async {
     final response = await SubjectsSources.removeSubject(model.subjectId);
+
     response.fold(
-      (error) async {
-        emit(state.copyWith(error: error.message, listDataOfSubjects: list));
-        await showMessageSnackBar(
-          context,
-          title: error.message,
-          type: MessageType.error,
-        );
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-      },
-      (name) async {
-        // await NotificationServices.subscribeToTopic(
-        //   model.subscribeToTopicForMembers,
-        // );
-        // final length = model.subjectEmailSts.isNotEmpty;
-        // final String and = length
-        //     ? "and ${model.subjectEmailSts.length} members"
-        //     : "";
-        // final NotificationModel notification = NotificationModel(
-        //   id: "join_${model.subjectId}",
-        //   type: NotificationType.joinedSubject,
-        //   body: "$name has Leaved ${model.subjectName} $and",
-        //   createdAt: DateTime.now().millisecondsSinceEpoch,
-        // );
-        // await NotificationServices.sendNotificationToTopic(
-        //   title: notification.title,
-        //   body: notification.body,
-        //   topic: model.subscribeToTopicForAdmin,
-        //   data: notification.toJson(),
-        // );
+      (error) => emit(state.copyWith(error: error.message)),
+      (_) {
+        final newList = List<SubjectModel>.from(state.listDataOfSubjects)
+          ..removeWhere((e) => e.subjectId == model.subjectId);
 
-        list.removeWhere((p0) => p0.subjectId == model.subjectId);
-        emit(state.copyWith(listDataOfSubjects: list));
-
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-
-        await showMessageSnackBar(
-          context,
-          title: 'Subject "${model.subjectName}" removed successfully!',
-          type: MessageType.success,
+        emit(
+          state.copyWith(
+            listDataOfSubjects: newList,
+            action: SubjectAction.removed,
+          ),
         );
       },
     );
   }
 
-  Future<void> updateSubject(BuildContext context, SubjectModel model) async {
-    final list = state.listDataOfSubjects;
+  Future<void> updateSubject(SubjectModel model) async {
     final response = await SubjectsSources.updateSubject(model);
-    response.fold(
-      (error) async {
-        emit(state.copyWith(error: error.message, listDataOfSubjects: list));
-        await showMessageSnackBar(
-          context,
-          title: error.message,
-          type: MessageType.error,
-        );
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-      },
-      (name) async {
-        final index = list.indexWhere(
-          ((p0) => p0.subjectId == model.subjectId),
-        );
-        list.setRange(index, (index + 1), [model]);
-        emit(state.copyWith(listDataOfSubjects: list));
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
 
-        await showMessageSnackBar(
-          context,
-          title: 'updated successfully!',
-          type: MessageType.success,
+    response.fold(
+      (error) => emit(state.copyWith(error: error.message)),
+      (_) {
+        final newList = state.listDataOfSubjects
+            .map((e) => e.subjectId == model.subjectId ? model : e)
+            .toList();
+
+        emit(
+          state.copyWith(
+            listDataOfSubjects: newList,
+            action: SubjectAction.updated,
+          ),
         );
       },
     );
   }
 
   Future<void> searchSubject(String query) async {
-    final list = state.listDataOfSubjects;
-    final searchQuery = query.toLowerCase().trim();
+    final search = query.toLowerCase().trim();
 
-    if (searchQuery.isEmpty) {
-      emit(state.copyWith(filteredSubjects: list));
+    if (search.isEmpty) {
+      emit(state.copyWith(filteredSubjects: state.listDataOfSubjects));
       return;
     }
 
-    final filteredList = list.where((subject) {
-      // Search by subject name
-      final matchesName = subject.subjectName.toLowerCase().contains(
-        searchQuery,
-      );
-
-      // Search by subject code
-      final matchesCode = subject.subjectCode.toLowerCase().contains(
-        searchQuery,
-      );
-
-      // Search by number of students
-      final studentCount = subject.subjectEmailSts.length.toString();
-      final matchesStudentCount = studentCount.contains(searchQuery);
-
-      // Search by teacher email
-      final matchesTeacherEmail = subject.subjectTeacher.teacherEmail
-          .toLowerCase()
-          .contains(searchQuery);
-
-      // Search by teacher name (if available in SubjectTeacher model)
-      final matchesTeacherName = subject.subjectTeacher.teacherName
-          .toLowerCase()
-          .contains(searchQuery);
-
-      // Search by any student email
-      final matchesStudentEmail = subject.subjectEmailSts.any(
-        (email) => email.toLowerCase().contains(searchQuery),
-      );
-
-      return matchesName ||
-          matchesCode ||
-          matchesStudentCount ||
-          matchesTeacherEmail ||
-          matchesTeacherName ||
-          matchesStudentEmail;
+    final filtered = state.listDataOfSubjects.where((subject) {
+      return subject.subjectName.toLowerCase().contains(search) ||
+          subject.subjectCode.toLowerCase().contains(search) ||
+          subject.subjectTeacher.teacherEmail
+              .toLowerCase()
+              .contains(search) ||
+          subject.subjectTeacher.teacherName
+              .toLowerCase()
+              .contains(search) ||
+          subject.subjectEmailSts
+              .any((e) => e.toLowerCase().contains(search));
     }).toList();
 
-    emit(state.copyWith(filteredSubjects: filteredList));
+    emit(state.copyWith(filteredSubjects: filtered));
   }
 }

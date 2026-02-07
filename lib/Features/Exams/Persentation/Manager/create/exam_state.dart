@@ -73,20 +73,20 @@ class CreateExamState extends Equatable {
 
   @override
   List<Object?> get props => [
-    subject,
-    selectedLevel,
-    name,
-    content,
-    canOpenQuestions,
-    numMultipleChoice,
-    numTrueFalse,
-    numQA,
-    time,
-    uploadOption,
-    uploadedFiles,
-    uploadText,
-    loadingCreating,
-    startDate,
-    endDate,
-  ];
+        subject,
+        selectedLevel,
+        name,
+        content,
+        canOpenQuestions,
+        numMultipleChoice,
+        numTrueFalse,
+        numQA,
+        time,
+        uploadOption,
+        uploadedFiles,
+        uploadText,
+        loadingCreating,
+        startDate,
+        endDate,
+      ];
 }

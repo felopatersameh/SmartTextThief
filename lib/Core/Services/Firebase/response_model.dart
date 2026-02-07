@@ -17,8 +17,10 @@ class ResponseModel {
     return ResponseModel(message: message, status: true, data: data);
   }
 
-  factory ResponseModel.error({String message = 'Error', dynamic data, FailureModel? failure}) {
-    return ResponseModel(message: message, status: false, data: data, failure: failure);
+  factory ResponseModel.error(
+      {String message = 'Error', dynamic data, FailureModel? failure}) {
+    return ResponseModel(
+        message: message, status: false, data: data, failure: failure);
   }
 
   @override
@@ -39,7 +41,6 @@ class ResponseModel {
       failure: failure ?? this.failure,
     );
   }
-
 
   Map<String, dynamic> toJson() {
     return {

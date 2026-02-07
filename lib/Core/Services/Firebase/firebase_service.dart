@@ -88,8 +88,8 @@ class FirebaseServices {
 
   Future<GoogleSignInAccount> google() async {
     await _googleSignIn.initialize(clientId: _webClientId);
-    final GoogleSignInAccount googleAccount = await _googleSignIn
-        .authenticate();
+    final GoogleSignInAccount googleAccount =
+        await _googleSignIn.authenticate();
 
     final GoogleSignInAuthentication googleSignInAuthentication =
         googleAccount.authentication;
@@ -137,17 +137,15 @@ class FirebaseServices {
   }) async {
     try {
       // Start with the DocumentReference to the main collection and the provided documentId
-      DocumentReference docRef = firestore!
-          .collection(mainCollectionName)
-          .doc(mainDocumentId);
+      DocumentReference docRef =
+          firestore!.collection(mainCollectionName).doc(mainDocumentId);
 
       // If subCollections are provided, traverse into them one by one
       if (subCollections != null && subCollections.isNotEmpty) {
         for (int i = 0; i < subCollections.length; i++) {
           final subCollection = subCollections[i];
-          final subId = (subIds != null && subIds.length > i)
-              ? subIds[i]
-              : null;
+          final subId =
+              (subIds != null && subIds.length > i) ? subIds[i] : null;
 
           // Get the CollectionReference under the current docRef
           final CollectionReference colRef = docRef.collection(subCollection);
@@ -180,16 +178,14 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      DocumentReference docRef = firestore!
-          .collection(mainCollectionName)
-          .doc(documentId);
+      DocumentReference docRef =
+          firestore!.collection(mainCollectionName).doc(documentId);
 
       if (subCollections != null && subCollections.isNotEmpty) {
         for (int i = 0; i < subCollections.length; i++) {
           final subCollection = subCollections[i];
-          final subId = (subIds != null && subIds.length > i)
-              ? subIds[i]
-              : null;
+          final subId =
+              (subIds != null && subIds.length > i) ? subIds[i] : null;
           final CollectionReference colRef = docRef.collection(subCollection);
           docRef = (subId != null && subId.isNotEmpty)
               ? colRef.doc(subId)
@@ -215,16 +211,14 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      DocumentReference docRef = firestore!
-          .collection(mainCollectionName)
-          .doc(documentId);
+      DocumentReference docRef =
+          firestore!.collection(mainCollectionName).doc(documentId);
 
       if (subCollections != null && subCollections.isNotEmpty) {
         for (int i = 0; i < subCollections.length; i++) {
           final subCollection = subCollections[i];
-          final subId = (subIds != null && subIds.length > i)
-              ? subIds[i]
-              : null;
+          final subId =
+              (subIds != null && subIds.length > i) ? subIds[i] : null;
           final CollectionReference colRef = docRef.collection(subCollection);
 
           docRef = (subId != null && subId.isNotEmpty)
@@ -252,16 +246,14 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      DocumentReference docRef = firestore!
-          .collection(mainCollectionName)
-          .doc(documentId);
+      DocumentReference docRef =
+          firestore!.collection(mainCollectionName).doc(documentId);
 
       if (subCollections != null && subCollections.isNotEmpty) {
         for (int i = 0; i < subCollections.length; i++) {
           final subCollection = subCollections[i];
-          final subId = (subIds != null && subIds.length > i)
-              ? subIds[i]
-              : null;
+          final subId =
+              (subIds != null && subIds.length > i) ? subIds[i] : null;
           final CollectionReference colRef = docRef.collection(subCollection);
           docRef = (subId != null && subId.isNotEmpty)
               ? colRef.doc(subId)
@@ -294,21 +286,19 @@ class FirebaseServices {
   }) async {
     try {
       // Always start from the main document
-      DocumentReference<Map<String, dynamic>> docRef = firestore!
-          .collection(mainCollectionName)
-          .doc(documentId);
+      DocumentReference<Map<String, dynamic>> docRef =
+          firestore!.collection(mainCollectionName).doc(documentId);
 
       // Initialize targetCollection with a default value (to satisfy null safety)
-      CollectionReference<Map<String, dynamic>> targetCollection = docRef
-          .collection(mainCollectionName);
+      CollectionReference<Map<String, dynamic>> targetCollection =
+          docRef.collection(mainCollectionName);
 
       // If there are subCollections, traverse until the last one
       if (subCollections != null && subCollections.isNotEmpty) {
         for (int i = 0; i < subCollections.length; i++) {
           final subCollection = subCollections[i];
-          final subId = (subIds != null && subIds.length > i)
-              ? subIds[i]
-              : null;
+          final subId =
+              (subIds != null && subIds.length > i) ? subIds[i] : null;
 
           final currentCollection = docRef.collection(subCollection);
 
@@ -373,9 +363,8 @@ class FirebaseServices {
         query = query.limit(limit);
       }
       final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-      final List<Map<String, dynamic>> results = snapshot.docs
-          .map((d) => d.data())
-          .toList();
+      final List<Map<String, dynamic>> results =
+          snapshot.docs.map((d) => d.data()).toList();
       return ResponseModel.success(
         message: results.isEmpty
             ? 'No documents found for $field in $collectionName'
@@ -419,9 +408,8 @@ class FirebaseServices {
         query = query.limit(limit);
       }
       final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-      final List<Map<String, dynamic>> results = snapshot.docs
-          .map((d) => d.data())
-          .toList();
+      final List<Map<String, dynamic>> results =
+          snapshot.docs.map((d) => d.data()).toList();
       return ResponseModel.success(
         message: results.isEmpty
             ? 'No documents found for $field in $collectionName'
@@ -465,29 +453,25 @@ class FirebaseServices {
         query = query.limit(limit);
       }
 
-      return query
-          .snapshots()
-          .map((snapshot) {
-            final List<Map<String, dynamic>> results = snapshot.docs
-                .map((d) => d.data())
-                .toList();
-            return ResponseModel.success(
-              message: results.isEmpty
-                  ? 'No documents found for $field in $collectionName'
-                  : 'Found ${results.length} documents',
-              data: results,
-            );
-          })
-          .handleError((error) {
-            final failure = FailureModel(
-              message: 'Error streaming $collectionName by $nameField',
-              error: error,
-            );
-            return ResponseModel.error(
-              message: failure.message,
-              failure: failure,
-            );
-          });
+      return query.snapshots().map((snapshot) {
+        final List<Map<String, dynamic>> results =
+            snapshot.docs.map((d) => d.data()).toList();
+        return ResponseModel.success(
+          message: results.isEmpty
+              ? 'No documents found for $field in $collectionName'
+              : 'Found ${results.length} documents',
+          data: results,
+        );
+      }).handleError((error) {
+        final failure = FailureModel(
+          message: 'Error streaming $collectionName by $nameField',
+          error: error,
+        );
+        return ResponseModel.error(
+          message: failure.message,
+          failure: failure,
+        );
+      });
     } catch (e) {
       final failure = FailureModel(
         message: 'Error setting up stream for $collectionName by $nameField',
@@ -653,51 +637,4 @@ class FirebaseServices {
       return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
-}
-
-Map<String, dynamic> calculateGpaWithLevel(
-  List<num> degree,
-  List<num> realDegree,
-) {
-  if (degree.isEmpty ||
-      realDegree.isEmpty ||
-      degree.length != realDegree.length) {
-    return {"gpa": 0.0, "level": "No Data"};
-  }
-
-  final num totalGot = degree.reduce((a, b) => a + b);
-  final num totalPossible = realDegree.reduce((a, b) => a + b);
-
-  if (totalPossible == 0) return {"gpa": 0.0, "level": "No Data"};
-
-  final double percentage = (totalGot / totalPossible) * 100;
-
-  final double gpa = _convertToGradePoint(percentage);
-
-  final String level = _getLevelByGpa(gpa);
-
-  return {"gpa": double.parse(gpa.toStringAsFixed(2)), "level": level};
-}
-
-double _convertToGradePoint(double percentage) {
-  if (percentage >= 93) return 4.0;
-  if (percentage >= 90) return 3.7;
-  if (percentage >= 87) return 3.3;
-  if (percentage >= 83) return 3.0;
-  if (percentage >= 80) return 2.7;
-  if (percentage >= 77) return 2.3;
-  if (percentage >= 73) return 2.0;
-  if (percentage >= 70) return 1.7;
-  if (percentage >= 67) return 1.3;
-  if (percentage >= 65) return 1.0;
-  return 0.0;
-}
-
-String _getLevelByGpa(double gpa) {
-  if (gpa >= 3.7) return "Excellent";
-  if (gpa >= 3.3) return "Very Good";
-  if (gpa >= 2.7) return "Good";
-  if (gpa >= 2.0) return "Fair";
-  if (gpa >= 1.0) return "Poor";
-  return "Fail";
 }

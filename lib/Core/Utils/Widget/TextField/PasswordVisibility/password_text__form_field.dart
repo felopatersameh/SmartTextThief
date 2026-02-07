@@ -9,7 +9,7 @@ import '../build_text_field.dart';
 
 class CustomPasswordTextFromField extends StatelessWidget {
   final TextEditingController controller;
-  final String fieldId; 
+  final String fieldId;
   final bool showForgetMessage;
   final bool isLogin;
 

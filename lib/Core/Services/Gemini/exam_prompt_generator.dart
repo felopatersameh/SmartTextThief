@@ -2,22 +2,23 @@ import '../../Utils/Enums/level_exam.dart';
 
 /// Prompt generator for different scenarios
 class ExamPromptGenerator {
-static String generatePrompt({
-  required String educationalText,
-  required LevelExam level,
-  required String multipleChoiceCount,
-  required String trueFalseCount,
-  required String shortAnswerCount,
-  required int examDurationMinutes,
-  String? contentContext,
-}) {
-  final totalQuestions = int.parse(multipleChoiceCount) + 
-                        int.parse(trueFalseCount) + 
-                        int.parse(shortAnswerCount);
-  
-  final timePerQuestion = (examDurationMinutes / totalQuestions).toStringAsFixed(1);
-  
-  return '''
+  static String generatePrompt({
+    required String educationalText,
+    required LevelExam level,
+    required String multipleChoiceCount,
+    required String trueFalseCount,
+    required String shortAnswerCount,
+    required int examDurationMinutes,
+    String? contentContext,
+  }) {
+    final totalQuestions = int.parse(multipleChoiceCount) +
+        int.parse(trueFalseCount) +
+        int.parse(shortAnswerCount);
+
+    final timePerQuestion =
+        (examDurationMinutes / totalQuestions).toStringAsFixed(1);
+
+    return '''
 You are an expert educational assessment creator. Generate exam questions in JSON format based STRICTLY and ONLY on the provided educational content below.
 
 **Educational Content:**
@@ -122,5 +123,5 @@ ${contentContext != null ? '''**Content Context:** $contentContext
 
 Generate the JSON array now (NO additional text, start with [):
 ''';
-}
+  }
 }

@@ -17,41 +17,52 @@ import '../Widgets/subject_info_card.dart';
 import '../cubit/subjects_cubit.dart';
 
 class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({super.key, required this.subjectModel});
+  const DetailsScreen({
+    super.key,
+    required this.subjectModel,
+  });
+
   final SubjectModel subjectModel;
 
   @override
   Widget build(BuildContext context) {
+    context.read<SubjectCubit>().getExams(subjectModel.subjectId);
+
     return Scaffold(
-      appBar: AppBar(title: Text(NameRoutes.subjectDetails.titleAppBar)),
-      body: FutureBuilder(
-        future: context.read<SubjectCubit>().getExams(subjectModel.subjectId),
-        builder: (context, snapshot) {
+      appBar: AppBar(
+        title: Text(NameRoutes.subjectDetails.titleAppBar),
+      ),
+      body: BlocBuilder<SubjectCubit, SubjectState>(
+        builder: (context, state) {
           Widget body;
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            body = const CenteredSection(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
+          if (state.loadingExams) {
+            body = const CenteredSection(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state.error != null) {
             body = CenteredSection(
               child: Text(
-                'Error: ${snapshot.error}',
+                state.error!,
                 style: const TextStyle(color: Colors.red),
               ),
             );
+          } else if (state.listDataOfExams.isEmpty) {
+            body = const CenteredSection(
+              child: EmptyListExams(),
+            );
           } else {
-            final exams = snapshot.data ?? [];
-            if (exams.isEmpty) {
-              body = const CenteredSection(child: EmptyListExams());
-            } else {
-              body = SliverPadding(
-                padding: EdgeInsetsGeometry.only(
-                  top: 20.h,
-                  right: 20.h,
-                  left: 20.h,
-                ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final exam = exams[index];
+            body = SliverPadding(
+              padding: EdgeInsets.only(
+                top: 20.h,
+                right: 20.h,
+                left: 20.h,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final exam = state.listDataOfExams[index];
+
                     return ExamCard(
                       exam: exam,
                       againTest: () {
@@ -72,9 +83,8 @@ class DetailsScreen extends StatelessWidget {
                         );
                       },
                       showQA: () {
-                        final email = GetLocalStorage.getEmailUser()
-                            .split("@")
-                            .first;
+                        final email =
+                            GetLocalStorage.getEmailUser().split("@").first;
 
                         AppRouter.nextScreenNoPath(
                           context,
@@ -92,10 +102,11 @@ class DetailsScreen extends StatelessWidget {
                         );
                       },
                     );
-                  }, childCount: exams.length),
+                  },
+                  childCount: state.listDataOfExams.length,
                 ),
-              );
-            }
+              ),
+            );
           }
 
           return CustomScrollView(
@@ -104,7 +115,7 @@ class DetailsScreen extends StatelessWidget {
               SliverToBoxAdapter(
                 child: SubjectInfoCard(
                   subjectModel: subjectModel,
-                  examLength: snapshot.data?.length ?? 0,
+                  examLength: state.listDataOfExams.length,
                 ),
               ),
               body,
@@ -119,7 +130,9 @@ class DetailsScreen extends StatelessWidget {
                   context,
                   NameRoutes.createExam,
                   extra: subjectModel,
-                  pathParameters: {"id": subjectModel.subjectId},
+                  pathParameters: {
+                    "id": subjectModel.subjectId,
+                  },
                 );
               },
               backgroundColor: AppColors.colorPrimary,

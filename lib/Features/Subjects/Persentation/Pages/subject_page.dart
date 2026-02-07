@@ -8,6 +8,7 @@ import '../../../../Core/Utils/Models/subject_model.dart';
 import '../../../../Core/Utils/Models/subject_teacher.dart';
 import '../../../../Core/Utils/Widget/add_subject_dialog.dart';
 import '../../../../Core/Utils/generate_secure_code.dart';
+import '../../../../Core/Utils/show_message_snack_bar.dart';
 import '../../../Profile/Persentation/cubit/profile_cubit.dart';
 import '../cubit/subjects_cubit.dart';
 import '../Widgets/body_subject_page.dart';
@@ -17,36 +18,76 @@ class SubjectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SubjectCubit, SubjectState>(
-      builder: (context, state) {
-        final read = context.read<ProfileCubit>().state;
+    return BlocListener<SubjectCubit, SubjectState>(
+      listenWhen: (prev, curr) =>
+          prev.action != curr.action || prev.error != curr.error,
+      listener: (context, state) {
+        if (state.action == SubjectAction.added) {
+          Navigator.pop(context);
+          showMessageSnackBar(
+            context,
+            title: 'Subject added successfully!',
+            type: MessageType.success,
+          );
+        }
 
-        return Scaffold(
-          appBar: AppBar(title: Text(NameRoutes.subject.titleAppBar)),
-          body: state.loading == true
-              ? Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: AppColors.colorPrimary,
-                  ),
-                )
-              : BodySubjectPage(state: state),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              final stu = read.model?.isStu ?? false;
-              final email = read.model?.userEmail ?? "";
-              final name = read.model?.userName ?? "";
+        if (state.action == SubjectAction.joined) {
+          Navigator.pop(context);
+          showMessageSnackBar(
+            context,
+            title: 'Joined subject successfully!',
+            type: MessageType.success,
+          );
+        }
 
-              if (stu) {
-                _showJoinSubjectDialog(context, email: email,name: name);
-              } else {
-                _showAddSubjectDialog(context, email: email, name: name);
-              }
-            },
-            backgroundColor: AppColors.colorPrimary,
-            child: AppIcons.add,
-          ),
-        );
+        if (state.error != null) {
+          showMessageSnackBar(
+            context,
+            title: state.error!,
+            type: MessageType.error,
+          );
+        }
       },
+      child: BlocBuilder<SubjectCubit, SubjectState>(
+        builder: (context, state) {
+          final read = context.read<ProfileCubit>().state;
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(NameRoutes.subject.titleAppBar),
+            ),
+            body: state.loading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: AppColors.colorPrimary,
+                    ),
+                  )
+                : BodySubjectPage(state: state),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                final isStu = read.model?.isStu ?? false;
+                final email = read.model?.userEmail ?? "";
+                final name = read.model?.userName ?? "";
+
+                if (isStu) {
+                  _showJoinSubjectDialog(
+                    context,
+                    email: email,
+                    name: name,
+                  );
+                } else {
+                  _showAddSubjectDialog(
+                    context,
+                    email: email,
+                    name: name,
+                  );
+                }
+              },
+              backgroundColor: AppColors.colorPrimary,
+              child: AppIcons.add,
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -78,13 +119,14 @@ void _showAddSubjectDialog(
         );
 
         if (!context.mounted) return;
-        await context.read<SubjectCubit>().addSubject(context, model);
+        await context.read<SubjectCubit>().addSubject(model);
       },
     ),
   );
 }
 
-void _showJoinSubjectDialog(BuildContext context, {required String email,required String name}) {
+void _showJoinSubjectDialog(BuildContext context,
+    {required String email, required String name}) {
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -96,7 +138,7 @@ void _showJoinSubjectDialog(BuildContext context, {required String email,require
       nameField: "Code",
       nameFieldHint: "Enter Code",
       onSubmit: (String code) async {
-        await context.read<SubjectCubit>().joinSubject(context, code, email,name);
+        await context.read<SubjectCubit>().joinSubject(code, email, name);
 
         // showMessageSnackBar(
         //     context,

@@ -1,7 +1,6 @@
 class FailureModel {
   final String message;
-  final dynamic error; 
-  
+  final dynamic error;
 
   FailureModel({
     required this.message,

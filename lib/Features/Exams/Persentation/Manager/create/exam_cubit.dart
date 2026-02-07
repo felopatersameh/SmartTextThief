@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ part 'exam_state.dart';
 
 class CreateExamCubit extends Cubit<CreateExamState> {
   CreateExamCubit({required SubjectModel subject})
-    : super(CreateExamState(subject: subject));
+      : super(CreateExamState(subject: subject));
 
   void changeLevel(LevelExam? level) {
     if (state.loadingCreating) return;
@@ -221,8 +220,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     final numChose = state.numMultipleChoice;
     final numTF = state.numTrueFalse;
     final numQA = state.numQA;
-    final sum =
-        (int.tryParse(numChose) ?? 0) +
+    final sum = (int.tryParse(numChose) ?? 0) +
         (int.tryParse(numTF) ?? 0) +
         (int.tryParse(numQA) ?? 0);
     final response = await ExamGeneratorService().generateExamQuestions(

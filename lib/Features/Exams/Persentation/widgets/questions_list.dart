@@ -32,8 +32,8 @@ class QuestionsList extends StatelessWidget {
         final question = questions[index];
         final studentAnswer =
             studentAnswers != null && index < studentAnswers!.length
-            ? studentAnswers![index]
-            : null;
+                ? studentAnswers![index]
+                : null;
 
         return _QuestionCard(
           question: question,
@@ -71,11 +71,39 @@ class _QuestionCard extends StatefulWidget {
 }
 
 class _QuestionCardState extends State<_QuestionCard> {
-  TextEditingController? _questionController;
+  late final TextEditingController _questionController;
   String? _selectedAnswer;
+
+  @override
+  void initState() {
+    super.initState();
+    _questionController = TextEditingController(
+      text: widget.question.questionText,
+    );
+    _selectedAnswer = widget.question.correctAnswer;
+  }
+
+  @override
+  void didUpdateWidget(covariant _QuestionCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.question.questionText != widget.question.questionText &&
+        _questionController.text != widget.question.questionText) {
+      _questionController.value = _questionController.value.copyWith(
+        text: widget.question.questionText,
+        selection: TextSelection.collapsed(
+          offset: widget.question.questionText.length,
+        ),
+        composing: TextRange.empty,
+      );
+    }
+    if (oldWidget.question.correctAnswer != widget.question.correctAnswer) {
+      _selectedAnswer = widget.question.correctAnswer;
+    }
+  }
+
   @override
   void dispose() {
-    _questionController?.dispose();
+    _questionController.dispose();
     super.dispose();
   }
 
@@ -102,18 +130,14 @@ class _QuestionCardState extends State<_QuestionCard> {
     final isCorrect = _isCorrect();
     final score = _getScore();
     final options = widget.question.options;
-    _selectedAnswer = widget.question.correctAnswer;
-    _questionController = TextEditingController(
-      text: widget.question.questionText ,
-    );
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: widget.isEditMode
             ? AppColors.colorsBackGround2
             : (isCorrect
-                  ? Colors.green.withValues(alpha: 0.1)
-                  : Colors.red.withValues(alpha: 0.1)),
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.red.withValues(alpha: 0.1)),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
           color: widget.isEditMode
@@ -243,9 +267,8 @@ class _QuestionCardState extends State<_QuestionCard> {
                 borderColor = isCorrectAnswer
                     ? Colors.green
                     : AppColors.colorPrimary.withValues(alpha: 0.3);
-                textColor = isCorrectAnswer
-                    ? Colors.green
-                    : AppColors.textWhite;
+                textColor =
+                    isCorrectAnswer ? Colors.green : AppColors.textWhite;
               } else {
                 // View Results Mode
                 if (isCorrectAnswer && isStudentAnswer) {
@@ -297,8 +320,8 @@ class _QuestionCardState extends State<_QuestionCard> {
                             border: Border.all(
                               color: isCorrectAnswer || isStudentAnswer
                                   ? (isCorrectAnswer
-                                        ? Colors.green
-                                        : Colors.red)
+                                      ? Colors.green
+                                      : Colors.red)
                                   : AppColors.textCoolGray,
                               width: 2,
                             ),

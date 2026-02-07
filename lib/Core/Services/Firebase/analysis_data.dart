@@ -6,12 +6,11 @@ import '../../Utils/Models/data_model.dart';
 import '../../Utils/Enums/collection_key.dart';
 
 class AnalysisData {
-  
   static Future<List<DataModel>> analyzedInstructor({
     required String email,
   }) async {
     final object = "${DataKey.subjectTeacher.key}.${DataKey.teacherEmail.key}";
-    
+
     try {
       // جلب جميع المواد في استعلام واحد
       final subjectsResponse = await FirebaseServices.instance.firestore!
@@ -35,13 +34,15 @@ class AnalysisData {
       }).toList();
 
       final allExamsResults = await Future.wait(examFutures);
-      
+
       int countExam = 0;
       int endedExam = 0;
       int runningExam = 0;
 
       // معالجة البيانات بشكل متوازي
-      final examProcessingFutures = allExamsResults.expand((examQuery) => examQuery.docs).map((examDoc) async {
+      final examProcessingFutures = allExamsResults
+          .expand((examQuery) => examQuery.docs)
+          .map((examDoc) async {
         final model = ExamModel.fromJson(examDoc.data());
         return model;
       }).toList();
@@ -101,7 +102,9 @@ class AnalysisData {
       final List<num> realDegree = [];
 
       // معالجة جميع الامتحانات بشكل متوازي
-      final processingFutures = allExamsResults.expand((examQuery) => examQuery.docs).map((examDoc) async {
+      final processingFutures = allExamsResults
+          .expand((examQuery) => examQuery.docs)
+          .map((examDoc) async {
         final model = ExamModel.fromJson(examDoc.data());
         final exam = model.examResult.firstWhere(
           (test) => test.examResultEmailSt == email,
@@ -124,8 +127,10 @@ class AnalysisData {
       final degrees = calculateGpaWithLevel(degree, realDegree);
       final double gpa = degrees["gpa"];
       final String level = degrees["level"];
-      final int totalDegree = degree.fold<int>(0, (prev, e) => prev + (e as int));
-      final int totalRealDegree = realDegree.fold<int>(0, (prev, e) => prev + (e as int));
+      final int totalDegree =
+          degree.fold<int>(0, (prev, e) => prev + (e as int));
+      final int totalRealDegree =
+          realDegree.fold<int>(0, (prev, e) => prev + (e as int));
 
       return [
         DataModel(name: "Done Exams", valueNum: countExam),
@@ -163,7 +168,8 @@ class AnalysisData {
   }
 
   // دالة محسنة لحساب GPA والمستوى
-  static Map<String, dynamic> calculateGpaWithLevel(List<num> degrees, List<num> realDegrees) {
+  static Map<String, dynamic> calculateGpaWithLevel(
+      List<num> degrees, List<num> realDegrees) {
     if (degrees.isEmpty || realDegrees.isEmpty) {
       return {"gpa": 0.0, "level": "none"};
     }
@@ -182,10 +188,15 @@ class AnalysisData {
     String level;
     if (percentage >= 90) {
       level = "Excellent";
-    } else if (percentage >= 80) {level = "Very Good";}
-    else if (percentage >= 70) {level = "Good";}
-    else if (percentage >= 60) {level = "Pass";}
-    else{ level = "Fail";}
+    } else if (percentage >= 80) {
+      level = "Very Good";
+    } else if (percentage >= 70) {
+      level = "Good";
+    } else if (percentage >= 60) {
+      level = "Pass";
+    } else {
+      level = "Fail";
+    }
 
     return {"gpa": double.parse(gpa.toStringAsFixed(2)), "level": level};
   }

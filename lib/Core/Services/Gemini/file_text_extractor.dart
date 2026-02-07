@@ -80,8 +80,7 @@ class FileTextExtractor {
         }
 
         // Add file metadata header
-        final header =
-            '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+        final header = '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
             'File ${i + 1}: ${file.name}\n'
             'Type: ${file.type.name.toUpperCase()}\n'
             'Size: ${file.sizeFormatted}\n'
@@ -152,7 +151,7 @@ class FileTextExtractor {
       'averageWordLength': words.isEmpty
           ? 0
           : (words.map((w) => w.length).reduce((a, b) => a + b) / words.length)
-                .round(),
+              .round(),
     };
   }
 }

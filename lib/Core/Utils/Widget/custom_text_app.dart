@@ -29,7 +29,7 @@ class AppCustomText extends StatelessWidget {
             ? _method()
             : Row(
                 children: [
-                  _method(),  
+                  _method(),
                   TextButton(
                     isSemanticButton: false,
                     onPressed: onPressed,

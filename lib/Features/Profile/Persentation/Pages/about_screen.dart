@@ -19,7 +19,6 @@ class _AboutScreenState extends State<AboutScreen> {
     return Scaffold(
       backgroundColor: AppColors.colorsBackGround,
       appBar: AppBar(title: Text(NameRoutes.about.titleAppBar)),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

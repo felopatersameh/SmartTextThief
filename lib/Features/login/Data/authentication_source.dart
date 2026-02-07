@@ -30,17 +30,16 @@ class AuthenticationSource {
       );
       if (isExist == false) {
         final UserModel model = UserModel(
-          userId: account.id,
-          userTokensFcm: [fcm],
-          userName: account.displayName.toString(),
-          userEmail: account.email,
-          photo: account.photoUrl ?? "",
-          userPassword: '',
-          userPhone: '',
-          userType: UserType.te,
-          userCreatedAt: DateTime.now(),
-          subscribedTopics: ["allUsers"]
-        );
+            userId: account.id,
+            userTokensFcm: [fcm],
+            userName: account.displayName.toString(),
+            userEmail: account.email,
+            photo: account.photoUrl ?? "",
+            userPassword: '',
+            userPhone: '',
+            userType: UserType.te,
+            userCreatedAt: DateTime.now(),
+            subscribedTopics: ["allUsers"]);
 
         final response = await FirebaseServices.instance.createAccount(
           model.toJson(),
@@ -71,5 +70,4 @@ class AuthenticationSource {
       return Left(model);
     }
   }
-
 }

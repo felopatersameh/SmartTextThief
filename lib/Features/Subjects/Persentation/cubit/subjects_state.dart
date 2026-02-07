@@ -1,20 +1,22 @@
 part of 'subjects_cubit.dart';
 
 class SubjectState extends Equatable {
-  final bool? loading;
-  final bool? loadingExams;
+  final bool loading;
+  final bool loadingExams;
   final List<SubjectModel> listDataOfSubjects;
   final List<SubjectModel>? filteredSubjects;
   final List<ExamModel> listDataOfExams;
   final String? error;
+  final SubjectAction? action;
 
   const SubjectState({
-    this.loading,
-    this.loadingExams,
+    this.loading=false,
+    this.loadingExams=false,
     this.listDataOfSubjects = const [],
-    this.filteredSubjects ,
+    this.filteredSubjects,
     this.listDataOfExams = const [],
     this.error,
+    this.action,
   });
 
   @override
@@ -25,6 +27,7 @@ class SubjectState extends Equatable {
         filteredSubjects,
         listDataOfExams,
         error,
+        action
       ];
 
   SubjectState copyWith({
@@ -34,6 +37,7 @@ class SubjectState extends Equatable {
     List<SubjectModel>? filteredSubjects,
     List<ExamModel>? listDataOfExams,
     String? error,
+    SubjectAction? action,
   }) {
     return SubjectState(
       loading: loading ?? this.loading,
@@ -42,8 +46,14 @@ class SubjectState extends Equatable {
       filteredSubjects: filteredSubjects ?? this.filteredSubjects,
       listDataOfExams: listDataOfExams ?? this.listDataOfExams,
       error: error ?? this.error,
+      action: action ?? this.action,
     );
   }
+}
 
-  
+enum SubjectAction {
+  added,
+  joined,
+  removed,
+  updated,
 }

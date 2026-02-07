@@ -1,11 +1,9 @@
-
 import 'package:google_generative_ai/google_generative_ai.dart';
-
 
 /// Gemini API client
 class ApiGemini {
-  final String _keyApi = "AIzaSyAQo8uSHQiV4s7D6EHVqp-nDfPJlLuDpdI";
-  final String _nameModel = "gemini-2.0-flash";
+  final String _keyApi = "AIzaSyCm2w5uUezoREJaS0PeqStryv_U7tHM5Bk";
+  final String _nameModel = "gemini-2.5-flash";
   late final GenerativeModel _model;
 
   ApiGemini() {
@@ -16,7 +14,7 @@ class ApiGemini {
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 8192,
+        maxOutputTokens: 1024,
       ),
     );
   }

@@ -85,27 +85,27 @@ class ExamModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-    DataKey.examId.key: examId,
-    DataKey.examIdSubject.key: examIdSubject,
-    DataKey.examIdTeacher.key: examIdTeacher,
-    DataKey.examExamResult.key: examResult.map((x) => x.toJson()).toList(),
-    DataKey.examStatic.key: examStatic.toJson(),
-    DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
-    DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
-    DataKey.examStartedAt.key: startedAt.millisecondsSinceEpoch,
-  };
+        DataKey.examId.key: examId,
+        DataKey.examIdSubject.key: examIdSubject,
+        DataKey.examIdTeacher.key: examIdTeacher,
+        DataKey.examExamResult.key: examResult.map((x) => x.toJson()).toList(),
+        DataKey.examStatic.key: examStatic.toJson(),
+        DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
+        DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
+        DataKey.examStartedAt.key: startedAt.millisecondsSinceEpoch,
+      };
 
   @override
   List<Object?> get props => [
-    examId,
-    examIdSubject,
-    examIdTeacher,
-    examResult,
-    examStatic,
-    examCreatedAt,
-    examFinishAt,
-    startedAt,
-  ];
+        examId,
+        examIdSubject,
+        examIdTeacher,
+        examResult,
+        examStatic,
+        examCreatedAt,
+        examFinishAt,
+        startedAt,
+      ];
 
   String get created => examCreatedAt.shortMonthYear;
   String get started => startedAt.fullDateTime;
@@ -130,8 +130,8 @@ class ExamModel extends Equatable {
 
   bool get showResult =>
       ((myTest != null) || (examFinishAt.isBefore(DateTime.now())))
-      ? true
-      : false;
+          ? true
+          : false;
 
   String get durationBeforeStarted {
     final text = "Started in ";

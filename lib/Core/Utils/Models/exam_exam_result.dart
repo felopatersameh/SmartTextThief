@@ -69,32 +69,33 @@ class ExamResultModel extends Equatable {
       levelExam: LevelExam.fromString(json[DataKey.levelExam.key]),
       numberOfQuestions:
           int.tryParse(json[DataKey.numberOfQuestions.key]?.toString() ?? '') ??
-          0,
+              0,
       randomQuestions: json[DataKey.randomQuestions.key] ?? false,
       typeExam: json[DataKey.typeExam.key] ?? "Quiz",
     );
   }
 
   Map<String, dynamic> toJson() => {
-    DataKey.examResultEmailSt.key: examResultEmailSt,
-    DataKey.examResultDegree.key: examResultDegree,
-    DataKey.examResultQandA.key: examResultQA.map((x) => x.toJson()).toList(),
-    DataKey.levelExam.key: levelExam.name,
-    DataKey.numberOfQuestions.key: numberOfQuestions,
-    DataKey.randomQuestions.key: randomQuestions,
-    DataKey.typeExam.key: typeExam,
-  };
+        DataKey.examResultEmailSt.key: examResultEmailSt,
+        DataKey.examResultDegree.key: examResultDegree,
+        DataKey.examResultQandA.key:
+            examResultQA.map((x) => x.toJson()).toList(),
+        DataKey.levelExam.key: levelExam.name,
+        DataKey.numberOfQuestions.key: numberOfQuestions,
+        DataKey.randomQuestions.key: randomQuestions,
+        DataKey.typeExam.key: typeExam,
+      };
 
   @override
   List<Object?> get props => [
-    examResultEmailSt,
-    examResultDegree,
-    examResultQA,
-    levelExam,
-    numberOfQuestions,
-    randomQuestions,
-    typeExam,
-  ];
+        examResultEmailSt,
+        examResultDegree,
+        examResultQA,
+        levelExam,
+        numberOfQuestions,
+        randomQuestions,
+        typeExam,
+      ];
 
   bool get isDo => (examResultEmailSt) == (GetLocalStorage.getEmailUser());
 }

@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'Core/Services/Notifications/notification_model.dart';
 
 import 'Config/setting.dart';
@@ -20,10 +19,9 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.wait([
-    Hive.initFlutter(),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    LocalStorageService.init(),
   ]);
-  await LocalStorageService.init();
   await Future.wait([
     FirebaseServices.instance.initialize(),
     RealtimeFirebase.initialize(),
@@ -76,7 +74,9 @@ class _MyAppState extends State<MyApp> {
         ScreenUtil.init(context);
         return MultiBlocProvider(
           providers: [
-            BlocProvider(create: (context) => SettingsCubit(), lazy: true),
+            BlocProvider(
+              create: (context) => SettingsCubit(),
+            ),
             BlocProvider(create: (context) => ProfileCubit()),
             BlocProvider(create: (context) => SubjectCubit()),
             BlocProvider(create: (context) => NotificationsCubit()),

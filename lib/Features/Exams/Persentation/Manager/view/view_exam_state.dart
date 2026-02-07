@@ -1,4 +1,3 @@
-  
 part of 'view_exam_cubit.dart';
 
 class ViewExamState extends Equatable {
@@ -17,7 +16,7 @@ class ViewExamState extends Equatable {
     this.selectedStudentEmail,
     this.startDate,
     this.endDate,
-  required  this.nameSubject,
+    required this.nameSubject,
   });
 
   ViewExamState copyWith({
@@ -51,4 +50,3 @@ class ViewExamState extends Equatable {
         nameSubject,
       ];
 }
-

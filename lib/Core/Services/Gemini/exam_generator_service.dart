@@ -6,14 +6,13 @@ import '../../../Core/Services/Gemini/exam_response_parser.dart';
 import '../../../Core/Services/Gemini/file_text_extractor.dart';
 import '../../../Core/Utils/Enums/level_exam.dart';
 
-
 class ExamGeneratorService {
   final ApiGemini _apiGemini;
   final FileTextExtractor _fileExtractor;
 
   ExamGeneratorService()
-    : _apiGemini = ApiGemini(),
-      _fileExtractor = FileTextExtractor();
+      : _apiGemini = ApiGemini(),
+        _fileExtractor = FileTextExtractor();
 
   /// Main method: Generate exam questions
   /// Returns: List of ExamResultQA
@@ -23,13 +22,13 @@ class ExamGeneratorService {
     List<InformationFileModel>? uploadedFiles,
 
     // Question settings
-    
+
     required LevelExam level,
     required String multipleChoiceCount,
     required String trueFalseCount,
     required String shortAnswerCount,
-        required int examDurationMinutes, 
-    String? contentContext, 
+    required int examDurationMinutes,
+    String? contentContext,
   }) async {
     try {
       // Step 1: Get educational text
@@ -61,14 +60,13 @@ class ExamGeneratorService {
 
       // Step 2: Generate prompt
       final prompt = ExamPromptGenerator.generatePrompt(
-        educationalText: educationalText,
-        level: level,
-        multipleChoiceCount: multipleChoiceCount,
-        trueFalseCount: trueFalseCount,
-        shortAnswerCount: shortAnswerCount,
-        examDurationMinutes: examDurationMinutes,
-        contentContext: contentContext 
-      );
+          educationalText: educationalText,
+          level: level,
+          multipleChoiceCount: multipleChoiceCount,
+          trueFalseCount: trueFalseCount,
+          shortAnswerCount: shortAnswerCount,
+          examDurationMinutes: examDurationMinutes,
+          contentContext: contentContext);
 
       // Step 3: Send to Gemini API
       final response = await _apiGemini.generateContent(prompt);

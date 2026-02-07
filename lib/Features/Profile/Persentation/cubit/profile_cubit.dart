@@ -7,7 +7,6 @@ import '../../Data/profile_source.dart';
 import '/Core/Utils/Models/user_model.dart';
 
 part 'profile_state.dart';
-
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit() : super(ProfileState());
 

@@ -10,7 +10,7 @@ import '../../Utils/Models/exam_result_q_a.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
-  // دالة للكشف عن النص العربي
+  // A function to detect Arabic text
   static bool _isArabic(String text) {
     if (text.isEmpty) return false;
     final arabicRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]');
@@ -38,16 +38,18 @@ class ExamPdfUtil {
       // Load fonts
       final fontData = await rootBundle.load("assets/Fonts/Roboto-Regular.ttf");
       final fontBold = await rootBundle.load("assets/Fonts/Roboto-Bold.ttf");
-      
+
       // تحميل الخطوط العربية - تأكد من إضافتها في assets
-      final fontArabicData = await rootBundle.load("assets/Fonts/Cairo-Regular.ttf");
-      final fontArabicBoldLoaded = await rootBundle.load("assets/Fonts/Cairo-Bold.ttf");
-      
+      final fontArabicData =
+          await rootBundle.load("assets/Fonts/Cairo-Regular.ttf");
+      final fontArabicBoldLoaded =
+          await rootBundle.load("assets/Fonts/Cairo-Bold.ttf");
+
       final font = pw.Font.ttf(fontData);
       final fontBoldTtf = pw.Font.ttf(fontBold);
       final fontArabic = pw.Font.ttf(fontArabicData);
       final fontArabicBold = pw.Font.ttf(fontArabicBoldLoaded);
-      
+
       final imageData = await rootBundle.load("assets/Image/logo.png");
       final logoImage = pw.MemoryImage(imageData.buffer.asUint8List());
 
@@ -311,9 +313,10 @@ class ExamPdfUtil {
                       ),
                     ),
                     child: pw.Directionality(
-                      textDirection: _isArabic(subInfo.subjectTeacher.teacherName)
-                          ? pw.TextDirection.rtl
-                          : pw.TextDirection.ltr,
+                      textDirection:
+                          _isArabic(subInfo.subjectTeacher.teacherName)
+                              ? pw.TextDirection.rtl
+                              : pw.TextDirection.ltr,
                       child: pw.Text(
                         "Dr.${subInfo.subjectTeacher.teacherName}",
                         style: pw.TextStyle(
@@ -347,7 +350,7 @@ class ExamPdfUtil {
     pw.Font fontArabicBold,
   ) {
     bool isValueArabic = _isArabic(value);
-    
+
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.center,
       children: [
@@ -361,7 +364,8 @@ class ExamPdfUtil {
         ),
         pw.SizedBox(width: 10),
         pw.Directionality(
-          textDirection: isValueArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+          textDirection:
+              isValueArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
           child: pw.Text(
             value,
             style: pw.TextStyle(
@@ -404,12 +408,15 @@ class ExamPdfUtil {
         children: [
           // Question number and text
           pw.Directionality(
-            textDirection: isQuestionArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+            textDirection:
+                isQuestionArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
             child: pw.RichText(
               text: pw.TextSpan(
                 children: [
                   pw.TextSpan(
-                    text: isQuestionArabic ? ' .س$questionNumber' : 'Q$questionNumber. ',
+                    text: isQuestionArabic
+                        ? ' .س$questionNumber'
+                        : 'Q$questionNumber. ',
                     style: pw.TextStyle(
                       font: isQuestionArabic ? fontArabicBold : fontBold,
                       fontSize: 14,
@@ -446,7 +453,9 @@ class ExamPdfUtil {
                   top: 5,
                 ),
                 child: pw.Directionality(
-                  textDirection: isOptionArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+                  textDirection: isOptionArabic
+                      ? pw.TextDirection.rtl
+                      : pw.TextDirection.ltr,
                   child: pw.Row(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -522,7 +531,8 @@ class ExamPdfUtil {
         color: PdfColors.green50,
       ),
       child: pw.Directionality(
-        textDirection: isAnswerArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+        textDirection:
+            isAnswerArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
         child: pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [

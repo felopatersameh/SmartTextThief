@@ -92,9 +92,8 @@ class ProfileScreen extends StatelessWidget {
                             title: "Waiting Will Be Restarting....",
                             type: MessageType.loading,
                             onLoading: () async {
-                              final userType = checkType
-                                  ? UserType.te
-                                  : UserType.st;
+                              final userType =
+                                  checkType ? UserType.te : UserType.st;
                               final isDone = await context
                                   .read<ProfileCubit>()
                                   .updateType(userType);
@@ -112,9 +111,8 @@ class ProfileScreen extends StatelessWidget {
                           context,
                           NameRoutes.about,
                           pathParameters: {
-                            "email": GetLocalStorage.getEmailUser()
-                                .split("@")
-                                .first,
+                            "email":
+                                GetLocalStorage.getEmailUser().split("@").first,
                           },
                         ),
                       ),
@@ -124,9 +122,8 @@ class ProfileScreen extends StatelessWidget {
                           context,
                           NameRoutes.help,
                           pathParameters: {
-                            "email": GetLocalStorage.getEmailUser()
-                                .split("@")
-                                .first,
+                            "email":
+                                GetLocalStorage.getEmailUser().split("@").first,
                           },
                         ),
                       ),

@@ -35,7 +35,9 @@ extension PathStringExtension on String {
   Future<String> ensureWithId() async {
     final id = (await LocalStorageService.getValue(
       LocalStorageKeys.id,
-    )).toString().substring(0, 5);
+    ))
+        .toString()
+        .substring(0, 5);
     return id;
   }
 

@@ -19,12 +19,19 @@ class ViewExam extends StatelessWidget {
   final String nameSubject;
   final bool isEditMode;
 
-  const ViewExam({super.key, required this.examModel, required this.isEditMode, required this.nameSubject,});
+  const ViewExam({
+    super.key,
+    required this.examModel,
+    required this.isEditMode,
+    required this.nameSubject,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ViewExamCubit(exam: examModel,isEditMode: isEditMode,nameSubject: nameSubject)..init(),
+      create: (context) => ViewExamCubit(
+          exam: examModel, isEditMode: isEditMode, nameSubject: nameSubject)
+        ..init(),
       child: const _ViewExamContent(),
     );
   }
@@ -40,7 +47,7 @@ class _ViewExamContent extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: Text(state.exam.examStatic.typeExam)),
           body: CustomScrollView(
-              physics: AppConfig.physicsCustomScrollView,
+            physics: AppConfig.physicsCustomScrollView,
             slivers: [
               SliverPadding(
                 padding: EdgeInsets.all(16.w),
@@ -51,16 +58,16 @@ class _ViewExamContent extends StatelessWidget {
                     SizedBox(height: 16.h),
 
                     /// === Exam Date Section ===
-                    if(!state.exam.isEnded)
-                    ExamDateSection(
-                      startDate: state.startDate,
-                      endDate: state.endDate,
-                      isEditMode: state.isEditMode,
-                      onStartChanged: (date) =>
-                          context.read<ViewExamCubit>().changeStartDate(date),
-                      onEndChanged: (date) =>
-                          context.read<ViewExamCubit>().changeEndDate(date),
-                    ),
+                    if (!state.exam.isEnded)
+                      ExamDateSection(
+                        startDate: state.startDate,
+                        endDate: state.endDate,
+                        isEditMode: state.isEditMode,
+                        onStartChanged: (date) =>
+                            context.read<ViewExamCubit>().changeStartDate(date),
+                        onEndChanged: (date) =>
+                            context.read<ViewExamCubit>().changeEndDate(date),
+                      ),
                     SizedBox(height: 20.h),
 
                     /// === Student Selector ===
@@ -80,7 +87,7 @@ class _ViewExamContent extends StatelessWidget {
                     AppCustomText.generate(
                       text: state.isEditMode
                           ? "Questions (Edit Mode)"
-                          : "Results(${state.exam.myTest?.examResultDegree??0} From ${state.exam.examStatic.numberOfQuestions})",
+                          : "Results(${state.exam.myTest?.examResultDegree ?? 0} From ${state.exam.examStatic.numberOfQuestions})",
                       textStyle: AppTextStyles.h5SemiBold.copyWith(
                         color: AppColors.textWhite,
                       ),
@@ -91,15 +98,16 @@ class _ViewExamContent extends StatelessWidget {
                     QuestionsList(
                       questions: state.exam.examStatic.examResultQA,
                       isEditMode: state.isEditMode,
-                      studentAnswers: state.selectedStudentEmail != null && state.selectedStudentEmail !="" 
+                      studentAnswers: state.selectedStudentEmail != null &&
+                              state.selectedStudentEmail != ""
                           ? state.exam.examResult
-                                .firstWhere(
-                                  (result) =>
-                                      result.examResultEmailSt ==
-                                      state.selectedStudentEmail,
-                                  orElse: () => state.exam.examResult.first,
-                                )
-                                .examResultQA
+                              .firstWhere(
+                                (result) =>
+                                    result.examResultEmailSt ==
+                                    state.selectedStudentEmail,
+                                orElse: () => state.exam.examResult.first,
+                              )
+                              .examResultQA
                           : null,
                       onUpdate: (index, question) => context
                           .read<ViewExamCubit>()
@@ -112,16 +120,20 @@ class _ViewExamContent extends StatelessWidget {
               ),
             ],
           ),
-          persistentFooterButtons: state.isEditMode?[
-            CreateButton(
-              onPress: state.loadingSave
-                  ? null
-                  : () => context.read<ViewExamCubit>().saveSubmit(context,),
-              text: state.loadingSave ? "Saving" : "Save && Submit",
-            ),
-            if (state.loadingSave)
-              LinearProgressIndicator(color: AppColors.colorPrimary),
-          ]:null,
+          persistentFooterButtons: state.isEditMode
+              ? [
+                  CreateButton(
+                    onPress: state.loadingSave
+                        ? null
+                        : () => context.read<ViewExamCubit>().saveSubmit(
+                              context,
+                            ),
+                    text: state.loadingSave ? "Saving" : "Save && Submit",
+                  ),
+                  if (state.loadingSave)
+                    LinearProgressIndicator(color: AppColors.colorPrimary),
+                ]
+              : null,
           persistentFooterDecoration: BoxDecoration(),
         );
       },

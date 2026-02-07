@@ -26,7 +26,6 @@ class ExamGenerationResultModel {
     );
   }
 
-
   Map<String, dynamic> toJson() {
     return {
       'isSuccess': isSuccess,

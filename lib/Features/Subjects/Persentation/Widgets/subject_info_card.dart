@@ -9,7 +9,7 @@ import 'info_row.dart';
 class SubjectInfoCard extends StatelessWidget {
   final SubjectModel subjectModel;
   final int? examLength;
-  
+
   const SubjectInfoCard({
     super.key,
     required this.subjectModel,
@@ -41,13 +41,13 @@ class SubjectInfoCard extends StatelessWidget {
           children: [
             // Header
             _buildHeader(),
-            
+
             Divider(
               color: Colors.white.withValues(alpha: 0.08),
               thickness: 1,
               height: 1,
             ),
-            
+
             // Content
             Padding(
               padding: EdgeInsets.all(14.w),
@@ -59,15 +59,15 @@ class SubjectInfoCard extends StatelessWidget {
                     label: 'Instructor',
                     value: subjectModel.subjectTeacher.teacherName,
                   ),
-                  
+
                   InfoRow(
                     icon: AppIcons.email,
                     label: 'Email',
                     value: subjectModel.subjectTeacher.teacherEmail,
                   ),
-                  
+
                   SizedBox(height: 4.h),
-                  
+
                   // Stats Row
                   Row(
                     children: [
@@ -96,9 +96,9 @@ class SubjectInfoCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  
+
                   SizedBox(height: 12.h),
-                  
+
                   // Code with Copy
                   _buildCodeSection(),
                 ],

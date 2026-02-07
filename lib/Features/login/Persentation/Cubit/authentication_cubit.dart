@@ -60,4 +60,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       context.read<NotificationsCubit>().init(user.subscribedTopics),
     ]);
   }
+
+    @override
+  Future<void> close() {
+    emit(AuthenticationState());
+    return super.close();
+  }
 }

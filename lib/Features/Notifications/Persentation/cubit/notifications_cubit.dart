@@ -26,34 +26,33 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     await _subscription?.cancel();
 
     // Start new stream
-    _subscription =
-        NotificationSource.listenNotificationsForTopics(
-          subscribedTopics,
-        ).listen((either) {
-          either.fold(
-            // Error
-            (failure) {
-              emit(
-                state.copyWith(loading: false, errorMessage: failure.message),
-              );
-            },
-            // Success
-            (list) {
-              int unread = 0;
-              for (var n in list) {
-                if (!n.readOut) unread++;
-              }
-
-              emit(
-                state.copyWith(
-                  loading: false,
-                  notificationsList: list,
-                  badgeCount: unread,
-                ),
-              );
-            },
+    _subscription = NotificationSource.listenNotificationsForTopics(
+      subscribedTopics,
+    ).listen((either) {
+      either.fold(
+        // Error
+        (failure) {
+          emit(
+            state.copyWith(loading: false, errorMessage: failure.message),
           );
-        });
+        },
+        // Success
+        (list) {
+          int unread = 0;
+          for (var n in list) {
+            if (!n.readOut) unread++;
+          }
+
+          emit(
+            state.copyWith(
+              loading: false,
+              notificationsList: list,
+              badgeCount: unread,
+            ),
+          );
+        },
+      );
+    });
   }
 
   Future<void> readout() async {
@@ -115,6 +114,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   @override
   Future<void> close() async {
     await _subscription?.cancel();
+    emit(NotificationsState());
     return super.close();
   }
 }

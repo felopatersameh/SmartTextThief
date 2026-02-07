@@ -85,8 +85,8 @@ class UserModel extends Equatable {
       userCreatedAt: json[DataKey.userCreatedAt.key] is String
           ? DateTime.tryParse(json[DataKey.userCreatedAt.key]) ?? DateTime.now()
           : (json[DataKey.userCreatedAt.key] is DateTime
-                ? json[DataKey.userCreatedAt.key]
-                : DateTime.now()),
+              ? json[DataKey.userCreatedAt.key]
+              : DateTime.now()),
       subscribedTopics: json[DataKey.subscribedTopics.key] == null
           ? []
           : List<String>.from(json[DataKey.subscribedTopics.key].map((x) => x)),
@@ -94,31 +94,31 @@ class UserModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-    DataKey.userId.key: userId,
-    DataKey.userTokensFCM.key: userTokensFcm.map((x) => x).toList(),
-    DataKey.userName.key: userName,
-    DataKey.userEmail.key: userEmail,
-    DataKey.userPassword.key: userPassword,
-    DataKey.photo.key: photo,
-    DataKey.userPhone.key: userPhone,
-    DataKey.userType.key: userType.value,
-    DataKey.userCreatedAt.key: userCreatedAt,
-    DataKey.subscribedTopics.key: subscribedTopics.map((x) => x).toList(),
-  };
+        DataKey.userId.key: userId,
+        DataKey.userTokensFCM.key: userTokensFcm.map((x) => x).toList(),
+        DataKey.userName.key: userName,
+        DataKey.userEmail.key: userEmail,
+        DataKey.userPassword.key: userPassword,
+        DataKey.photo.key: photo,
+        DataKey.userPhone.key: userPhone,
+        DataKey.userType.key: userType.value,
+        DataKey.userCreatedAt.key: userCreatedAt,
+        DataKey.subscribedTopics.key: subscribedTopics.map((x) => x).toList(),
+      };
 
   bool get isStu => userType.value == UserType.st.value;
   bool get isTe => userType.value == UserType.te.value;
   @override
   List<Object?> get props => [
-    userId,
-    userTokensFcm,
-    userName,
-    userEmail,
-    photo,
-    userPassword,
-    userPhone,
-    userType.value,
-    userCreatedAt,
-    subscribedTopics,
-  ];
+        userId,
+        userTokensFcm,
+        userName,
+        userEmail,
+        photo,
+        userPassword,
+        userPhone,
+        userType.value,
+        userCreatedAt,
+        subscribedTopics,
+      ];
 }

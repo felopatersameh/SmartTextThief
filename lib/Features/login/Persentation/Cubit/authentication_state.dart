@@ -7,7 +7,8 @@ class AuthenticationState extends Equatable {
   final bool? success;
   const AuthenticationState({this.loading, this.message, this.success});
 
-  AuthenticationState copyWith({bool? loading, String? message, bool? success}) {
+  AuthenticationState copyWith(
+      {bool? loading, String? message, bool? success}) {
     return AuthenticationState(
       loading: loading ?? this.loading,
       message: message ?? this.message,

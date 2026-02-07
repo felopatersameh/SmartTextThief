@@ -27,24 +27,28 @@ class DoExamCubit extends Cubit<DoExamState> {
   ExamModel? currentExam;
   DateTime? startTime;
   ExamModel? examModel;
-List<ExamResultQA> _shuffleExam(List<ExamResultQA> questions, bool shouldShuffle) {
-  if (!shouldShuffle) return questions;
-  
-  final random = Random();
-  
-  final shuffledQuestions = List<ExamResultQA>.from(questions)..shuffle(random);
-  
-  return shuffledQuestions.map((question) {
-    if (question.questionType == 'multiple_choice' && question.options.length > 1) {
-      final shuffledOptions = List<String>.from(question.options)..shuffle(random);
-      return question.copyWith(
-        options: shuffledOptions,
-        questionId: question.questionId,
-      );
-    }
-    return question;
-  }).toList();
-}
+  List<ExamResultQA> _shuffleExam(
+      List<ExamResultQA> questions, bool shouldShuffle) {
+    if (!shouldShuffle) return questions;
+
+    final random = Random();
+
+    final shuffledQuestions = List<ExamResultQA>.from(questions)
+      ..shuffle(random);
+
+    return shuffledQuestions.map((question) {
+      if (question.questionType == 'multiple_choice' &&
+          question.options.length > 1) {
+        final shuffledOptions = List<String>.from(question.options)
+          ..shuffle(random);
+        return question.copyWith(
+          options: shuffledOptions,
+          questionId: question.questionId,
+        );
+      }
+      return question;
+    }).toList();
+  }
 
   Future<void> init(ExamModel model) async {
     examModel = model;
@@ -55,16 +59,15 @@ List<ExamResultQA> _shuffleExam(List<ExamResultQA> questions, bool shouldShuffle
     // Convert minutes to Duration
     final examDurationMinutes = int.tryParse(model.examStatic.time) ?? 10;
     final examDuration = Duration(minutes: examDurationMinutes);
-      final checkRandom = model.examStatic.randomQuestions;
-          final questions = _shuffleExam(model.examStatic.examResultQA, checkRandom);
+    final checkRandom = model.examStatic.randomQuestions;
+    final questions = _shuffleExam(model.examStatic.examResultQA, checkRandom);
 
     emit(
       state.copyWith(
-        totalQuestions: totalQuestions,
-        remainingTime: examDuration,
-        loading: false,
-        questions: questions
-      ),
+          totalQuestions: totalQuestions,
+          remainingTime: examDuration,
+          loading: false,
+          questions: questions),
     );
 
     await createData(model);
@@ -203,12 +206,9 @@ List<ExamResultQA> _shuffleExam(List<ExamResultQA> questions, bool shouldShuffle
       final name = nameParts.length >= 2
           ? "${nameParts[0]} ${nameParts[1]}"
           : GetLocalStorage.getNameUser();
-        final length =
-            model.examResult.isEmpty ||
-            model.examResult.length - 1 == 0;
-        final String and = length
-            ? ""
-            : "and ${model.examResult.length} members";
+      final length =
+          model.examResult.isEmpty || model.examResult.length - 1 == 0;
+      final String and = length ? "" : "and ${model.examResult.length} members";
       final notification = NotificationModel(
         id: "doExam_${model.examId}",
         topicId: "${model.examIdSubject}_admin",

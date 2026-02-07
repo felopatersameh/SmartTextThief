@@ -21,23 +21,22 @@ class ViewExamCubit extends Cubit<ViewExamState> {
     required bool isEditMode,
     required String nameSubject,
   }) : super(
-         ViewExamState(
-           exam: exam,
-           isEditMode: isEditMode,
-           startDate: exam.startedAt,
-           endDate: exam.examFinishAt,
-           nameSubject: nameSubject,
-         ),
-       );
+          ViewExamState(
+            exam: exam,
+            isEditMode: isEditMode,
+            startDate: exam.startedAt,
+            endDate: exam.examFinishAt,
+            nameSubject: nameSubject,
+          ),
+        );
   Future<void> init() async {
     if (state.exam.isTeacher) return;
     if (state.isEditMode) return;
     if (!state.exam.doExam) {
       final email = GetLocalStorage.getEmailUser();
       final examResultQA = state.exam.examStatic.examResultQA;
-      final updatedExamResultQA = examResultQA
-          .map((element) => element.copyWith(score: "0"))
-          .toList();
+      final updatedExamResultQA =
+          examResultQA.map((element) => element.copyWith(score: "0")).toList();
       final ExamResultModel lastModel = ExamResultModel(
         examResultEmailSt: email,
         examResultDegree: "0",

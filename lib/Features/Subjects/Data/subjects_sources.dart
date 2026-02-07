@@ -28,8 +28,8 @@ class SubjectsSources {
           model.add(ExamModel.fromJson(element));
         }
         model.sort((a, b) {
-          final DateTime aDate =  a.examCreatedAt;
-          final DateTime bDate =  b.examCreatedAt;
+          final DateTime aDate = a.examCreatedAt;
+          final DateTime bDate = b.examCreatedAt;
           return bDate.compareTo(aDate);
         });
         return right(model);
@@ -69,8 +69,8 @@ class SubjectsSources {
           model.add(SubjectModel.fromJson(element));
         }
         model.sort((a, b) {
-          final DateTime aDate =  a.subjectCreatedAt;
-          final DateTime bDate =  b.subjectCreatedAt;
+          final DateTime aDate = a.subjectCreatedAt;
+          final DateTime bDate = b.subjectCreatedAt;
           return aDate.compareTo(bDate);
         });
         return right(model);
@@ -214,12 +214,10 @@ class SubjectsSources {
         await NotificationServices.subscribeToTopic(
           data.subscribeToTopicForMembers,
         );
-        final length =
-            data.subjectEmailSts.isEmpty ||
+        final length = data.subjectEmailSts.isEmpty ||
             data.subjectEmailSts.length - 1 == 0;
-        final String and = length
-            ? ""
-            : "and ${data.subjectEmailSts.length} members";
+        final String and =
+            length ? "" : "and ${data.subjectEmailSts.length} members";
         final NotificationModel model = NotificationModel(
           topicId: data.subscribeToTopicForAdmin,
           type: NotificationType.joinedSubject,

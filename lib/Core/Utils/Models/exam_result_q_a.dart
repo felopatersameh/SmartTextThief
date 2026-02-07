@@ -2,23 +2,23 @@ import 'package:equatable/equatable.dart';
 
 import '../Enums/data_key.dart';
 
-class ExamResultQA  extends Equatable {
+class ExamResultQA extends Equatable {
   final String questionId;
   final String questionType;
   final String questionText;
   final List<String> options;
   final String correctAnswer;
   final String studentAnswer;
-  final String ? score;
+  final String? score;
 
- const ExamResultQA({
+  const ExamResultQA({
     required this.questionId,
     required this.questionType,
     required this.questionText,
     required this.options,
     required this.correctAnswer,
     required this.studentAnswer,
-     this.score,
+    this.score,
   });
 
   factory ExamResultQA.fromJson(Map<String, dynamic> json) {
@@ -42,7 +42,8 @@ class ExamResultQA  extends Equatable {
       questionText: json[DataKey.questionText.key] ?? "",
       options: json[DataKey.options.key] == null
           ? []
-          : List<String>.from((json[DataKey.options.key] as List).map((x) => x.toString())),
+          : List<String>.from(
+              (json[DataKey.options.key] as List).map((x) => x.toString())),
       correctAnswer: json[DataKey.correctAnswer.key] ?? "",
       studentAnswer: studentAnswer,
       score: json[DataKey.score.key]?.toString(),
@@ -50,25 +51,25 @@ class ExamResultQA  extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-    DataKey.questionId.key: questionId,
-    DataKey.questionType.key: questionType,
-    DataKey.questionText.key: questionText,
-    DataKey.options.key: options,
-    DataKey.correctAnswer.key: correctAnswer,
-    DataKey.studentAnswer.key: studentAnswer,
-    DataKey.score.key: score ?? "-1",
-  };
- 
+        DataKey.questionId.key: questionId,
+        DataKey.questionType.key: questionType,
+        DataKey.questionText.key: questionText,
+        DataKey.options.key: options,
+        DataKey.correctAnswer.key: correctAnswer,
+        DataKey.studentAnswer.key: studentAnswer,
+        DataKey.score.key: score ?? "-1",
+      };
+
   @override
   List<Object?> get props => [
-    questionId,
-    questionType,
-    questionText,
-    options,
-    correctAnswer,
-    studentAnswer,
-    score,
-  ];
+        questionId,
+        questionType,
+        questionText,
+        options,
+        correctAnswer,
+        studentAnswer,
+        score,
+      ];
 
   ExamResultQA copyWith({
     String? questionId,
@@ -89,5 +90,4 @@ class ExamResultQA  extends Equatable {
       score: score ?? this.score,
     );
   }
-
 }

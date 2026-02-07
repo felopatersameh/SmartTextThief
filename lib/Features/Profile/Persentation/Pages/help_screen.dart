@@ -62,13 +62,16 @@ class _HelpScreenState extends State<HelpScreen> {
               'Track personal progress',
             ]),
             const SizedBox(height: 12),
-            _buildRoleCard('🏢 Organization/Admin (Coming Soon)', [
-              'Manage institutional accounts',
-              'Approve/reject user registrations',
-              'Add emails with designated roles',
-              'Complete organizational oversight',
-              'Institution-wide analytics',
-            ], isComingSoon: true),
+            _buildRoleCard(
+                '🏢 Organization/Admin (Coming Soon)',
+                [
+                  'Manage institutional accounts',
+                  'Approve/reject user registrations',
+                  'Add emails with designated roles',
+                  'Complete organizational oversight',
+                  'Institution-wide analytics',
+                ],
+                isComingSoon: true),
             const SizedBox(height: 24),
 
             // Getting Started Section
@@ -147,19 +150,25 @@ class _HelpScreenState extends State<HelpScreen> {
             // Authentication Section
             _buildSectionTitle('🔐 Authentication & Security'),
             const SizedBox(height: 12),
-            _buildAuthCard('Current Implementation', [
-              'Google Authentication (Sign in with Google)',
-              'Email/Password registration',
-              'Institution/School selection during signup',
-              'Role selection (Instructor/Student)',
-            ], false),
+            _buildAuthCard(
+                'Current Implementation',
+                [
+                  'Google Authentication (Sign in with Google)',
+                  'Email/Password registration',
+                  'Institution/School selection during signup',
+                  'Role selection (Instructor/Student)',
+                ],
+                false),
             const SizedBox(height: 12),
-            _buildAuthCard('Future Security Features', [
-              'Email verification required',
-              'Organization approval system',
-              'Role-based access control',
-              'Secure exam delivery',
-            ], true),
+            _buildAuthCard(
+                'Future Security Features',
+                [
+                  'Email verification required',
+                  'Organization approval system',
+                  'Role-based access control',
+                  'Secure exam delivery',
+                ],
+                true),
             const SizedBox(height: 32),
 
             // Contact Support

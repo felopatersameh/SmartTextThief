@@ -9,7 +9,7 @@ import '../../../../Core/Utils/Widget/custom_text_app.dart';
 class SubjectsCard extends StatelessWidget {
   final SubjectModel model;
   final VoidCallback? openSubjectDetails;
-  
+
   const SubjectsCard({
     super.key,
     this.openSubjectDetails,

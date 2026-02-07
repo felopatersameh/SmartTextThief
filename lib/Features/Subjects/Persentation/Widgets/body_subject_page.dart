@@ -25,11 +25,11 @@ class BodySubjectPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: ExamsHeaderCard(
-                onChanged: (value) => context.read<SubjectCubit>().searchSubject(value),
+                onChanged: (value) =>
+                    context.read<SubjectCubit>().searchSubject(value),
               ),
             ),
           ),
-
           if (displayList.isEmpty)
             SliverFillRemaining(
               child: Center(
@@ -47,17 +47,21 @@ class BodySubjectPage extends StatelessWidget {
                     Text(
                       'No subjects found',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Try adjusting your search',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                      ),
+                            color: Theme.of(
+                              context,
+                            )
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withValues(alpha: 0.7),
+                          ),
                     ),
                   ],
                 ),

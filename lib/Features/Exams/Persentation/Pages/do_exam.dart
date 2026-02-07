@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../Config/setting.dart';
-import '../../../../../Core/Services/screenshot_protection_service.dart';
 import '../../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../../Core/Utils/Models/exam_result_q_a.dart';
 import '../../../../../Core/Resources/app_colors.dart';
@@ -138,7 +137,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     }
 
     // ✅ إلغاء حماية Screenshot
-    ScreenshotProtectionService.disableProtection();
+    // ScreenshotProtectionService.disableProtection();
 
     // Restore navigation bar when exiting exam
     SystemChrome.setEnabledSystemUIMode(
@@ -188,7 +187,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         },
         builder: (context, state) {
           final cubit = BlocProvider.of<DoExamCubit>(context);
-          final questions =state.questions;
+          final questions = state.questions;
 
           // Safety check: handle empty questions
           if (questions.isEmpty) {
@@ -283,18 +282,16 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         children: [
           Icon(
             Icons.timer,
-            color: duration.inSeconds < 60
-                ? Colors.red
-                : AppColors.colorPrimary,
+            color:
+                duration.inSeconds < 60 ? Colors.red : AppColors.colorPrimary,
           ),
           const SizedBox(width: 8),
           AppCustomText.generate(
             text:
                 '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
             textStyle: AppTextStyles.h6Bold.copyWith(
-              color: duration.inSeconds < 60
-                  ? Colors.red
-                  : AppColors.colorPrimary,
+              color:
+                  duration.inSeconds < 60 ? Colors.red : AppColors.colorPrimary,
             ),
           ),
         ],
@@ -359,15 +356,15 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                 color: isCurrent
                     ? AppColors.colorPrimary
                     : isAnswered
-                    ? Colors.green.withValues(alpha: 0.3)
-                    : AppColors.colorBackgroundCardProjects,
+                        ? Colors.green.withValues(alpha: 0.3)
+                        : AppColors.colorBackgroundCardProjects,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isCurrent
                       ? AppColors.colorPrimary
                       : isAnswered
-                      ? Colors.green
-                      : AppColors.colorUnActiveIcons,
+                          ? Colors.green
+                          : AppColors.colorUnActiveIcons,
                   width: isCurrent ? 3 : 1,
                 ),
               ),

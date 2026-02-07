@@ -35,9 +35,8 @@ class NoConnectionScreen extends StatelessWidget {
               SizedBox(height: 30.h),
               ElevatedButton.icon(
                 onPressed: () {
-                  final internet = context
-                      .read<SettingsCubit>()
-                      .getConnectivity();
+                  final internet =
+                      context.read<SettingsCubit>().getConnectivity();
                   if (!internet) return;
                   context.canPop()
                       ? context.pop()

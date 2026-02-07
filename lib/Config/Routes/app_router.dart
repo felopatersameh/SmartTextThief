@@ -27,7 +27,8 @@ class AppRouter {
     String route, {
     Object? extra,
     Map<String, String> pathParameters = const <String, String>{},
-  }) => context.pushNamed(route, extra: extra, pathParameters: pathParameters);
+  }) =>
+      context.pushNamed(route, extra: extra, pathParameters: pathParameters);
 
   static void nextScreenAndClear(BuildContext context, String route) =>
       context.go(route);
@@ -39,14 +40,14 @@ class AppRouter {
     String name, {
     Object? extra,
     Map<String, String> pathParameters = const <String, String>{},
-  }) => context.goNamed(name, extra: extra, pathParameters: pathParameters);
+  }) =>
+      context.goNamed(name, extra: extra, pathParameters: pathParameters);
 
   static void replaceScreen(BuildContext context, String route) =>
       context.pushReplacement(route);
 
   static GoRouter router = GoRouter(
     initialLocation: NameRoutes.splash,
-
     routes: [
       GoRoute(
         name: NameRoutes.splash,
@@ -167,7 +168,6 @@ class AppRouter {
         ],
       ),
     ],
-
     errorBuilder: (context, state) {
       if (state.error?.message.toString().contains("NoConnectionScreen") ==
           true) {

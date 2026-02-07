@@ -20,57 +20,98 @@ class NotificationSource {
 
     final controller =
         StreamController<Either<FailureModel, List<NotificationModel>>>();
+    final subscriptions = <StreamSubscription>[];
+    final notificationsById = <String, NotificationModel>{};
 
-    final List<NotificationModel> buffer = [];
-
-    try {
-      for (final topic in topics) {
-        FirebaseServices.instance
-            .findDocsInListStream(
-              CollectionKey.notification.key,
-              topic,
-              nameField: DataKey.topicId.key,
-            )
-            .listen((response) {
-          if (response.status) {
-            for (final element in response.data) {
-              final model = NotificationModel.fromJson(element);
-              if (!buffer.any((e) => e.id == model.id)) {
-                buffer.add(model);
-              }
-           
-            }
-                  buffer.sort((a, b) {
-                    final DateTime aDate = a.createdAt!;
-                    final DateTime bDate = b.createdAt!;
-                    return bDate.compareTo(aDate);
-                  });
-                  controller.add(Right(buffer));
-                } else {
-            controller.add(
-              Left(FailureModel(
-                error: "Firestore Error",
-                message: response.message,
-              )),
-            );
-          }
-        }, onError: (error) {
-          controller.add(
-            Left(FailureModel(
-              error: error.toString(),
-              message: "Stream Listening Error",
-            )),
-          );
+    void emitNotifications() {
+      final sortedNotifications = notificationsById.values.toList()
+        ..sort((a, b) {
+          final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return bDate.compareTo(aDate);
         });
+      if (!controller.isClosed) {
+        controller.add(Right(sortedNotifications));
       }
-    } catch (e) {
-      controller.add(
-        Left(FailureModel(
-          error: e.toString(),
-          message: "Unexpected Stream Error",
-        )),
-      );
     }
+
+    controller.onListen = () {
+      try {
+        for (final topic in topics) {
+          final subscription = FirebaseServices.instance
+              .findDocsInListStream(
+            CollectionKey.notification.key,
+            topic,
+            nameField: DataKey.topicId.key,
+          )
+              .listen(
+            (response) {
+              if (!response.status) {
+                if (!controller.isClosed) {
+                  controller.add(
+                    Left(
+                      FailureModel(
+                        error: "Firestore Error",
+                        message: response.message,
+                      ),
+                    ),
+                  );
+                }
+                return;
+              }
+
+              final rawData = response.data;
+              if (rawData is List) {
+                for (final item in rawData) {
+                  if (item is Map<String, dynamic>) {
+                    final model = NotificationModel.fromJson(item);
+                    notificationsById[model.id] = model;
+                  } else if (item is Map) {
+                    final model = NotificationModel.fromJson(
+                      Map<String, dynamic>.from(item),
+                    );
+                    notificationsById[model.id] = model;
+                  }
+                }
+              }
+
+              emitNotifications();
+            },
+            onError: (error) {
+              if (!controller.isClosed) {
+                controller.add(
+                  Left(
+                    FailureModel(
+                      error: error.toString(),
+                      message: "Stream Listening Error",
+                    ),
+                  ),
+                );
+              }
+            },
+          );
+          subscriptions.add(subscription);
+        }
+      } catch (e) {
+        if (!controller.isClosed) {
+          controller.add(
+            Left(
+              FailureModel(
+                error: e.toString(),
+                message: "Unexpected Stream Error",
+              ),
+            ),
+          );
+        }
+      }
+    };
+
+    controller.onCancel = () async {
+      for (final subscription in subscriptions) {
+        await subscription.cancel();
+      }
+      subscriptions.clear();
+    };
 
     return controller.stream;
   }

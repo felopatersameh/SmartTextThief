@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class SettingsState {
   final ThemeMode themeMode;
   final Locale locale;
-    final bool internet;
+  final bool internet;
   const SettingsState({
     this.themeMode = ThemeMode.light,
     this.locale = const Locale('en'),
@@ -14,12 +14,11 @@ class SettingsState {
     ThemeMode? themeMode,
     Locale? locale,
     bool? internet,
-    
   }) {
     return SettingsState(
       themeMode: themeMode ?? this.themeMode,
       locale: locale ?? this.locale,
-       internet: internet ?? this.internet,
+      internet: internet ?? this.internet,
     );
   }
 }

@@ -1,4 +1,4 @@
-  part of 'do_exam_cubit.dart';
+part of 'do_exam_cubit.dart';
 
 class DoExamState extends Equatable {
   final int timerExam;
@@ -45,13 +45,13 @@ class DoExamState extends Equatable {
 
   @override
   List<Object> get props => [
-    timerExam,
-    loading,
-    currentQuestionIndex,
-    userAnswers,
-    isExamFinished,
-    remainingTime,
-    totalQuestions,
-    questions,
-  ];
+        timerExam,
+        loading,
+        currentQuestionIndex,
+        userAnswers,
+        isExamFinished,
+        remainingTime,
+        totalQuestions,
+        questions,
+      ];
 }

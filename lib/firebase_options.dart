@@ -60,5 +60,4 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://smarttextthief-default-rtdb.firebaseio.com',
     storageBucket: 'smarttextthief.firebasestorage.app',
   );
-
 }

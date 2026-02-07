@@ -76,14 +76,14 @@ class NotificationModel extends Equatable {
   Color get backgroundColor => _titleTopic.backgroundColor;
 
   Duration? get timeSinceCreation =>
-      _createdAt == null ? null : DateTime.now().difference(_createdAt!);
+      _createdAt == null ? null : DateTime.now().difference(_createdAt);
 
   Duration? get timeSinceUpdate =>
-      _updatedAt == null ? null : DateTime.now().difference(_updatedAt!);
+      _updatedAt == null ? null : DateTime.now().difference(_updatedAt);
 
   String get formattedTime {
     if (_updatedAt == null) return '';
-    final duration = DateTime.now().difference(_updatedAt!);
+    final duration = DateTime.now().difference(_updatedAt);
     if (duration.inMinutes < 1) return 'Just now';
     if (duration.inMinutes < 60) return '${duration.inMinutes}m ago';
     if (duration.inHours < 24) return '${duration.inHours}h ago';
@@ -172,10 +172,8 @@ class NotificationModel extends Equatable {
           json['readIn'].map((item) => item.toString()),
         );
       } else if (json['readIn'] is String) {
-        readIn = (json['readIn'] as String)
-            .split(',')
-            .map((e) => e.trim())
-            .toList();
+        readIn =
+            (json['readIn'] as String).split(',').map((e) => e.trim()).toList();
       }
     }
 

@@ -27,7 +27,7 @@ class ErrorScreen extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
               Text(
-                'الصفحة غير موجودة',
+                'Page not found',
                 style: TextStyle(color: Colors.grey, fontSize: 16.sp),
               ),
               SizedBox(height: 30.h),
@@ -41,7 +41,7 @@ class ErrorScreen extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'العودة للرئيسية',
+                  'Return to home',
                   style: TextStyle(fontSize: 14.sp),
                 ),
               ),

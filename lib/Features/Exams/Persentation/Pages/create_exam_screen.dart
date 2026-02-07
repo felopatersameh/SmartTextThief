@@ -100,9 +100,8 @@ class _CreateExamBody extends StatelessWidget {
               onPress: cubit.state.loadingCreating
                   ? null
                   : () async => await cubit.submitExam(context),
-              text: cubit.state.loadingCreating
-                  ? "Creating...."
-                  : "Create Exam",
+              text:
+                  cubit.state.loadingCreating ? "Creating...." : "Create Exam",
             ),
             if (state.loadingCreating)
               LinearProgressIndicator(color: AppColors.colorPrimary),

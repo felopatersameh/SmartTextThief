@@ -211,5 +211,4 @@ class NotificationServices {
       return false;
     }
   }
-
 }

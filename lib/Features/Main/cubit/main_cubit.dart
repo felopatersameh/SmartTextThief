@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../Notifications/Persentation/cubit/notifications_cubit.dart';
 import '../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../Config/Routes/app_router.dart';
 import '../../../Config/Routes/name_routes.dart';
@@ -16,23 +15,21 @@ class MainCubit extends Cubit<MainState> {
   List<String> nameScreens = ["Subject", "Notifications", "Profile"];
   // List<Widget> screens = [Container(), SubjectPage(), ProfileScreen()];
 
-  List<BottomNavigationBarItem> items(BuildContext context) {
-    int notificationsBadgeCount = context
-        .read<NotificationsCubit>()
-        .state
-        .badgeCount;
-    return [
-      BottomNavigationBarItem(icon: Icon(AppIcons.subject), label: "Subject"),
-      BottomNavigationBarItem(
-        icon: bottomNavIconWithBadge(
-          notificationsBadgeCount,
-          icon: Icon(AppIcons.notificationPage),
-        ),
-        label: "Notifications",
+    
+List<BottomNavigationBarItem> items(int notificationsBadgeCount) {
+  return [
+    BottomNavigationBarItem(icon: Icon(AppIcons.subject), label: "Subject"),
+    BottomNavigationBarItem(
+      icon: bottomNavIconWithBadge(
+        notificationsBadgeCount,
+        icon: Icon(AppIcons.notificationPage),
       ),
-      BottomNavigationBarItem(icon: Icon(AppIcons.profile), label: "Profile"),
-    ];
-  }
+      label: "Notifications",
+    ),
+    BottomNavigationBarItem(icon: Icon(AppIcons.profile), label: "Profile"),
+  ];
+}
+
 
   List<String> nav = [
     NameRoutes.subject,
@@ -48,6 +45,12 @@ class MainCubit extends Cubit<MainState> {
           : {},
     );
     emit(state.copyWith(index: index));
+  }
+
+  @override
+  Future<void> close() {
+    emit(MainState(index: 0));
+    return super.close();
   }
 }
 

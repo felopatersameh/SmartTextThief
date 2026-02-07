@@ -10,7 +10,8 @@ import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Utils/Models/user_model.dart';
 
 class ProfileSource {
-  static Future<Either<FailureModel, (UserModel, List<DataModel>)>> getDataUser() async {
+  static Future<Either<FailureModel, (UserModel, List<DataModel>)>>
+      getDataUser() async {
     try {
       final String userId = GetLocalStorage.getIdUser();
 

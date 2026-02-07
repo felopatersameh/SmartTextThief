@@ -15,7 +15,7 @@ class EmptyListSubjects extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            IconBroken.Bookmark, 
+            IconBroken.Bookmark,
             size: 70.sp,
             color: Colors.grey.withValues(alpha: 0.5),
           ),

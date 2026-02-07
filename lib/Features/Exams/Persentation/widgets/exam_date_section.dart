@@ -22,10 +22,9 @@ class ExamDateSection extends StatelessWidget {
 
   Future<void> _pickDate(BuildContext context, bool isStart) async {
     if (!isEditMode) return;
-    final year = DateTime.now().year +2;
-    final initialDate = isStart
-        ? (startDate ?? DateTime.now())
-        : (endDate ?? DateTime.now());
+    final year = DateTime.now().year + 2;
+    final initialDate =
+        isStart ? (startDate ?? DateTime.now()) : (endDate ?? DateTime.now());
 
     final picked = await showDatePicker(
       context: context,

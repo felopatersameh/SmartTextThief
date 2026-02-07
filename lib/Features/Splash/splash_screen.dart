@@ -9,6 +9,7 @@ import '../../Config/Routes/name_routes.dart';
 import '../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../Profile/Persentation/cubit/profile_cubit.dart';
 import 'loading_indicator.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -31,66 +32,68 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToMainScreen() async {
-  try {
-    _updateProgress(0.1);
+    try {
+      _updateProgress(0.1);
 
-    final bool isLoggedIn = LocalStorageService.getValue(
-      LocalStorageKeys.isLoggedIn,
-      defaultValue: false,
-    );
-    final String id = LocalStorageService.getValue(
-      LocalStorageKeys.id,
-      defaultValue: "",
-    );
-    _updateProgress(0.2);
+      final bool isLoggedIn = LocalStorageService.getValue(
+        LocalStorageKeys.isLoggedIn,
+        defaultValue: false,
+      );
+      final String id = LocalStorageService.getValue(
+        LocalStorageKeys.id,
+        defaultValue: "",
+      );
+      _updateProgress(0.2);
 
-    if (id.isEmpty || !isLoggedIn) {
-      if (mounted) AppRouter.goNamedByPath(context, NameRoutes.login);
-      return;
-    }
+      if (id.isEmpty || !isLoggedIn) {
+        if (mounted) AppRouter.goNamedByPath(context, NameRoutes.login);
+        return;
+      }
 
-    _updateProgress(0.3);
-
-    if (!mounted) return;
-    final user = await context.read<ProfileCubit>().init();
-    if (user.userId == "-#") {
-      if (!mounted) return;
-      AppRouter.goNamedByPath(context, NameRoutes.login);
-      return;
-    }
-        await _smoothProgressUpdate(0.4, .7, 5);
+      _updateProgress(0.3);
 
       if (!mounted) return;
+      final user = await context.read<ProfileCubit>().init();
+      if (user.userId == "-#") {
+        if (!mounted) return;
+        AppRouter.goNamedByPath(context, NameRoutes.login);
+        return;
+      }
+      await _smoothProgressUpdate(0.4, .7, 5);
 
-    await Future.wait([
-      context.read<SubjectCubit>().init(user.userEmail, user.isStu),
-      context.read<NotificationsCubit>().init(user.subscribedTopics),
-    ]);
+      if (!mounted) return;
 
-    await _smoothProgressUpdate(0.7, 1.0, 2);
+      await Future.wait([
+        context.read<SubjectCubit>().init(user.userEmail, user.isStu),
+        context.read<NotificationsCubit>().init(user.subscribedTopics),
+      ]);
 
-    if (mounted) {
-      AppRouter.goNamedByPath(context, NameRoutes.subject);
-    }
-  } catch (e) {
-    if (mounted) {
-      AppRouter.goNamedByPath(context, NameRoutes.login);
+      await _smoothProgressUpdate(0.7, 1.0, 2);
+
+      if (mounted) {
+        AppRouter.goNamedByPath(context, NameRoutes.subject);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppRouter.goNamedByPath(context, NameRoutes.login);
+      }
     }
   }
-}
 
-void _updateProgress(double value) {
-  if (mounted) _controller.value = value;
-}
-
-Future<void> _smoothProgressUpdate(double start, double end, int steps) async {
-  final double stepSize = (end - start) / steps;
-  
-  for (int i = 1; i <= steps; i++) {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _updateProgress(start + (stepSize * i));
+  void _updateProgress(double value) {
+    if (mounted) _controller.value = value;
   }
-}
+
+  Future<void> _smoothProgressUpdate(
+      double start, double end, int steps) async {
+    final double stepSize = (end - start) / steps;
+
+    for (int i = 1; i <= steps; i++) {
+      await Future.delayed(const Duration(milliseconds: 150));
+      _updateProgress(start + (stepSize * i));
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();

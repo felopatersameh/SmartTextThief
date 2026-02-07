@@ -12,7 +12,7 @@ class LocalNotificationService {
         InitializationSettings(android: initializationSettingsAndroid);
 
     await _notificationsPlugin.initialize(
-      initializationSettings,
+      settings: initializationSettings,
     );
 
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -32,7 +32,8 @@ class LocalNotificationService {
     required String title,
     required String body,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       'high_importance_channel', // must match channel ID
       'High Importance Notifications',
       channelDescription: 'This channel is used for important notifications.',
@@ -41,7 +42,6 @@ class LocalNotificationService {
       ticker: 'ticker',
       playSound: true,
       icon: '@mipmap/ic_launcher',
-      
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(
@@ -49,10 +49,10 @@ class LocalNotificationService {
     );
 
     await _notificationsPlugin.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
-      body,
-      notificationDetails,
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: title,
+      body: body,
+      notificationDetails: notificationDetails,
     );
   }
 }

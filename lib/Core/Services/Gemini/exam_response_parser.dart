@@ -7,9 +7,9 @@ class ExamResponseParser {
     try {
       String cleanedJson = _cleanJsonResponse(jsonResponse);
       final dynamic parsed = jsonDecode(cleanedJson);
-      
+
       List<dynamic> questionsList;
-      
+
       if (parsed is List) {
         questionsList = parsed;
       } else if (parsed is Map<String, dynamic>) {
@@ -23,11 +23,10 @@ class ExamResponseParser {
       } else {
         throw Exception('Invalid JSON format');
       }
-      
+
       return questionsList
           .map((json) => ExamResultQA.fromJson(json as Map<String, dynamic>))
           .toList();
-          
     } catch (e) {
       // log('Error parsing questions: $e');
       // log('Response was: $jsonResponse');
@@ -37,18 +36,19 @@ class ExamResponseParser {
 
   static String _cleanJsonResponse(String response) {
     String cleaned = response.trim();
-    
+
     // Remove markdown code blocks
     cleaned = cleaned.replaceAll(RegExp(r'^```json\s*', multiLine: true), '');
     cleaned = cleaned.replaceAll(RegExp(r'^```\s*', multiLine: true), '');
     cleaned = cleaned.replaceAll(RegExp(r'\s*```$', multiLine: true), '');
     cleaned = cleaned.trim();
-    
+
     // Find JSON array or object
     final jsonStart = cleaned.indexOf('[');
     final jsonObjectStart = cleaned.indexOf('{');
-    
-    if (jsonStart != -1 && (jsonObjectStart == -1 || jsonStart < jsonObjectStart)) {
+
+    if (jsonStart != -1 &&
+        (jsonObjectStart == -1 || jsonStart < jsonObjectStart)) {
       final jsonEnd = cleaned.lastIndexOf(']');
       if (jsonEnd != -1) {
         cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
@@ -59,25 +59,26 @@ class ExamResponseParser {
         cleaned = cleaned.substring(jsonObjectStart, jsonEnd + 1);
       }
     }
-    
+
     return cleaned.trim();
   }
 
   static bool validateQuestions(List<ExamResultQA> questions) {
     if (questions.isEmpty) return false;
-    
+
     for (var q in questions) {
-      if (q.questionId.isEmpty || 
-          q.questionType.isEmpty || 
+      if (q.questionId.isEmpty ||
+          q.questionType.isEmpty ||
           q.questionText.isEmpty ||
           q.correctAnswer.isEmpty) {
         return false;
       }
-      
-      if (!['multiple_choice', 'true_false', 'short_answer'].contains(q.questionType)) {
+
+      if (!['multiple_choice', 'true_false', 'short_answer']
+          .contains(q.questionType)) {
         return false;
       }
-      
+
       if (q.questionType == 'multiple_choice' && q.options.length != 4) {
         return false;
       }
@@ -85,7 +86,7 @@ class ExamResponseParser {
         return false;
       }
     }
-    
+
     return true;
   }
 }

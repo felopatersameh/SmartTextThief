@@ -1,11 +1,14 @@
 import 'package:hive/hive.dart';
 import 'local_storage_keys.dart';
+import 'package:hive_flutter/hive_flutter.dart' as local;
 
 class LocalStorageService {
   static late Box _box;
 
-  static Future<void> init() async =>
-      _box = await Hive.openBox(LocalStorageKeys.boxName);
+  static Future<void> init() async {
+   await local.Hive.initFlutter();
+    _box = await Hive.openBox(LocalStorageKeys.boxName);
+  }
 
   static Future<void> setValue(String key, dynamic value) async =>
       await _box.put(key, value);

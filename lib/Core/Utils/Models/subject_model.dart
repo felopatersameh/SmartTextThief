@@ -56,23 +56,23 @@ class SubjectModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-    DataKey.subjectIdSubject.key: subjectId,
-    DataKey.subjectCodeSub.key: subjectCode,
-    DataKey.subjectNameSubject.key: subjectName,
-    DataKey.subjectTeacher.key: subjectTeacher.toJson(),
-    DataKey.subjectEmailSts.key: subjectEmailSts.map((x) => x).toList(),
-    DataKey.subjectCreatedAt.key: subjectCreatedAt.millisecondsSinceEpoch,
-  };
+        DataKey.subjectIdSubject.key: subjectId,
+        DataKey.subjectCodeSub.key: subjectCode,
+        DataKey.subjectNameSubject.key: subjectName,
+        DataKey.subjectTeacher.key: subjectTeacher.toJson(),
+        DataKey.subjectEmailSts.key: subjectEmailSts.map((x) => x).toList(),
+        DataKey.subjectCreatedAt.key: subjectCreatedAt.millisecondsSinceEpoch,
+      };
 
   @override
   List<Object?> get props => [
-    subjectId,
-    subjectCode,
-    subjectName,
-    subjectTeacher,
-    subjectEmailSts,
-    subjectCreatedAt,
-  ];
+        subjectId,
+        subjectCode,
+        subjectName,
+        subjectTeacher,
+        subjectEmailSts,
+        subjectCreatedAt,
+      ];
 
   String get createdAt => subjectCreatedAt.shortMonthYear;
   bool get isME =>
