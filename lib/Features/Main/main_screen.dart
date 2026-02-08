@@ -66,6 +66,7 @@ class MainScreen extends StatelessWidget {
       NameRoutes.subjectDetails.ensureWithSlash(),
       NameRoutes.createExam.ensureWithSlash(),
       NameRoutes.view.ensureWithSlash(),
+      NameRoutes.dashboard.ensureWithSlash(),
     ];
 
     return examPaths.any(location.contains);

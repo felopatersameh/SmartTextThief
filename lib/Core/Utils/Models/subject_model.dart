@@ -12,6 +12,7 @@ class SubjectModel extends Equatable {
     required this.subjectName,
     required this.subjectTeacher,
     required this.subjectEmailSts,
+    required this.subjectIsOpen,
     required this.subjectCreatedAt,
   });
 
@@ -20,6 +21,7 @@ class SubjectModel extends Equatable {
   final String subjectName;
   final SubjectTeacher subjectTeacher;
   final List<String> subjectEmailSts;
+  final bool subjectIsOpen;
   final DateTime subjectCreatedAt;
 
   SubjectModel copyWith({
@@ -28,6 +30,7 @@ class SubjectModel extends Equatable {
     String? subjectName,
     SubjectTeacher? subjectTeacher,
     List<String>? subjectEmailSts,
+    bool? subjectIsOpen,
     DateTime? subjectCreatedAt,
   }) {
     return SubjectModel(
@@ -36,6 +39,7 @@ class SubjectModel extends Equatable {
       subjectName: subjectName ?? this.subjectName,
       subjectTeacher: subjectTeacher ?? this.subjectTeacher,
       subjectEmailSts: subjectEmailSts ?? this.subjectEmailSts,
+      subjectIsOpen: subjectIsOpen ?? this.subjectIsOpen,
       subjectCreatedAt: subjectCreatedAt ?? this.subjectCreatedAt,
     );
   }
@@ -49,6 +53,7 @@ class SubjectModel extends Equatable {
       subjectEmailSts: json[DataKey.subjectEmailSts.key] == null
           ? []
           : List<String>.from(json[DataKey.subjectEmailSts.key]!.map((x) => x)),
+      subjectIsOpen: json[DataKey.subjectIsOpen.key] ?? true,
       subjectCreatedAt: DateTime.fromMillisecondsSinceEpoch(
         json[DataKey.subjectCreatedAt.key] ?? 0,
       ),
@@ -61,6 +66,7 @@ class SubjectModel extends Equatable {
         DataKey.subjectNameSubject.key: subjectName,
         DataKey.subjectTeacher.key: subjectTeacher.toJson(),
         DataKey.subjectEmailSts.key: subjectEmailSts.map((x) => x).toList(),
+        DataKey.subjectIsOpen.key: subjectIsOpen,
         DataKey.subjectCreatedAt.key: subjectCreatedAt.millisecondsSinceEpoch,
       };
 
@@ -71,6 +77,7 @@ class SubjectModel extends Equatable {
         subjectName,
         subjectTeacher,
         subjectEmailSts,
+        subjectIsOpen,
         subjectCreatedAt,
       ];
 

@@ -47,6 +47,7 @@ enum DataKey {
   subjectNameSubject('subject_nameSubject'),
   subjectTeacher('subject_teacher'),
   subjectEmailSts('subject_emailSts'),
+  subjectIsOpen('subject_isOpen'),
   subjectCreatedAt('subject_createdAt'),
 
   // 🔹 Teacher object (inside Subject)

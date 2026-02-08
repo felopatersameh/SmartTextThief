@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sahih_validator/sahih_validator.dart';
 import '../../../../Config/Routes/name_routes.dart';
 import '../../../../Config/Routes/app_router.dart';
 import '../Cubit/authentication_cubit.dart';
 
 import '../../../../Core/Resources/resources.dart';
-import '../../../../Core/Utils/Widget/ButtonsStyle/build_button_app.dart';
 import '../../../../Core/Utils/Widget/ButtonsStyle/build_button_app_with_icon.dart';
-import '../../../../Core/Utils/Widget/TextField/PasswordVisibility/password_text__form_field.dart';
-import '../../../../Core/Utils/Widget/TextField/build_text_field.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
 import '../../../../Core/Utils/show_message_snack_bar.dart';
 
@@ -22,22 +18,39 @@ class BodyScreen extends StatefulWidget {
 }
 
 class _BodyScreenState extends State<BodyScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  late final PageController _pageController;
+  int _currentPage = 0;
 
-  final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _key = GlobalKey<FormState>();
+  final List<_OnboardingItem> _items = const [
+    _OnboardingItem(
+      title: 'Create Exams Faster',
+      description:
+          'Generate complete exams in minutes using AI with clean structure and ready-to-use questions.',
+      icon: AppIcons.quiz,
+    ),
+    _OnboardingItem(
+      title: 'Manage Subjects Easily',
+      description:
+          'Organize subjects, share codes with students, and keep all your exam workflow in one place.',
+      icon: AppIcons.subject,
+    ),
+    _OnboardingItem(
+      title: 'Track Student Results',
+      description:
+          'View submissions, monitor performance, and improve learning outcomes with clear data.',
+      icon: AppIcons.people,
+    ),
+  ];
+
   @override
   void initState() {
-    _emailController.clear();
-    _passwordController.clear();
+    _pageController = PageController();
     super.initState();
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -71,78 +84,167 @@ class _BodyScreenState extends State<BodyScreen> {
           }
         }
       },
-      child: Form(
-        key: _key,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: 8.h),
+            Container(
+              width: 78.w,
+              height: 78.h,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.colorPrimary.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100.r),
+                child: Image.asset(
+                  'assets/Image/s2.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 25.h),
             AppCustomText.generate(
               text: AppStrings.welcome,
-              textStyle: AppTextStyles.h5SemiBold,
+              textStyle: AppTextStyles.h3Bold,
+              textAlign: TextAlign.center,
             ),
-            SizedBox(height: 8.h),
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: .9.sw),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 400.h,
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: _items.length,
+                          onPageChanged: (index) {
+                            if (!mounted) return;
+                            setState(() => _currentPage = index);
+                          },
+                          itemBuilder: (context, index) {
+                            final item = _items[index];
+                            return _OnboardingCard(item: item);
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          _items.length,
+                          (index) => AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeOut,
+                            width: _currentPage == index ? 22.w : 8.w,
+                            height: 8.h,
+                            margin: EdgeInsets.symmetric(horizontal: 4.w),
+                            decoration: BoxDecoration(
+                              color: _currentPage == index
+                                  ? AppColors.colorPrimary
+                                  : AppColors.colorUnActiveIcons.withValues(
+                                      alpha: 0.55,
+                                    ),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      BuildButtonAppWithIcon(
+                        actions: () async => await showMessageSnackBar(
+                          context,
+                          title: "loading ${AppStrings.orSignInWithGoogle}",
+                          type: MessageType.loading,
+                          onLoading: () async =>
+                              await context
+                                  .read<AuthenticationCubit>()
+                                  .loginByGoogle(
+                                    context,
+                                  ),
+                        ),
+                        iconErrorBuilder: AppIcons.google,
+                        text: AppStrings.orSignInWithGoogle,
+                        textIcon: "",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OnboardingItem {
+  final String title;
+  final String description;
+  final IconData icon;
+
+  const _OnboardingItem({
+    required this.title,
+    required this.description,
+    required this.icon,
+  });
+}
+
+class _OnboardingCard extends StatelessWidget {
+  final _OnboardingItem item;
+
+  const _OnboardingCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 22.h),
+        padding: EdgeInsets.all(22.w),
+        decoration: BoxDecoration(
+          color: AppColors.colorsBackGround2,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: AppColors.colorTextFieldBackGround.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64.w,
+              height: 150.h,
+              decoration: BoxDecoration(
+                color: AppColors.colorPrimary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                item.icon,
+                color: AppColors.colorPrimary,
+                size: 30.sp,
+              ),
+            ),
+            SizedBox(height: 18.h),
             AppCustomText.generate(
-              text: AppStrings.welcomeHint,
+              text: item.title,
+              textStyle: AppTextStyles.h6Bold,
+            ),
+            SizedBox(height: 10.h),
+            AppCustomText.generate(
+              text: item.description,
               textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
                 color: Colors.grey.shade500,
               ),
-            ),
-            SizedBox(height: 40.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.w),
-              child: Column(
-                children: [
-                  AppTextField(
-                    controller: _emailController,
-                    validator: (p0) => SahihValidator.email(email: p0 ?? ""),
-                    keyboard: TextInputType.emailAddress,
-                    hint: AppStrings.email,
-                  ),
-                  CustomPasswordTextFromField(
-                    controller: _passwordController,
-                    fieldId: 'Password_1#',
-                    hintText: AppStrings.password,
-                  ),
-                  SizedBox(height: 24.h),
-                  BuildButtonApp(
-                    actions: () async {
-                      if (_key.currentState?.validate() == true) {
-                        await showMessageSnackBar(
-                          context,
-                          title: "loading ${AppStrings.login}",
-                          type: MessageType.loading,
-                          onLoading: () async => await context
-                              .read<AuthenticationCubit>()
-                              .loginByEmail(),
-                        );
-                      }
-                    },
-                    text: AppStrings.login,
-                  ),
-                  SizedBox(height: 20.h),
-                  AppCustomText.generate(
-                    text: AppStrings.orContinue,
-                    textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  BuildButtonAppWithIcon(
-                    actions: () async => await showMessageSnackBar(
-                      context,
-                      title: "loading ${AppStrings.orSignInWithGoogle}",
-                      type: MessageType.loading,
-                      onLoading: () async => await context
-                          .read<AuthenticationCubit>()
-                          .loginByGoogle(context),
-                    ),
-                    iconErrorBuilder: AppIcons.google,
-                    text: AppStrings.orSignInWithGoogle,
-                    textIcon: "",
-                  ),
-                  SizedBox(height: 30.h),
-                ],
-              ),
+              maxLines: 5,
+              textAlign: TextAlign.center,
             ),
           ],
         ),

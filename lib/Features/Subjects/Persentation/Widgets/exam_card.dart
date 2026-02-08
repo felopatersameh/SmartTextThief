@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../Core/Utils/Models/exam_model.dart';
-import '../../../../Core/Resources/app_colors.dart';
-import '../../../../Core/Resources/app_fonts.dart';
-import '../../../../Core/Resources/app_icons.dart';
-import '../../../../Core/Utils/Widget/custom_text_app.dart';
+import 'package:smart_text_thief/Core/Resources/app_colors.dart';
+import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
+import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class ExamCard extends StatelessWidget {
   final ExamModel exam;

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../Features/Profile/Persentation/Pages/about_screen.dart';
 import '../../Features/Profile/Persentation/Pages/help_screen.dart';
 
+import '../../Core/Utils/Models/exam_exam_result.dart';
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
 import '../../Features/Exams/Persentation/Pages/create_exam_screen.dart';
@@ -13,8 +14,9 @@ import '../../Features/Main/main_screen.dart';
 import '../../Features/Notifications/Persentation/notification_page.dart';
 import '../../Features/Profile/Persentation/Pages/profile_screen.dart';
 import '../../Features/Splash/splash_screen.dart';
-import '../../Features/Subjects/Persentation/Pages/details_screen.dart';
 import '../../Features/Subjects/Persentation/Pages/subject_page.dart';
+import '../../Features/Subjects/Persentation/Pages/dashboard_screen.dart';
+import '../../Features/Subjects/Persentation/Pages/details_screen.dart';
 import '../../Features/login/Persentation/choose_role_screen.dart';
 import '../../Features/login/Persentation/login_screen.dart';
 import '../Setting/settings_cubit.dart';
@@ -97,6 +99,24 @@ class AppRouter {
             pageBuilder: (context, state) =>
                 NoTransitionPage(child: const SubjectPage()),
             routes: [
+              GoRoute(
+                name: NameRoutes.dashboard,
+                path: NameRoutes.dashboard,
+                pageBuilder: (context, state) {
+                  final data = state.extra as Map<String, dynamic>?;
+                  return NoTransitionPage(
+                    child: DashboardScreen(
+                      subject: data?['subject'] as SubjectModel?,
+                      exams: (data?['exams'] as List<dynamic>? ?? const [])
+                          .whereType<ExamModel>()
+                          .toList(),
+                      results: (data?['results'] as List<dynamic>? ?? const [])
+                          .whereType<ExamResultModel>()
+                          .toList(),
+                    ),
+                  );
+                },
+              ),
               GoRoute(
                 name: NameRoutes.subjectDetails,
                 path: '${NameRoutes.subjectDetails.ensureWithSlash()}:id',

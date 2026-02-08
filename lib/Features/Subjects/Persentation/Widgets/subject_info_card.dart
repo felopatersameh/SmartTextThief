@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '/Core/Resources/resources.dart';
-import '/Core/Utils/Models/subject_model.dart';
-import '/Core/Utils/Widget/custom_text_app.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
+import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'info_row.dart';
 
 class SubjectInfoCard extends StatelessWidget {
   final SubjectModel subjectModel;
   final int? examLength;
+  final VoidCallback? onToggleOpen;
+  final VoidCallback? onDeleteSubject;
+  final VoidCallback? onLeaveSubject;
+  final VoidCallback? onOpenDashboard;
 
   const SubjectInfoCard({
     super.key,
     required this.subjectModel,
     required this.examLength,
+    this.onToggleOpen,
+    this.onDeleteSubject,
+    this.onLeaveSubject,
+    this.onOpenDashboard,
   });
 
   @override
@@ -99,8 +107,17 @@ class SubjectInfoCard extends StatelessWidget {
 
                   SizedBox(height: 12.h),
 
+                  _buildStatusSection(),
+
+                  SizedBox(height: 12.h),
+
                   // Code with Copy
                   _buildCodeSection(),
+
+                  if (_hasActions) ...[
+                    SizedBox(height: 12.h),
+                    _buildActionsSection(),
+                  ],
                 ],
               ),
             ),
@@ -221,6 +238,121 @@ class SubjectInfoCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  bool get _hasActions =>
+      onToggleOpen != null ||
+      onDeleteSubject != null ||
+      onLeaveSubject != null ||
+      onOpenDashboard != null;
+
+  Widget _buildStatusSection() {
+    final isOpen = subjectModel.subjectIsOpen;
+    final color = isOpen ? Colors.green : Colors.red;
+    final text = isOpen ? 'Open for joining' : 'Closed for joining';
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isOpen ? Icons.lock_open_rounded : Icons.lock_outline_rounded,
+            color: color,
+            size: 16.sp,
+          ),
+          SizedBox(width: 8.w),
+          AppCustomText.generate(
+            text: text,
+            textStyle: AppTextStyles.bodySmallBold.copyWith(color: color),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionsSection() {
+    if (subjectModel.isME) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  title:
+                      subjectModel.subjectIsOpen ? 'Close Subject' : 'Open Subject',
+                  onTap: onToggleOpen,
+                  background: Colors.amber.withValues(alpha: 0.18),
+                  borderColor: Colors.amber.withValues(alpha: 0.5),
+                  textColor: Colors.amber.shade300,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: _buildActionButton(
+                  title: 'Delete Subject',
+                  onTap: onDeleteSubject,
+                  background: Colors.red.withValues(alpha: 0.18),
+                  borderColor: Colors.red.withValues(alpha: 0.5),
+                  textColor: Colors.red.shade300,
+                ),
+              ),
+            ],
+          ),
+          if (onOpenDashboard != null) ...[
+            SizedBox(height: 8.h),
+            _buildActionButton(
+              title: 'Subject Dashboard',
+              onTap: onOpenDashboard,
+              background: AppColors.colorPrimary.withValues(alpha: 0.18),
+              borderColor: AppColors.colorPrimary.withValues(alpha: 0.5),
+              textColor: AppColors.colorPrimary,
+            ),
+          
+        ],
+    ]);
+      
+    }
+
+    return _buildActionButton(
+      title: 'Leave Subject',
+      onTap: onLeaveSubject,
+      background: Colors.red.withValues(alpha: 0.18),
+      borderColor: Colors.red.withValues(alpha: 0.5),
+      textColor: Colors.red.shade300,
+    );
+  }
+
+  Widget _buildActionButton({
+    required String title,
+    required VoidCallback? onTap,
+    required Color background,
+    required Color borderColor,
+    required Color textColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10.r),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 10.w),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: borderColor),
+        ),
+        child: Center(
+          child: AppCustomText.generate(
+            text: title,
+            textStyle: AppTextStyles.bodySmallBold.copyWith(color: textColor),
+          ),
+        ),
       ),
     );
   }

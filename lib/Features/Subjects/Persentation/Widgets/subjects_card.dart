@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '/Core/Utils/Models/subject_model.dart';
-import '../../../../Core/Resources/app_colors.dart';
-import '../../../../Core/Resources/app_fonts.dart';
-import '../../../../Core/Resources/app_icons.dart';
-import '../../../../Core/Utils/Widget/custom_text_app.dart';
+import 'package:smart_text_thief/Core/Resources/app_colors.dart';
+import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
+import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class SubjectsCard extends StatelessWidget {
   final SubjectModel model;
@@ -24,7 +24,6 @@ class SubjectsCard extends StatelessWidget {
     final Color subtitleColor = Colors.grey.shade600;
     final String title = model.subjectName;
     final String date = model.createdAt;
-    final int lengthStudent = model.subjectEmailSts.length;
 
     return GestureDetector(
       onTap: openSubjectDetails,
@@ -70,21 +69,6 @@ class SubjectsCard extends StatelessWidget {
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-            // Stats row
-            Row(
-              children: [
-                // Students
-                Icon(AppIcons.people, size: 16.sp, color: primary),
-                SizedBox(width: 6.w),
-                AppCustomText.generate(
-                  text: '$lengthStudent Students',
-                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                    color: primary,
                   ),
                 ),
               ],

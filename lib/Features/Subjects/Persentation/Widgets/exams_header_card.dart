@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../Core/Resources/app_colors.dart';
-import '../../../../Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/app_colors.dart';
+import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
 
 class ExamsHeaderCard extends StatelessWidget {
   final void Function(String)? onChanged;
@@ -30,7 +30,7 @@ class ExamsHeaderCard extends StatelessWidget {
             cursorColor: primary,
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.search, color: hintColor, size: 20.sp),
-              hintText: 'Search exams...',
+              hintText: 'Search subjects...',
               hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
                 color: hintColor,
               ),
