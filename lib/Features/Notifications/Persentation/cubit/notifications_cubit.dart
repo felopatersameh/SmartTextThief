@@ -95,10 +95,11 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     emit(state.copyWith(notificationsList: updated));
   }
 
-  Future<void> clear() async {
+  Future<void> clear({bool keepAllUsers = false}) async {
     await _subscription?.cancel();
 
     for (var topic in state.subscribedTopics) {
+      if (keepAllUsers && topic == 'allUsers') continue;
       await NotificationServices.unSubscribeToTopic(topic);
     }
 
@@ -106,7 +107,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       state.copyWith(
         badgeCount: 0,
         notificationsList: [],
-        subscribedTopics: [],
+        subscribedTopics: keepAllUsers ? ['allUsers'] : [],
       ),
     );
   }

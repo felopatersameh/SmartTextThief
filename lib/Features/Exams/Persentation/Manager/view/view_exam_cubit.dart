@@ -124,7 +124,7 @@ class ViewExamCubit extends Cubit<ViewExamState> {
     final model = state.exam;
     emit(state.copyWith(loadingSave: true));
     final response = await ExamSource.createExam(model, state.nameSubject);
-    response.fold(
+    await response.fold(
       (error) async {
         await showMessageSnackBar(
           context,
@@ -139,9 +139,9 @@ class ViewExamCubit extends Cubit<ViewExamState> {
           type: MessageType.success,
         );
         if (!context.mounted) return;
-        AppRouter.nextScreenNoPath(context, NameRoutes.subject);
+        AppRouter.goNamedByPath(context, NameRoutes.subject);
       },
     );
-    emit(state.copyWith(loadingSave: true));
+    emit(state.copyWith(loadingSave: false));
   }
 }

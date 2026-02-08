@@ -2,28 +2,28 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 
 /// Gemini API client
 class ApiGemini {
-  final String _keyApi = "AIzaSyCm2w5uUezoREJaS0PeqStryv_U7tHM5Bk";
+  final String _keyApi;
   final String _nameModel = "gemini-2.5-flash";
   late final GenerativeModel _model;
 
-  ApiGemini() {
+  ApiGemini({required String apiKey}) : _keyApi = apiKey {
     _model = GenerativeModel(
       model: _nameModel,
       apiKey: _keyApi,
       generationConfig: GenerationConfig(
-        temperature: 0.7,
+        temperature: 0.2,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 4096,
+        responseMimeType: 'application/json',
       ),
     );
   }
 
-  Future<String> generateContent(String prompt) async {
+  Future<GenerateContentResponse> generateContent(String prompt) async {
     try {
       final content = [Content.text(prompt)];
-      final response = await _model.generateContent(content);
-      return response.text ?? 'No reply found. Please try again.';
+      return await _model.generateContent(content);
     } catch (e) {
       // log('Gemini API error: $e');
       rethrow;

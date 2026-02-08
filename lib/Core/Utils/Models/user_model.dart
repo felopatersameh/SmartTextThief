@@ -10,6 +10,7 @@ class UserModel extends Equatable {
     required this.userName,
     required this.userEmail,
     required this.userPassword,
+    required this.userGeminiApiKey,
     required this.userPhone,
     required this.userType,
     required this.userCreatedAt,
@@ -22,6 +23,7 @@ class UserModel extends Equatable {
   final String userName;
   final String userEmail;
   final String userPassword;
+  final String userGeminiApiKey;
   final String userPhone;
   final UserType userType;
   final DateTime userCreatedAt;
@@ -35,6 +37,7 @@ class UserModel extends Equatable {
       userName: '',
       userEmail: '',
       userPassword: '',
+      userGeminiApiKey: '',
       userPhone: '',
       photo: '',
       userType: UserType.non,
@@ -49,6 +52,7 @@ class UserModel extends Equatable {
     String? userName,
     String? userEmail,
     String? userPassword,
+    String? userGeminiApiKey,
     String? userPhone,
     String? photo,
     UserType? userType,
@@ -62,6 +66,7 @@ class UserModel extends Equatable {
       userName: userName ?? this.userName,
       userEmail: userEmail ?? this.userEmail,
       userPassword: userPassword ?? this.userPassword,
+      userGeminiApiKey: userGeminiApiKey ?? this.userGeminiApiKey,
       userPhone: userPhone ?? this.userPhone,
       photo: photo ?? this.photo,
       userType: userType ?? this.userType,
@@ -80,6 +85,7 @@ class UserModel extends Equatable {
       photo: json[DataKey.photo.key] ?? "",
       userEmail: json[DataKey.userEmail.key] ?? "",
       userPassword: json[DataKey.userPassword.key] ?? "",
+      userGeminiApiKey: json[DataKey.userGeminiApiKey.key] ?? "",
       userPhone: json[DataKey.userPhone.key] ?? "",
       userType: UserType.fromString(json[DataKey.userType.key] ?? "non"),
       userCreatedAt: json[DataKey.userCreatedAt.key] is String
@@ -99,6 +105,7 @@ class UserModel extends Equatable {
         DataKey.userName.key: userName,
         DataKey.userEmail.key: userEmail,
         DataKey.userPassword.key: userPassword,
+        DataKey.userGeminiApiKey.key: userGeminiApiKey,
         DataKey.photo.key: photo,
         DataKey.userPhone.key: userPhone,
         DataKey.userType.key: userType.value,
@@ -116,6 +123,7 @@ class UserModel extends Equatable {
         userEmail,
         photo,
         userPassword,
+        userGeminiApiKey,
         userPhone,
         userType.value,
         userCreatedAt,

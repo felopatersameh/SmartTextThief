@@ -52,15 +52,20 @@ class SubjectCubit extends Cubit<SubjectState> {
     );
   }
 
-  Future<void> addSubject(SubjectModel model) async {
+  Future<bool> addSubject(SubjectModel model) async {
     final response = await SubjectsSources.addSubject(model);
+    bool isDone = false;
 
     response.fold(
-      (error) => emit(
-        state.copyWith(error: error.message),
-      ),
+      (error) {
+        isDone = false;
+        emit(
+          state.copyWith(error: error.message),
+        );
+      },
       (_) {
         final newList = [model, ...state.listDataOfSubjects];
+        isDone = true;
         emit(
           state.copyWith(
             listDataOfSubjects: newList,
@@ -69,19 +74,25 @@ class SubjectCubit extends Cubit<SubjectState> {
         );
       },
     );
+    return isDone;
   }
 
-  Future<void> joinSubject(
+  Future<bool> joinSubject(
     String code,
     String email,
     String name,
   ) async {
     final response = await SubjectsSources.joinSubject(code, email, name);
+    bool isDone = false;
 
     response.fold(
-      (error) => emit(state.copyWith(error: error.message)),
+      (error) {
+        isDone = false;
+        emit(state.copyWith(error: error.message));
+      },
       (model) {
         final newList = [model, ...state.listDataOfSubjects];
+        isDone = true;
         emit(
           state.copyWith(
             listDataOfSubjects: newList,
@@ -90,6 +101,7 @@ class SubjectCubit extends Cubit<SubjectState> {
         );
       },
     );
+    return isDone;
   }
 
   Future<void> removeSubject(SubjectModel model) async {

@@ -8,7 +8,7 @@ import 'TextField/build_text_field.dart';
 import '../show_message_snack_bar.dart';
 
 class AddSubjectDialog extends StatefulWidget {
-  final Future<void> Function(String name)? onSubmit;
+  final Future<bool> Function(String name)? onSubmit;
   final String? title;
   final String? nameField;
   final String? messageLoading;
@@ -34,6 +34,7 @@ class AddSubjectDialog extends StatefulWidget {
 class _AddSubjectDialogState extends State<AddSubjectDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -42,8 +43,11 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
   }
 
   void _submitForm() async {
+    if (_submitting) return;
     if (_formKey.currentState!.validate()) {
+      setState(() => _submitting = true);
       final name = _nameController.text.trim();
+      bool isDone = false;
 
       // Show loading message
       await showMessageSnackBar(
@@ -52,10 +56,15 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
         type: MessageType.loading,
         onLoading: () async {
           if (widget.onSubmit != null) {
-            await widget.onSubmit!(name);
+            isDone = await widget.onSubmit!(name);
           }
         },
       );
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      if (isDone) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -63,10 +72,12 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
   Widget build(BuildContext context) {
     final Color primary = AppColors.colorPrimary;
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Container(
+    return PopScope(
+      canPop: !_submitting,
+      child: Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Container(
         padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
           color: AppColors.colorsBackGround2,
@@ -146,7 +157,9 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
+                      onTap: _submitting
+                          ? null
+                          : () => Navigator.of(context).pop(),
                       child: Container(
                         padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
@@ -213,7 +226,7 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
                   ],
                 ),
                 child: ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: _submitting ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     foregroundColor: Colors.white,
@@ -236,7 +249,7 @@ class _AddSubjectDialogState extends State<AddSubjectDialog> {
             ],
           ),
         ),
-      ),
+      ),),
     );
   }
 }

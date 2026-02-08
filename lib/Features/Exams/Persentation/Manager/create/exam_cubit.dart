@@ -13,6 +13,7 @@ import '../../../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../../../Core/Utils/Models/exam_result_static_model.dart';
 import '../../../../../../Core/Utils/generate_secure_code.dart';
 import '../../../../../../Core/Utils/show_message_snack_bar.dart';
+import '../../../../Profile/Persentation/cubit/profile_cubit.dart';
 import '../../widgets/upload_option_section.dart';
 
 part 'exam_state.dart';
@@ -153,65 +154,88 @@ class CreateExamCubit extends Cubit<CreateExamState> {
   }
 
   Future<void> submitExam(BuildContext context) async {
+    if (state.loadingCreating) return;
     emit(state.copyWith(loadingCreating: true));
     final currentState = state;
+    if (currentState.selectedLevel == null ||
+        currentState.name.trim().isEmpty) {
+      await showMessageSnackBar(
+        context,
+        title: "All fields must be filled",
+        type: MessageType.error,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
+    final totalQuestions = (int.tryParse(currentState.numMultipleChoice) ?? 0) +
+        (int.tryParse(currentState.numTrueFalse) ?? 0) +
+        (int.tryParse(currentState.numQA) ?? 0);
+    if (totalQuestions <= 0) {
+      await showMessageSnackBar(
+        context,
+        title: "You must select a number of questions",
+        type: MessageType.error,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
+    if (currentState.time < 10) {
+      await showMessageSnackBar(
+        context,
+        title: "Exam time cannot be less than 10 minutes",
+        type: MessageType.warning,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
+    if (currentState.startDate == null || currentState.endDate == null) {
+      await showMessageSnackBar(
+        context,
+        title: "Please specify start and end time",
+        type: MessageType.warning,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
+    if (!currentState.endDate!.isAfter(currentState.startDate!)) {
+      await showMessageSnackBar(
+        context,
+        title: "End date must be after start date",
+        type: MessageType.warning,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
+    if (currentState.uploadOption == UploadOption.file &&
+        currentState.uploadedFiles.isEmpty) {
+      await showMessageSnackBar(
+        context,
+        title: "No Files Uploaded",
+        type: MessageType.error,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
+    if (currentState.uploadOption == UploadOption.text &&
+        currentState.uploadText.trim().isEmpty) {
+      await showMessageSnackBar(
+        context,
+        title: "No text found",
+        type: MessageType.error,
+      );
+      emit(state.copyWith(loadingCreating: false));
+      return;
+    }
+
     try {
-      if (currentState.selectedLevel.toString().isEmpty ||
-          currentState.name.trim().isEmpty) {
-        await showMessageSnackBar(
-          context,
-          title: "All fields must be filled",
-          type: MessageType.error,
-        );
-        throw ("All fields must be filled");
-      } else if (currentState.numMultipleChoice.isEmpty &&
-          currentState.numTrueFalse.isEmpty &&
-          currentState.numQA.isEmpty) {
-        await showMessageSnackBar(
-          context,
-          title: "You must select a number of questions",
-          type: MessageType.error,
-        );
-        throw ("You must select a number of questions");
-      } else if (currentState.time < 10) {
-        await showMessageSnackBar(
-          context,
-          title: "Exam time cannot be less than 10 minutes",
-          type: MessageType.warning,
-        );
-        throw ("Exam time cannot be less than 10 minutes");
-      } else if (currentState.startDate == null ||
-          currentState.endDate == null) {
-        await showMessageSnackBar(
-          context,
-          title: "Please specify start and end time",
-          type: MessageType.warning,
-        );
-        throw ("Please specify start and end time");
-      } else if (currentState.uploadOption == UploadOption.file) {
-        if (currentState.uploadedFiles.isEmpty) {
-          await showMessageSnackBar(
-            context,
-            title: "No Files Uploaded",
-            type: MessageType.error,
-          );
-          throw ("No Files Uploaded");
-        } else {
-          await created(context);
-        }
-      } else if (currentState.uploadOption == UploadOption.text) {
-        if (currentState.uploadText.trim().isEmpty) {
-          await showMessageSnackBar(
-            context,
-            title: "No text found",
-            type: MessageType.error,
-          );
-          throw ("No text found");
-        } else {
-          await created(context);
-        }
-      }
-    } catch (e) {
+      await created(context);
+    } finally {
       emit(state.copyWith(loadingCreating: false));
     }
   }
@@ -223,7 +247,22 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     final sum = (int.tryParse(numChose) ?? 0) +
         (int.tryParse(numTF) ?? 0) +
         (int.tryParse(numQA) ?? 0);
-    final response = await ExamGeneratorService().generateExamQuestions(
+    final profileApiKey =
+        context.read<ProfileCubit>().state.model?.userGeminiApiKey.trim() ?? "";
+    final userApiKey = profileApiKey.isNotEmpty
+        ? profileApiKey
+        : EnvConfig.geminiFallbackApiKey;
+    if (userApiKey.isEmpty) {
+      await showMessageSnackBar(
+        context,
+        title: "Please add your Gemini API key from profile first",
+        type: MessageType.warning,
+      );
+      return;
+    }
+
+    final response =
+        await ExamGeneratorService(apiKey: userApiKey).generateExamQuestions(
       level: state.selectedLevel!,
       multipleChoiceCount: numChose,
       trueFalseCount: numTF,
@@ -233,6 +272,20 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       contentContext: state.content,
       manualText: state.uploadText,
     );
+    if (!context.mounted) return;
+    final questions = response.questions;
+    if (!response.isSuccess || questions == null || questions.isEmpty) {
+      final errorMessage = response.errorMessage ?? "";
+      await showMessageSnackBar(
+        context,
+        title: errorMessage.isNotEmpty
+            ? errorMessage
+            : "Failed to generate exam questions",
+        type: MessageType.error,
+      );
+      return;
+    }
+
     final userId = GetLocalStorage.getIdUser();
     final exam = ExamModel(
       examId: generateExamId(),
@@ -243,7 +296,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       examCreatedAt: DateTime.now(),
       examResult: [],
       examStatic: ExamStaticModel(
-        examResultQA: response.questions!,
+        examResultQA: questions,
         levelExam: state.selectedLevel!,
         numberOfQuestions: sum,
         time: state.time.toString(),
@@ -251,14 +304,12 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         randomQuestions: state.canOpenQuestions,
       ),
     );
-    if (!context.mounted) return;
-    if (!response.isSuccess) throw ("error");
+
     await showMessageSnackBar(
       context,
       title: "Created is Done",
       type: MessageType.success,
     );
-    emit(state.copyWith(loadingCreating: false));
     if (!context.mounted) return;
     AppRouter.nextScreenNoPath(
       context,

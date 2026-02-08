@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../../../Core/Services/Notifications/notification_services.dart';
 import '../../../../../Core/Services/Notifications/notification_model.dart';
@@ -21,9 +20,12 @@ part 'do_exam_state.dart';
 
 class DoExamCubit extends Cubit<DoExamState> {
   DoExamCubit() : super(DoExamState());
+  static const Duration backgroundGraceDuration = Duration(minutes: 2);
   String? listenerId;
   int seconds = 0;
   Timer? examTimer;
+  Timer? _backgroundGraceTimer;
+  DateTime? _backgroundAt;
   ExamModel? currentExam;
   DateTime? startTime;
   ExamModel? examModel;
@@ -51,6 +53,9 @@ class DoExamCubit extends Cubit<DoExamState> {
   }
 
   Future<void> init(ExamModel model) async {
+    await disposeExam();
+    seconds = 0;
+    _backgroundAt = null;
     examModel = model;
     currentExam = model;
     startTime = DateTime.now();
@@ -70,8 +75,10 @@ class DoExamCubit extends Cubit<DoExamState> {
           questions: questions),
     );
 
-    await createData(model);
-    await createListeningExam(model);
+    try {
+      await createData(model);
+      await createListeningExam(model);
+    } catch (_) {}
 
     // Start exam timer
     examTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
@@ -90,17 +97,22 @@ class DoExamCubit extends Cubit<DoExamState> {
       }
 
       emit(state.copyWith(timerExam: seconds, remainingTime: remaining));
-      updateData(model);
+      await updateData(model);
     });
   }
 
   void selectAnswer(String questionId, String answer) {
     final updatedAnswers = Map<String, String>.from(state.userAnswers);
-    updatedAnswers[questionId] = answer;
+    final normalizedAnswer = answer.trim();
+    if (normalizedAnswer.isEmpty) {
+      updatedAnswers.remove(questionId);
+    } else {
+      updatedAnswers[questionId] = normalizedAnswer;
+    }
     emit(state.copyWith(userAnswers: updatedAnswers));
 
     // Update Firebase with the selected answer
-    updateAnswerInFirebase(questionId, answer);
+    updateAnswerInFirebase(questionId, normalizedAnswer);
   }
 
   Future<void> updateAnswerInFirebase(String questionId, String answer) async {
@@ -155,85 +167,127 @@ class DoExamCubit extends Cubit<DoExamState> {
     emit(state.copyWith(isExamFinished: true));
     examTimer?.cancel();
 
-    if (listenerId != null) {
-      if (examModel != null) {
-        final Map<String, dynamic> resultsUpdate = {};
-        int totalScore = 0;
+    if (examModel != null) {
+      final Map<String, dynamic> resultsUpdate = {};
+      int totalScore = 0;
 
-        for (var question in examModel!.examStatic.examResultQA) {
-          final studentAnswer = state.userAnswers[question.questionId] ?? '';
-          final correctAnswer =
-              question.correctAnswer; // assuming correctAnswer property exists
-          final isCorrect = studentAnswer == correctAnswer;
-          final score = isCorrect ? 1 : 0;
-          totalScore += score;
+      for (var question in examModel!.examStatic.examResultQA) {
+        final studentAnswer = state.userAnswers[question.questionId] ?? '';
+        final correctAnswer =
+            question.correctAnswer; // assuming correctAnswer property exists
+        final isCorrect = studentAnswer == correctAnswer;
+        final score = isCorrect ? 1 : 0;
+        totalScore += score;
 
-          resultsUpdate[question.questionId] = {
-            ...question.toJson(),
-            "studentAnswer": studentAnswer,
-            "score": score,
-            "evaluated": true,
-          };
-        }
-        final emailStudent = GetLocalStorage.getEmailUser();
-        final List<ExamResultQA> examResultQA = resultsUpdate.values
-            .map((e) => ExamResultQA.fromJson(e as Map<String, dynamic>))
-            .toList();
-        final ExamResultModel lastModel = ExamResultModel(
-          examResultEmailSt: emailStudent,
-          examResultDegree: totalScore.toString(),
-          examResultQA: examResultQA,
-          levelExam: examModel!.examStatic.levelExam,
-          numberOfQuestions: examModel!.examStatic.numberOfQuestions,
-          typeExam: examModel!.examStatic.typeExam,
-        );
-        await RealtimeFirebase.unListen(listenerId!);
-        await FirebaseServices.instance.updateData(
-          CollectionKey.subjects.key,
-          model.examIdSubject,
-          {
-            DataKey.examExamResult.key: FieldValue.arrayUnion([
-              lastModel.toJson(),
-            ]),
-          },
-          subCollections: [CollectionKey.exams.key],
-          subIds: [model.examId],
-        );
+        resultsUpdate[question.questionId] = {
+          ...question.toJson(),
+          "studentAnswer": studentAnswer,
+          "score": score,
+          "evaluated": true,
+        };
       }
-
-      await RealtimeFirebase.deleteData("Exam_Live/${model.specialIdLiveExam}");
-      final nameParts = GetLocalStorage.getNameUser().split(" ");
-      final name = nameParts.length >= 2
-          ? "${nameParts[0]} ${nameParts[1]}"
-          : GetLocalStorage.getNameUser();
-      final length =
-          model.examResult.isEmpty || model.examResult.length - 1 == 0;
-      final String and = length ? "" : "and ${model.examResult.length} members";
-      final notification = NotificationModel(
-        id: "doExam_${model.examId}",
-        topicId: "${model.examIdSubject}_admin",
-        type: NotificationType.submit,
-        body:
-            "$name Submitted Exam ${model.examStatic.typeExam} ${model.specialIdLiveExam} $and",
+      final emailStudent = GetLocalStorage.getEmailUser();
+      final List<ExamResultQA> examResultQA = resultsUpdate.values
+          .map((e) => ExamResultQA.fromJson(e as Map<String, dynamic>))
+          .toList();
+      final ExamResultModel lastModel = ExamResultModel(
+        examResultEmailSt: emailStudent,
+        examResultDegree: totalScore.toString(),
+        examResultQA: examResultQA,
+        levelExam: examModel!.examStatic.levelExam,
+        numberOfQuestions: examModel!.examStatic.numberOfQuestions,
+        typeExam: examModel!.examStatic.typeExam,
       );
-      await NotificationServices.sendNotificationToTopic(
-        id: notification.id,
-        data: notification.toJson(),
-        stringData: notification.toJsonString(),
+
+      final latestExamResponse = await FirebaseServices.instance.getData(
+        model.examIdSubject,
+        CollectionKey.subjects.key,
+        subCollections: [CollectionKey.exams.key],
+        subIds: [model.examId],
+      );
+
+      final List<Map<String, dynamic>> mergedResults = [];
+      if (latestExamResponse.status && latestExamResponse.data is Map) {
+        final latestExamData =
+            Map<String, dynamic>.from(latestExamResponse.data as Map);
+        final latestResults = latestExamData[DataKey.examExamResult.key];
+        if (latestResults is List) {
+          for (final result in latestResults) {
+            Map<String, dynamic>? resultMap;
+            if (result is Map<String, dynamic>) {
+              resultMap = result;
+            } else if (result is Map) {
+              resultMap = Map<String, dynamic>.from(result);
+            }
+            if (resultMap == null) continue;
+            if (resultMap[DataKey.examResultEmailSt.key] == emailStudent) {
+              continue;
+            }
+            mergedResults.add(resultMap);
+          }
+        }
+      }
+      mergedResults.add(lastModel.toJson());
+
+      await FirebaseServices.instance.updateData(
+        CollectionKey.subjects.key,
+        model.examIdSubject,
+        {
+          DataKey.examExamResult.key: mergedResults,
+        },
+        subCollections: [CollectionKey.exams.key],
+        subIds: [model.examId],
       );
     }
+
+    if (listenerId != null) {
+      await RealtimeFirebase.unListen(listenerId!);
+      listenerId = null;
+    }
+    try {
+      await RealtimeFirebase.deleteData("Exam_Live/${model.specialIdLiveExam}");
+    } catch (_) {}
+    final nameParts = GetLocalStorage.getNameUser().split(" ");
+    final name = nameParts.length >= 2
+        ? "${nameParts[0]} ${nameParts[1]}"
+        : GetLocalStorage.getNameUser();
+    final length = model.examResult.isEmpty || model.examResult.length - 1 == 0;
+    final String and = length ? "" : "and ${model.examResult.length} members";
+    final notification = NotificationModel(
+      id: "doExam_${model.examId}",
+      topicId: "${model.examIdSubject}_admin",
+      type: NotificationType.submit,
+      body:
+          "$name Submitted Exam ${model.examStatic.typeExam} ${model.specialIdLiveExam} $and",
+    );
+    await NotificationServices.sendNotificationToTopic(
+      id: notification.id,
+      data: notification.toJson(),
+      stringData: notification.toJsonString(),
+    );
   }
 
   bool validateAllQuestionsAnswered() {
     if (examModel == null) return false;
-    final totalQuestions = examModel!.examStatic.examResultQA.length;
-    return state.userAnswers.length == totalQuestions;
+    for (final question in examModel!.examStatic.examResultQA) {
+      final answer = state.userAnswers[question.questionId];
+      if (!_isAnswerValid(answer)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   int get unansweredQuestionsCount {
     if (examModel == null) return 0;
-    final totalQuestions = examModel!.examStatic.examResultQA.length;
-    return totalQuestions - state.userAnswers.length;
+    int unanswered = 0;
+    for (final question in examModel!.examStatic.examResultQA) {
+      final answer = state.userAnswers[question.questionId];
+      if (!_isAnswerValid(answer)) {
+        unanswered++;
+      }
+    }
+    return unanswered;
   }
 
   Future<bool> submitExam() async {
@@ -257,16 +311,46 @@ class DoExamCubit extends Cubit<DoExamState> {
     }
   }
 
-  Future<void> disposeExam() async {
-    examTimer?.cancel();
-    if (listenerId != null) {
-      await RealtimeFirebase.unListen(listenerId!);
+  void onAppBackgrounded() {
+    if (state.isExamFinished || currentExam == null) return;
+    _backgroundAt ??= DateTime.now();
+    _backgroundGraceTimer?.cancel();
+    _backgroundGraceTimer = Timer(backgroundGraceDuration, () async {
+      await forceFinishExam();
+    });
+  }
+
+  Future<void> onAppResumed() async {
+    if (state.isExamFinished) return;
+    final backgroundAt = _backgroundAt;
+    _backgroundAt = null;
+    _backgroundGraceTimer?.cancel();
+    _backgroundGraceTimer = null;
+    if (backgroundAt == null) return;
+
+    final awayDuration = DateTime.now().difference(backgroundAt);
+    if (awayDuration >= backgroundGraceDuration) {
+      await forceFinishExam();
     }
   }
 
+  Future<void> disposeExam() async {
+    examTimer?.cancel();
+    examTimer = null;
+    _backgroundGraceTimer?.cancel();
+    _backgroundGraceTimer = null;
+    _backgroundAt = null;
+    if (listenerId != null) {
+      await RealtimeFirebase.unListen(listenerId!);
+      listenerId = null;
+    }
+  }
+
+  bool _isAnswerValid(String? answer) => answer != null && answer.trim().isNotEmpty;
+
   @override
-  Future<void> close() {
-    disposeExam();
+  Future<void> close() async {
+    await disposeExam();
     return super.close();
   }
 
@@ -280,7 +364,7 @@ class DoExamCubit extends Cubit<DoExamState> {
     for (var element in model.examStatic.examResultQA) {
       map[element.questionId] = element.toJson();
     }
-    RealtimeFirebase.create(
+    await RealtimeFirebase.create(
       "Exam_Live",
       map,
       otherData: otherMap,
@@ -289,17 +373,17 @@ class DoExamCubit extends Cubit<DoExamState> {
   }
 
   Future<void> updateData(ExamModel model) async {
-    // Only update the timer
-    final Map<String, dynamic> timerUpdate = {
-      'time': state.timerExam,
-      'dispose_exam': 0,
-    };
-
-    await RealtimeFirebase.updateData(
-      "Exam_Live/${model.specialIdLiveExam}",
-      {},
-      otherUpdates: timerUpdate,
-    );
+    try {
+      final Map<String, dynamic> timerUpdate = {
+        'time': state.timerExam,
+        'dispose_exam': 0,
+      };
+      await RealtimeFirebase.updateData(
+        "Exam_Live/${model.specialIdLiveExam}",
+        {},
+        otherUpdates: timerUpdate,
+      );
+    } catch (_) {}
   }
 
   Future<void> createListeningExam(ExamModel model) async {

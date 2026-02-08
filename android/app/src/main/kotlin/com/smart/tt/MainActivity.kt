@@ -1,4 +1,4 @@
-package com.smart.smart_text_thief
+package com.smart.tt
 
 import io.flutter.embedding.android.FlutterActivity
 

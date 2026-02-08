@@ -15,6 +15,7 @@ import '../../Features/Profile/Persentation/Pages/profile_screen.dart';
 import '../../Features/Splash/splash_screen.dart';
 import '../../Features/Subjects/Persentation/Pages/details_screen.dart';
 import '../../Features/Subjects/Persentation/Pages/subject_page.dart';
+import '../../Features/login/Persentation/choose_role_screen.dart';
 import '../../Features/login/Persentation/login_screen.dart';
 import '../Setting/settings_cubit.dart';
 import 'error_screen.dart';
@@ -58,6 +59,11 @@ class AppRouter {
         name: NameRoutes.login,
         path: NameRoutes.login.ensureWithSlash(),
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        name: NameRoutes.chooseRole,
+        path: NameRoutes.chooseRole.ensureWithSlash(),
+        builder: (context, state) => const ChooseRoleScreen(),
       ),
       ShellRoute(
         pageBuilder: (context, state, child) =>

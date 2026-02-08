@@ -1,3 +1,5 @@
+import 'package:google_generative_ai/google_generative_ai.dart';
+
 import '../../../Features/Exams/Persentation/widgets/upload_option_section.dart';
 import 'api_gemini.dart';
 import '../../../Core/Services/Gemini/exam_generation_result_model.dart';
@@ -9,9 +11,10 @@ import '../../../Core/Utils/Enums/level_exam.dart';
 class ExamGeneratorService {
   final ApiGemini _apiGemini;
   final FileTextExtractor _fileExtractor;
+  static const int _maxEducationalTextChars = 20000;
 
-  ExamGeneratorService()
-      : _apiGemini = ApiGemini(),
+  ExamGeneratorService({required String apiKey})
+      : _apiGemini = ApiGemini(apiKey: apiKey),
         _fileExtractor = FileTextExtractor();
 
   /// Main method: Generate exam questions
@@ -31,6 +34,16 @@ class ExamGeneratorService {
     String? contentContext,
   }) async {
     try {
+      final expectedQuestionsCount =
+          (int.tryParse(multipleChoiceCount) ?? 0) +
+              (int.tryParse(trueFalseCount) ?? 0) +
+              (int.tryParse(shortAnswerCount) ?? 0);
+      if (expectedQuestionsCount <= 0) {
+        return ExamGenerationResultModel.error(
+          'Invalid questions count. Please choose at least one question.',
+        );
+      }
+
       // Step 1: Get educational text
       String educationalText;
 
@@ -58,6 +71,11 @@ class ExamGeneratorService {
         );
       }
 
+      // Keep prompt size bounded to reduce model truncation/errors.
+      if (educationalText.length > _maxEducationalTextChars) {
+        educationalText = educationalText.substring(0, _maxEducationalTextChars);
+      }
+
       // Step 2: Generate prompt
       final prompt = ExamPromptGenerator.generatePrompt(
           educationalText: educationalText,
@@ -70,9 +88,30 @@ class ExamGeneratorService {
 
       // Step 3: Send to Gemini API
       final response = await _apiGemini.generateContent(prompt);
+      final finishReason = response.candidates.isNotEmpty
+          ? response.candidates.first.finishReason
+          : null;
+      final responseText = response.text ?? "";
+
+      if (finishReason == FinishReason.maxTokens) {
+        return ExamGenerationResultModel.error(
+          'Generated output was cut off (max tokens reached). Reduce question count/content size and try again.',
+        );
+      }
+      if (responseText.trim().isEmpty) {
+        return ExamGenerationResultModel.error(
+          'No valid response generated. Please try again.',
+        );
+      }
 
       // Step 4: Parse response to questions
-      final questions = ExamResponseParser.parseQuestions(response);
+      final questions = ExamResponseParser.parseQuestions(responseText);
+
+      if (questions.length != expectedQuestionsCount) {
+        return ExamGenerationResultModel.error(
+          'Generated ${questions.length} question(s), expected $expectedQuestionsCount. Please try again.',
+        );
+      }
 
       // Step 5: Validate questions
       if (!ExamResponseParser.validateQuestions(questions)) {

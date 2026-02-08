@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../Config/setting.dart';
 import '../../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../../Core/Utils/Models/exam_result_q_a.dart';
@@ -38,103 +41,10 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     // _enableScreenshotProtection();
   }
 
-  // // ✅ تفعيل الحماية مع Callbacks
-  // void _enableScreenshotProtection() {
-  //   ScreenshotProtectionService.enableProtection(
-  //     onFirstScreenshot: () {
-  //       if (mounted) {
-  //         _showScreenshotWarningDialog();
-  //       }
-  //     },
-  //     onSecondScreenshot: () {
-  //       if (mounted && _cubit != null) {
-  //         _handleSecondScreenshot();
-  //       }
-  //     },
-  //   );
-  // }
-
-  // // ✅ تحذير المرة الأولى
-  // void _showScreenshotWarningDialog() {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) => AlertDialog(
-  //       backgroundColor: AppColors.colorsBackGround2,
-  //       icon: Icon(Icons.warning_amber_rounded, color: Colors.red, size: 60),
-  //       title: AppCustomText.generate(
-  //         text: '⚠️ تحذير أمني',
-  //         textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.red),
-  //       ),
-  //       content: AppCustomText.generate(
-  //         text:
-  //             'تم رصد محاولة أخذ Screenshot!\n\nهذا مخالف لقواعد الامتحان.\n\n⚠️ في حالة التكرار سيتم إنهاء الامتحان تلقائياً.',
-  //         textStyle: AppTextStyles.bodyMediumMedium,
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.of(context).pop(),
-  //           child: AppCustomText.generate(
-  //             text: 'فهمت',
-  //             textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-  //               color: AppColors.colorPrimary,
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // // ✅ إنهاء الامتحان عند Screenshot الثاني
-  // Future<void> _handleSecondScreenshot() async {
-  //   // إنهاء الامتحان مباشرة
-  //   await _cubit?.forceFinishExam();
-
-  //   if (mounted) {
-  //     // عرض رسالة وإغلاق الصفحة
-  //     showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (context) => AlertDialog(
-  //         backgroundColor: AppColors.colorsBackGround2,
-  //         icon: Icon(Icons.block, color: Colors.red, size: 60),
-  //         title: AppCustomText.generate(
-  //           text: '❌ تم إنهاء الامتحان',
-  //           textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.red),
-  //         ),
-  //         content: AppCustomText.generate(
-  //           text:
-  //               'تم إنهاء الامتحان بسبب محاولات أخذ Screenshot متكررة.\n\nتم حفظ إجاباتك الحالية.',
-  //           textStyle: AppTextStyles.bodyMediumMedium,
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // إغلاق الـ Dialog
-  //               Navigator.of(context).pop(); // إغلاق صفحة الامتحان
-  //             },
-  //             child: AppCustomText.generate(
-  //               text: 'حسناً',
-  //               textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-  //                 color: Colors.red,
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   }
-  // }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
-    // Finish exam if not already finished (handles crashes, unexpected exits)
-    if (_cubit != null && !_cubit!.state.isExamFinished) {
-      _cubit!.forceFinishExam();
-    }
 
     // ✅ إلغاء حماية Screenshot
     // ScreenshotProtectionService.disableProtection();
@@ -156,15 +66,17 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    if (_cubit == null) return;
 
-    // If app goes to background or becomes inactive and exam is not finished
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_cubit!.onAppResumed());
+      return;
+    }
+
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
-      if (_cubit != null && !_cubit!.state.isExamFinished) {
-        // Force finish exam when app goes to background (handles app crash, network loss, etc)
-        _cubit!.forceFinishExam();
-      }
+      _cubit!.onAppBackgrounded();
     }
   }
 
@@ -335,7 +247,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     DoExamCubit cubit,
   ) {
     return Container(
-      height: 80,
+      height: 80.h,
       padding: const EdgeInsets.all(16),
       color: AppColors.colorsBackGround2,
       child: ListView.builder(
@@ -343,7 +255,8 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         itemCount: questions.length,
         itemBuilder: (context, index) {
           final question = questions[index];
-          final isAnswered = state.userAnswers.containsKey(question.questionId);
+          final answer = state.userAnswers[question.questionId];
+          final isAnswered = answer != null && answer.trim().isNotEmpty;
           final isCurrent = index == state.currentQuestionIndex;
 
           return GestureDetector(
@@ -391,6 +304,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     DoExamCubit cubit,
   ) {
     final currentAnswer = state.userAnswers[question.questionId];
+    final isShortAnswer = question.questionType == 'short_answer';
 
     return Expanded(
       child: Container(
@@ -405,80 +319,118 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
           children: [
             AppCustomText.generate(
               text: question.questionText,
+              // maxLines:question.questionText.length ,
               textStyle: AppTextStyles.h6Bold,
             ),
             const SizedBox(height: 24),
             Expanded(
-              child: ListView.builder(
-                itemCount: question.options.length,
-                itemBuilder: (context, index) {
-                  final option = question.options[index];
-                  final isSelected = currentAnswer == option;
+              child: isShortAnswer
+                  ? _buildShortAnswerField(question, currentAnswer, cubit)
+                  : ListView.builder(
+                      itemCount: question.options.length,
+                      itemBuilder: (context, index) {
+                        final option = question.options[index];
+                        final isSelected = currentAnswer == option;
 
-                  return GestureDetector(
-                    onTap: () =>
-                        cubit.selectAnswer(question.questionId, option),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.colorPrimary.withValues(alpha: 0.2)
-                            : AppColors.colorBackgroundCardProjects,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.colorPrimary
-                              : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
+                        return GestureDetector(
+                          onTap: () =>
+                              cubit.selectAnswer(question.questionId, option),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+                              color: isSelected
+                                  ? AppColors.colorPrimary.withValues(alpha: 0.2)
+                                  : AppColors.colorBackgroundCardProjects,
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.colorPrimary
-                                    : AppColors.textCoolGray,
+                                    : Colors.transparent,
                                 width: 2,
                               ),
-                              color: isSelected
-                                  ? AppColors.colorPrimary
-                                  : Colors.transparent,
                             ),
-                            child: isSelected
-                                ? const Icon(
-                                    Icons.check,
-                                    size: 16,
-                                    color: Colors.white,
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppCustomText.generate(
-                              text: option,
-                              textStyle: AppTextStyles.bodyLargeMedium.copyWith(
-                                color: isSelected
-                                    ? AppColors.textWhite
-                                    : AppColors.textCoolGray,
-                              ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.colorPrimary
+                                          : AppColors.textCoolGray,
+                                      width: 2,
+                                    ),
+                                    color: isSelected
+                                        ? AppColors.colorPrimary
+                                        : Colors.transparent,
+                                  ),
+                                  child: isSelected
+                                      ? const Icon(
+                                          Icons.check,
+                                          size: 16,
+                                          color: Colors.white,
+                                        )
+                                      : null,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: AppCustomText.generate(
+                                    text: option,
+                                    textStyle:
+                                        AppTextStyles.bodyLargeMedium.copyWith(
+                                      color: isSelected
+                                          ? AppColors.textWhite
+                                          : AppColors.textCoolGray,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildShortAnswerField(
+    ExamResultQA question,
+    String? currentAnswer,
+    DoExamCubit cubit,
+  ) {
+    return ListView(
+      children: [
+        TextFormField(
+          key: ValueKey('short_answer_${question.questionId}'),
+          initialValue: currentAnswer ?? '',
+          minLines: 5,
+          maxLines: 8,
+          keyboardType: TextInputType.multiline,
+          onChanged: (value) => cubit.selectAnswer(question.questionId, value),
+          style: AppTextStyles.bodyLargeMedium.copyWith(
+            color: AppColors.textWhite,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Write your answer here...',
+            hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
+              color: AppColors.textCoolGray,
+            ),
+            filled: true,
+            fillColor: AppColors.colorBackgroundCardProjects,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -31,7 +31,7 @@ class ExamSource {
               "New Exam Created ${examModel.specialIdLiveExam} in $nameSubject\n${examModel.durationBeforeStarted} and ${examModel.durationAfterStarted}",
         );
 
-        NotificationServices.sendNotificationToTopic(
+        await NotificationServices.sendNotificationToTopic(
           data: model.toJson(),
           stringData: model.toJsonString(),
         );
@@ -95,11 +95,13 @@ class ExamSource {
     ExamResultQA examResultQA,
   ) async {
     try {
+      final questionListKey =
+          '${DataKey.examStatic.key}.${DataKey.examResultQandA.key}';
       final response = await FirebaseServices.instance.updateData(
         CollectionKey.subjects.key,
         idSubject,
         {
-          "exam_Q&A": FieldValue.arrayUnion([examResultQA]),
+          questionListKey: FieldValue.arrayUnion([examResultQA.toJson()]),
         },
         subCollections: [CollectionKey.exams.key],
         subIds: [idExam],
@@ -120,11 +122,13 @@ class ExamSource {
     ExamResultQA examResultQA,
   ) async {
     try {
+      final questionListKey =
+          '${DataKey.examStatic.key}.${DataKey.examResultQandA.key}';
       final response = await FirebaseServices.instance.updateData(
         CollectionKey.subjects.key,
         idSubject,
         {
-          "exam_Q&A": FieldValue.arrayRemove([examResultQA]),
+          questionListKey: FieldValue.arrayRemove([examResultQA.toJson()]),
         },
         subCollections: [CollectionKey.exams.key],
         subIds: [idExam],

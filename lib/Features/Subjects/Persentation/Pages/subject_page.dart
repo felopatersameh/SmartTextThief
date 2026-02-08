@@ -23,7 +23,6 @@ class SubjectPage extends StatelessWidget {
           prev.action != curr.action || prev.error != curr.error,
       listener: (context, state) {
         if (state.action == SubjectAction.added) {
-          Navigator.pop(context);
           showMessageSnackBar(
             context,
             title: 'Subject added successfully!',
@@ -32,7 +31,6 @@ class SubjectPage extends StatelessWidget {
         }
 
         if (state.action == SubjectAction.joined) {
-          Navigator.pop(context);
           showMessageSnackBar(
             context,
             title: 'Joined subject successfully!',
@@ -99,7 +97,7 @@ void _showAddSubjectDialog(
 }) {
   showDialog(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     builder: (context) => AddSubjectDialog(
       title: 'Add New Subject',
       submitButtonText: 'Add Subject',
@@ -118,8 +116,8 @@ void _showAddSubjectDialog(
           subjectCreatedAt: DateTime.now(),
         );
 
-        if (!context.mounted) return;
-        await context.read<SubjectCubit>().addSubject(model);
+        if (!context.mounted) return false;
+        return await context.read<SubjectCubit>().addSubject(model);
       },
     ),
   );
@@ -129,7 +127,7 @@ void _showJoinSubjectDialog(BuildContext context,
     {required String email, required String name}) {
   showDialog(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: false,
     builder: (context) => AddSubjectDialog(
       title: 'Join Subject',
       submitButtonText: 'Join',
@@ -138,15 +136,7 @@ void _showJoinSubjectDialog(BuildContext context,
       nameField: "Code",
       nameFieldHint: "Enter Code",
       onSubmit: (String code) async {
-        await context.read<SubjectCubit>().joinSubject(code, email, name);
-
-        // showMessageSnackBar(
-        //     context,
-        //     title: 'Invalid subject code. Please try again.',
-        //     type: MessageType.error,
-        //   );
-
-        // if (!context.mounted) return;
+        return await context.read<SubjectCubit>().joinSubject(code, email, name);
       },
     ),
   );

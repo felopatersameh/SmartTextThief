@@ -15,6 +15,7 @@ enum DataKey {
   userName('user_name'),
   userEmail('user_email'),
   userPassword('user_password'),
+  userGeminiApiKey('user_geminiApiKey'),
   userPhone('user_phone'),
   userType('user_type'),
   userCreatedAt('user_createdAt'),

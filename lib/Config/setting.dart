@@ -12,5 +12,6 @@ export 'Themes/light.dart';
 export 'Themes/dark_theme.dart';
 
 export 'app_config.dart';
+export 'env_config.dart';
 
 export 'screen_orientation_helper.dart';

@@ -8,6 +8,7 @@ import '../../Config/Routes/name_routes.dart';
 
 import '../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../Profile/Persentation/cubit/profile_cubit.dart';
+import '../../Core/Utils/Enums/enum_user.dart';
 import 'loading_indicator.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -57,6 +58,11 @@ class _SplashScreenState extends State<SplashScreen>
       if (user.userId == "-#") {
         if (!mounted) return;
         AppRouter.goNamedByPath(context, NameRoutes.login);
+        return;
+      }
+      if (user.userType == UserType.non) {
+        if (!mounted) return;
+        AppRouter.goNamedByPath(context, NameRoutes.chooseRole);
         return;
       }
       await _smoothProgressUpdate(0.4, .7, 5);

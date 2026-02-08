@@ -37,7 +37,7 @@ class _BodyScreenState extends State<BodyScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    
+
     super.dispose();
   }
 
@@ -55,7 +55,11 @@ class _BodyScreenState extends State<BodyScreen> {
               type: MessageType.success,
             );
             if (!context.mounted) return;
-            AppRouter.goNamedByPath(context, NameRoutes.subject);
+            if (state.requireRoleSelection) {
+              AppRouter.goNamedByPath(context, NameRoutes.chooseRole);
+            } else {
+              AppRouter.goNamedByPath(context, NameRoutes.subject);
+            }
           }
           if (state.success == false) {
             if (!context.mounted) return;
@@ -99,23 +103,6 @@ class _BodyScreenState extends State<BodyScreen> {
                     fieldId: 'Password_1#',
                     hintText: AppStrings.password,
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
-                        minimumSize: Size(0, 0),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: AppCustomText.generate(
-                        text: AppStrings.forgotPassword,
-                        textStyle: AppTextStyles.bodySmallSemiBold.copyWith(
-                          color: AppColors.colorPrimary,
-                        ),
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 24.h),
                   BuildButtonApp(
                     actions: () async {
@@ -154,19 +141,6 @@ class _BodyScreenState extends State<BodyScreen> {
                     textIcon: "",
                   ),
                   SizedBox(height: 30.h),
-                  // BuildButtonAppWithIcon(
-                  //   actions: () async => await showMessageSnackBar(
-                  //     context,
-                  //     title: "loading ${AppStrings.orSignInWithFacebook}",
-                  //     type: MessageType.loading,
-                  //     onLoading: () async => await context
-                  //         .read<AuthenticationCubit>()
-                  //         .loginByFacebook(),
-                  //   ),
-                  //   iconErrorBuilder: AppIcons.facebook,
-                  //   text: AppStrings.orSignInWithFacebook,
-                  //   textIcon: "",
-                  // ),
                 ],
               ),
             ),

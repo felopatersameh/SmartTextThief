@@ -36,8 +36,9 @@ class AuthenticationSource {
             userEmail: account.email,
             photo: account.photoUrl ?? "",
             userPassword: '',
+            userGeminiApiKey: '',
             userPhone: '',
-            userType: UserType.te,
+            userType: UserType.non,
             userCreatedAt: DateTime.now(),
             subscribedTopics: ["allUsers"]);
 

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:dio/dio.dart';
+import '../../../Config/env_config.dart';
 import '../Firebase/firebase_service.dart';
 import '../../LocalStorage/get_local_storage.dart';
 import '../../Utils/Enums/collection_key.dart';
@@ -91,7 +92,9 @@ class NotificationServices {
   }
 
   static Future<ServiceAccountCredentials> _loadServiceAccount() async {
-    final jsonStr = await rootBundle.loadString('assets/service_account.json');
+    final jsonStr = await rootBundle.loadString(
+      EnvConfig.fcmServiceAccountPath,
+    );
     // log("jsonStr:: $jsonStr");
     return ServiceAccountCredentials.fromJson(jsonStr);
   }
@@ -110,7 +113,8 @@ class NotificationServices {
     required Map<String, dynamic> payloadData,
   }) async {
     final accessToken = await _getAccessToken();
-    const projectId = 'smarttextthief';
+    final projectId = EnvConfig.fcmProjectId;
+    if (projectId.isEmpty) return;
 
     for (final token in tokens) {
       final payload = {
@@ -142,14 +146,14 @@ class NotificationServices {
         );
 
         if (response.statusCode == 200) {
-          //debugPrint('✅ Notification sent to token');
+          // debugPrint('✅ Notification sent to token');
         } else {
-          //debugPrint(
+          // debugPrint(
           // '❌ Error sending notification: ${response.statusCode} - ${response.data}',
           // );
         }
       } catch (e) {
-        //debugPrint('❌ Dio error: $e');
+        // debugPrint('❌ Dio error: $e');
       }
     }
   }
@@ -163,7 +167,8 @@ class NotificationServices {
   }) async {
     try {
       final accessToken = await _getAccessToken();
-      const projectId = 'smarttextthief';
+      final projectId = EnvConfig.fcmProjectId;
+      if (projectId.isEmpty) return false;
       final String id0 = id ?? data?['id'];
       final payload = {
         "message": {

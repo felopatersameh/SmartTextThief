@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../../Config/env_config.dart';
 import '../../Utils/Enums/collection_key.dart';
 import 'response_model.dart';
 import 'failure_model.dart';
@@ -13,8 +14,6 @@ class FirebaseServices {
 
   static final FirebaseServices _instance = FirebaseServices._();
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
-  static final _webClientId =
-      "231951979413-anlihbi9s6do3h4rm078g54o3u44e5nh.apps.googleusercontent.com";
   static FirebaseServices get instance => _instance;
 
   FirebaseAuth? _auth;
@@ -87,7 +86,10 @@ class FirebaseServices {
   }
 
   Future<GoogleSignInAccount> google() async {
-    await _googleSignIn.initialize(clientId: _webClientId);
+    final webClientId = EnvConfig.googleWebClientId;
+    await _googleSignIn.initialize(
+      clientId: webClientId.isEmpty ? null : webClientId,
+    );
     final GoogleSignInAccount googleAccount =
         await _googleSignIn.authenticate();
 

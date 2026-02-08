@@ -7,24 +7,21 @@ class RealtimeFirebase {
   static FirebaseDatabase? _database;
   static final Map<String, StreamSubscription> _listeners = {};
   static bool _initialized = false;
+  static bool _persistenceConfigured = false;
 
   /// Initialize Firebase Realtime Database
   /// Call this after Firebase.initializeApp() in main()
   static Future<void> initialize({String? databaseURL}) async {
-    try {
-      if (!_initialized) {
-        _database = FirebaseDatabase.instanceFor(
-          app: Firebase.app(),
-          databaseURL: databaseURL,
-        );
-        _database!.setPersistenceEnabled(true);
-        _initialized = true;
-        //developer\.log\('RealtimeFirebase initialized successfully');
-      }
-    } catch (e) {
-      //developer\.log\('RealtimeFirebase initialization failed: $e');
-      throw Exception('Firebase initialization failed: $e');
+    if (_initialized && _database != null) {
+      return;
     }
+    _database = FirebaseDatabase.instanceFor(
+      app: Firebase.app(),
+      databaseURL: databaseURL,
+    );
+    await _configurePersistenceIfNeeded();
+    _initialized = true;
+    //developer\.log\('RealtimeFirebase initialized successfully');
   }
 
   /// Check if Firebase is initialized
@@ -376,16 +373,12 @@ class RealtimeFirebase {
 
   /// Enable offline persistence (call before any database operations)
   static void enablePersistence() {
-    if (_database != null) {
-      _database!.setPersistenceEnabled(true);
-    }
+    _configurePersistenceIfNeeded();
   }
 
   /// Disable offline persistence
   static void disablePersistence() {
-    if (_database != null) {
-      _database!.setPersistenceEnabled(false);
-    }
+    // Not supported safely after database use; keeping as no-op intentionally.
   }
 
   /// Get database reference for advanced operations
@@ -407,6 +400,7 @@ class RealtimeFirebase {
   static Future<void> dispose() async {
     await unlistenAll();
     _initialized = false;
+    _persistenceConfigured = false;
     _database = null;
   }
 
@@ -453,6 +447,17 @@ class RealtimeFirebase {
     } catch (e) {
       //developer\.log\('Push multiple failed: $e');
       throw Exception('Push multiple failed: $e');
+    }
+  }
+
+  static Future<void> _configurePersistenceIfNeeded() async {
+    if (_database == null || _persistenceConfigured) return;
+    try {
+      _database!.setPersistenceEnabled(true);
+      _persistenceConfigured = true;
+    } catch (_) {
+      // Avoid crashing when persistence is already configured or called late.
+      _persistenceConfigured = true;
     }
   }
 }
