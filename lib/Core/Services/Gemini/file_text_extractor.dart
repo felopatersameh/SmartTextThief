@@ -3,29 +3,26 @@ import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-import '../../../Features/Exams/Persentation/widgets/upload_option_section.dart';
+import '../../../Features/Exams/create_exam/data/models/information_file_model.dart';
 import '../../Utils/Enums/upload_option.dart';
 
 class FileTextExtractor {
   /// Extract text from PDF file using Syncfusion
   Future<String> extractFromPdf(String filePath) async {
     try {
-      // Load PDF document
-      final File file = File(filePath);
+      final file = File(filePath);
       final bytes = await file.readAsBytes();
-      final PdfDocument document = PdfDocument(inputBytes: bytes);
+      final document = PdfDocument(inputBytes: bytes);
 
-      // Extract text from all pages
-      final StringBuffer extractedText = StringBuffer();
-      final PdfTextExtractor extractor = PdfTextExtractor(document);
+      final extractedText = StringBuffer();
+      final extractor = PdfTextExtractor(document);
 
       for (int i = 0; i < document.pages.count; i++) {
-        final String pageText = extractor.extractText(startPageIndex: i);
+        final pageText = extractor.extractText(startPageIndex: i);
         extractedText.writeln(pageText);
-        extractedText.writeln(); // Add spacing between pages
+        extractedText.writeln();
       }
 
-      // Dispose document
       document.dispose();
 
       final result = extractedText.toString().trim();
@@ -33,7 +30,6 @@ class FileTextExtractor {
           ? 'Unable to extract text from PDF. The file might be image-based or protected.'
           : result;
     } catch (e) {
-      // log('Error extracting PDF text: $e');
       return 'Error reading PDF file: ${e.toString()}';
     }
   }
@@ -42,13 +38,9 @@ class FileTextExtractor {
   Future<String> extractFromImage(String filePath) async {
     try {
       final inputImage = InputImage.fromFilePath(filePath);
-      final textRecognizer = TextRecognizer(
-        script: TextRecognitionScript.latin,
-      );
+      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
 
-      final RecognizedText recognizedText = await textRecognizer.processImage(
-        inputImage,
-      );
+      final recognizedText = await textRecognizer.processImage(inputImage);
       await textRecognizer.close();
 
       if (recognizedText.text.trim().isEmpty) {
@@ -57,7 +49,6 @@ class FileTextExtractor {
 
       return recognizedText.text;
     } catch (e) {
-      // log('Error extracting image text: $e');
       return 'Error reading image file: ${e.toString()}';
     }
   }
@@ -66,11 +57,12 @@ class FileTextExtractor {
   Future<List<String>> extractFromMultipleFiles(
     List<InformationFileModel> files,
   ) async {
-    List<String> extractedTexts = [];
+    const separator = '----------------------------------';
+    final extractedTexts = <String>[];
 
     for (int i = 0; i < files.length; i++) {
       final file = files[i];
-      String text = '';
+      var text = '';
 
       try {
         if (file.type == FilesType.pdf) {
@@ -79,22 +71,20 @@ class FileTextExtractor {
           text = await extractFromImage(file.path);
         }
 
-        // Add file metadata header
-        final header = '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+        final header = '\n$separator\n'
             'File ${i + 1}: ${file.name}\n'
             'Type: ${file.type.name.toUpperCase()}\n'
             'Size: ${file.sizeFormatted}\n'
-            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+            '$separator\n';
 
         extractedTexts.add(header + text);
       } catch (e) {
-        // log('Error processing file ${file.name}: $e');
         extractedTexts.add(
-          '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
+          '\n$separator\n'
           'File ${i + 1}: ${file.name}\n'
           'Error: Could not process this file.\n'
           'Details: ${e.toString()}\n'
-          '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n',
+          '$separator\n',
         );
       }
     }
@@ -115,9 +105,8 @@ class FileTextExtractor {
 
   /// Validate if extracted text is sufficient for exam generation
   bool isTextSufficient(String text, {int minWords = 50}) {
-    // Remove headers and special characters
     final cleanText = text
-        .replaceAll(RegExp(r'━+'), '')
+        .replaceAll(RegExp(r'-+'), '')
         .replaceAll(RegExp(r'File \d+:.*'), '')
         .replaceAll(RegExp(r'Type:.*'), '')
         .replaceAll(RegExp(r'Size:.*'), '')
@@ -126,16 +115,13 @@ class FileTextExtractor {
     final words = cleanText.split(RegExp(r'\s+'));
     final validWords = words.where((w) => w.length > 2).length;
 
-    // log(
-    //   'Extracted text has $validWords valid words (minimum required: $minWords)',
-    // );
     return validWords >= minWords;
   }
 
   /// Get statistics about extracted text
   Map<String, dynamic> getTextStatistics(String text) {
     final cleanText = text
-        .replaceAll(RegExp(r'━+'), '')
+        .replaceAll(RegExp(r'-+'), '')
         .replaceAll(RegExp(r'File \d+:.*'), '')
         .trim();
 

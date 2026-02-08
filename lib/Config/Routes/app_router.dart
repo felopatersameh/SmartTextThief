@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../Features/Exams/create_exam/presentation/pages/create_exam_screen.dart';
 import '../../Features/Profile/Persentation/Pages/about_screen.dart';
 import '../../Features/Profile/Persentation/Pages/help_screen.dart';
 
 import '../../Core/Utils/Models/exam_exam_result.dart';
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
-import '../../Features/Exams/Persentation/Pages/create_exam_screen.dart';
-import '../../Features/Exams/Persentation/Pages/do_exam.dart';
-import '../../Features/Exams/Persentation/Pages/view_exam.dart';
+import '../../Features/Exams/do_exam/presentation/pages/do_exam.dart';
+import '../../Features/Exams/view_exam/presentation/pages/view_exam.dart';
 import '../../Features/Main/main_screen.dart';
 import '../../Features/Notifications/Persentation/notification_page.dart';
 import '../../Features/Profile/Persentation/Pages/profile_screen.dart';

@@ -1,6 +1,6 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 
-import '../../../Features/Exams/Persentation/widgets/upload_option_section.dart';
+import '../../../Features/Exams/create_exam/data/models/information_file_model.dart';
 import 'api_gemini.dart';
 import '../../../Core/Services/Gemini/exam_generation_result_model.dart';
 import '../../../Core/Services/Gemini/exam_prompt_generator.dart';

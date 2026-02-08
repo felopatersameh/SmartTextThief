@@ -1,66 +1,30 @@
-// import 'package:flutter/services.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 
-// class ScreenshotProtectionService {
-//   static const platform = MethodChannel('screenshot_protection');
+class ScreenshotProtectionService {
+  static final NoScreenshot _noScreenshot = NoScreenshot.instance;
+  static int _activeProtectionRequests = 0;
 
-//   // Counter لعدد مرات Screenshot في iOS
-//   static int _iosScreenshotCount = 0;
+  static Future<void> enableProtection() async {
+    _activeProtectionRequests++;
+    if (_activeProtectionRequests > 1) return;
 
-//   // Callback عند كشف Screenshot
-//   static Function()? _onScreenshotDetected;
-//   static Function()? _onSecondScreenshot;
+    try {
+      await _noScreenshot.screenshotOff();
+    } catch (_) {}
+  }
 
-//   /// تفعيل الحماية للشاشة
-//   static Future<void> enableProtection({
-//     Function()? onFirstScreenshot,
-//     Function()? onSecondScreenshot,
-//   }) async {
-//     _iosScreenshotCount = 0;
-//     _onScreenshotDetected = onFirstScreenshot;
-//     _onSecondScreenshot = onSecondScreenshot;
+  static Future<void> disableProtection() async {
+    if (_activeProtectionRequests == 0) return;
 
-//     try {
-//       await platform.invokeMethod('enableSecureMode');
+    _activeProtectionRequests--;
+    if (_activeProtectionRequests > 0) return;
 
-//       platform.setMethodCallHandler(_handleMethodCall);
+    try {
+      await _noScreenshot.screenshotOn();
+    } catch (_) {}
+  }
 
-//       ////print('🔒 Screenshot protection enabled');
-//     } catch (e) {
-//       //print('Error enabling protection: $e');
-//     }
-//   }
-
-//   /// إلغاء الحماية عند الخروج من الشاشة
-//   static Future<void> disableProtection() async {
-//     try {
-//       await platform.invokeMethod('disableSecureMode');
-//       platform.setMethodCallHandler(null);
-//       _iosScreenshotCount = 0;
-//       //print('🔓 Screenshot protection disabled');
-//     } catch (e) {
-//       //print('Error disabling protection: $e');
-//     }
-//   }
-
-//   /// معالجة الرسائل من Native Code
-//   static Future<void> _handleMethodCall(MethodCall call) async {
-//     if (call.method == 'onScreenshot') {
-//       _iosScreenshotCount++;
-
-//       //print('📸 Screenshot detected! Count: $_iosScreenshotCount');
-
-//       if (_iosScreenshotCount == 1) {
-//         // المرة الأولى: تحذير
-//         _onScreenshotDetected?.call();
-//       } else if (_iosScreenshotCount >= 2) {
-//         // المرة الثانية: إنهاء الامتحان
-//         _onSecondScreenshot?.call();
-//       }
-//     }
-//   }
-
-//   /// Reset الـ counter (اختياري)
-//   static void resetCounter() {
-//     _iosScreenshotCount = 0;
-//   }
-// }
+  static void reset() {
+    _activeProtectionRequests = 0;
+  }
+}

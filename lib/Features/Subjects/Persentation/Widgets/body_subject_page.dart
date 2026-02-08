@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_text_thief/Config/Routes/app_router.dart';
-import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/empty_list_subjects.dart';
