@@ -44,6 +44,7 @@ dependencies:
   pdf: ^3.11.3
   sahih_validator: ^2.0.0
   syncfusion_flutter_pdf: ^32.2.3
+  fl_chart: ^1.1.1
 
 dev_dependencies:
   flutter_test:
