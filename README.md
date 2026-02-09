@@ -222,47 +222,90 @@ All advanced features and full support
 
 ## 📱 Screens
 
-> Add images inside `assets/screens/` then link them here
-
-<details>
+<details open>
 <summary><b>View All Screens (Click to Expand)</b></summary>
 
-### 🎨 General Flow
+### 🎨 Authentication Flow
 
-| Screen | Path |
-|--------|------|
-| **Login** | `assets/screens/Login1.jpg` |
-| **Login** | `assets/screens/Login3.jpg` |
-| **Login** | `assets/screens/Login2.jpg` |
-| **Choose Role** | `assets/screens/choose_role.jpg` |
+<table>
+<tr>
+<td width="33%" align="center">
+<img src="assets/screens/Login1.jpg" alt="Login Screen 1" width="250"/>
+<br/><b>Login Screen 1</b>
+</td>
+<td width="33%" align="center">
+<img src="assets/screens/Login2.jpg" alt="Login Screen 2" width="250"/>
+<br/><b>Login Screen 2</b>
+</td>
+<td width="33%" align="center">
+<img src="assets/screens/Login3.jpg" alt="Login Screen 3" width="250"/>
+<br/><b>Login Screen 3</b>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="3">
+<img src="assets/screens/choose_role.jpg" alt="Choose Role" width="250"/>
+<br/><b>Choose Role</b>
+</td>
+</tr>
+</table>
 
 ### 📚 Main Screens
 
-| Screen | Path |
-|--------|------|
-| **Subjects** | `assets/screens/subjects.jpg` |
-| **Subject Details** | `assets/screens/subject_details.jpg` |
-| **Create Exam** | `assets/screens/create_exam.jpg` |
+<table>
+<tr>
+<td width="33%" align="center">
+<img src="assets/screens/subjects.jpg" alt="Subjects" width="250"/>
+<br/><b>Subjects</b>
+</td>
+<td width="33%" align="center">
+<img src="assets/screens/subject_details.jpg" alt="Subject Details" width="250"/>
+<br/><b>Subject Details</b>
+</td>
+<td width="33%" align="center">
+<img src="assets/screens/create_exam.jpg" alt="Create Exam" width="250"/>
+<br/><b>Create Exam</b>
+</td>
+</tr>
+</table>
 
 ### 🎓 Exam Screens
 
-| Screen | Path |
-|--------|------|
-| **Do Exam** | `assets/screens/do_exam.jpg` |
-| **Exam Result** | `assets/screens/exam_result.jpg` |
+<table>
+<tr>
+<td width="50%" align="center">
+<img src="assets/screens/do_exam.jpg" alt="Do Exam" width="250"/>
+<br/><b>Take Exam</b>
+</td>
+<td width="50%" align="center">
+<img src="assets/screens/exam_result.jpg" alt="Exam Result" width="250"/>
+<br/><b>Exam Result</b>
+</td>
+</tr>
+</table>
 
 ### ⚙️ Common Screens
 
-| Screen | Path |
-|--------|------|
-| **Dashboard** | `assets/screens/dashboard.jpg` |
-| **Notifications** | `assets/screens/notifications.jpg` |
-| **Profile** | `assets/screens/profile.jpg` |
+<table>
+<tr>
+<td width="33%" align="center">
+<img src="assets/screens/dashboard.jpg" alt="Dashboard" width="250"/>
+<br/><b>Dashboard</b>
+</td>
+<td width="33%" align="center">
+<img src="assets/screens/notifications.jpg" alt="Notifications" width="250"/>
+<br/><b>Notifications</b>
+</td>
+<td width="33%" align="center">
+<img src="assets/screens/profile.jpg" alt="Profile" width="250"/>
+<br/><b>Profile</b>
+</td>
+</tr>
+</table>
 
 </details>
 
 ---
-
 
 ## 🛠️ Tech Stack
 
@@ -386,5 +429,17 @@ flutter run
 - 📱 Store assets finalization
 
 ---
+
+<div align="center">
+
+### ⭐ If you find this project helpful, please give it a star
+
+**Made with ❤️ for Education**
+
+---
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](#)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](#)
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](#)
 
 </div>
