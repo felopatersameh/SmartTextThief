@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Config/app_config.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Config/di/service_locator.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
+import 'package:smart_text_thief/Features/Exams/create_exam/data/repositories/create_exam_repository.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/presentation/cubit/create_exam_cubit.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/presentation/widgets/create_button.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/presentation/widgets/exam_date_section.dart';
@@ -21,7 +22,10 @@ class CreateExamScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CreateExamCubit(subject: subject),
+      create: (context) => CreateExamCubit(
+        subject: subject,
+        repository: getIt<CreateExamRepository>(),
+      ),
       child: Scaffold(
         appBar: AppBar(title: Text(NameRoutes.createExam.titleAppBar)),
         body: CustomScrollView(
@@ -55,15 +59,15 @@ class _CreateExamBody extends StatelessWidget {
           children: [
             LevelDropdown(state: state),
             ExamField(
-              hint: 'Enter exam Name',
+              hint: CreateExamStrings.examNameHint,
               initialValue: state.name,
-              title: "Name of Exam",
+              title: CreateExamStrings.examNameTitle,
               onChanged: cubit.changeName,
             ),
             ExamField(
-              hint: 'e.g., Religious, Scientific, Training, etc.',
+              hint: CreateExamStrings.contentContextHint,
               initialValue: state.content,
-              title: "Content Context",
+              title: CreateExamStrings.contentContextTitle,
               onChanged: cubit.changeContent,
             ),
             Row(
@@ -77,7 +81,7 @@ class _CreateExamBody extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    "Can each open exam have questions unordered?",
+                    CreateExamStrings.unorderedQuestionsLabel,
                     style: AppTextStyles.bodyMediumMedium,
                   ),
                 ),
@@ -100,7 +104,9 @@ class _CreateExamBody extends StatelessWidget {
                   ? null
                   : () async => await cubit.submitExam(context),
               text:
-                  cubit.state.loadingCreating ? "Creating...." : "Create Exam",
+                  cubit.state.loadingCreating
+                      ? CreateExamStrings.creating
+                      : CreateExamStrings.createExam,
             ),
             if (state.loadingCreating)
               LinearProgressIndicator(color: AppColors.colorPrimary),

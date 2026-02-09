@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 
 class ExamsHeaderCard extends StatelessWidget {
   final void Function(String)? onChanged;
@@ -10,8 +9,8 @@ class ExamsHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color primary = AppColors.colorPrimary;
-    final Color fieldColor = Colors.white.withValues(alpha: .08);
-    final Color hintColor = Colors.white.withValues(alpha: 0.6);
+    final Color fieldColor = AppColors.textWhite.withValues(alpha: .08);
+    final Color hintColor = AppColors.textWhite.withValues(alpha: 0.6);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,11 +25,13 @@ class ExamsHeaderCard extends StatelessWidget {
           ),
           child: TextField(
             onChanged: onChanged,
-            style: AppTextStyles.bodyMediumMedium.copyWith(color: Colors.white),
+            style: AppTextStyles.bodyMediumMedium.copyWith(
+              color: AppColors.textWhite,
+            ),
             cursorColor: primary,
             decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search, color: hintColor, size: 20.sp),
-              hintText: 'Search subjects...',
+              prefixIcon: Icon(AppIcons.search, color: hintColor, size: 20.sp),
+              hintText: SubjectStrings.searchSubjectsHint,
               hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
                 color: hintColor,
               ),

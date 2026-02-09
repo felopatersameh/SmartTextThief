@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../Config/Routes/name_routes.dart';
 import '../../../../Config/Routes/app_router.dart';
 import '../Cubit/authentication_cubit.dart';
 
@@ -21,26 +20,7 @@ class _BodyScreenState extends State<BodyScreen> {
   late final PageController _pageController;
   int _currentPage = 0;
 
-  final List<_OnboardingItem> _items = const [
-    _OnboardingItem(
-      title: 'Create Exams Faster',
-      description:
-          'Generate complete exams in minutes using AI with clean structure and ready-to-use questions.',
-      icon: AppIcons.quiz,
-    ),
-    _OnboardingItem(
-      title: 'Manage Subjects Easily',
-      description:
-          'Organize subjects, share codes with students, and keep all your exam workflow in one place.',
-      icon: AppIcons.subject,
-    ),
-    _OnboardingItem(
-      title: 'Track Student Results',
-      description:
-          'View submissions, monitor performance, and improve learning outcomes with clear data.',
-      icon: AppIcons.people,
-    ),
-  ];
+  final List<OnboardingItemData> _items = AppList.onboardingItems;
 
   @override
   void initState() {
@@ -69,9 +49,9 @@ class _BodyScreenState extends State<BodyScreen> {
             );
             if (!context.mounted) return;
             if (state.requireRoleSelection) {
-              AppRouter.goNamedByPath(context, NameRoutes.chooseRole);
+              AppRouter.pushToChooseRole(context);
             } else {
-              AppRouter.goNamedByPath(context, NameRoutes.subject);
+              AppRouter.pushToMainScreen(context);
             }
           }
           if (state.success == false) {
@@ -103,7 +83,7 @@ class _BodyScreenState extends State<BodyScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100.r),
                 child: Image.asset(
-                  'assets/Image/s2.png',
+                  AppConstants.appLogoAsset,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -161,7 +141,7 @@ class _BodyScreenState extends State<BodyScreen> {
                       BuildButtonAppWithIcon(
                         actions: () async => await showMessageSnackBar(
                           context,
-                          title: "loading ${AppStrings.orSignInWithGoogle}",
+                          title: LoginStrings.loadingGoogleSignIn,
                           type: MessageType.loading,
                           onLoading: () async =>
                               await context
@@ -186,20 +166,8 @@ class _BodyScreenState extends State<BodyScreen> {
   }
 }
 
-class _OnboardingItem {
-  final String title;
-  final String description;
-  final IconData icon;
-
-  const _OnboardingItem({
-    required this.title,
-    required this.description,
-    required this.icon,
-  });
-}
-
 class _OnboardingCard extends StatelessWidget {
-  final _OnboardingItem item;
+  final OnboardingItemData item;
 
   const _OnboardingCard({required this.item});
 
@@ -241,7 +209,7 @@ class _OnboardingCard extends StatelessWidget {
             AppCustomText.generate(
               text: item.description,
               textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                color: Colors.grey.shade500,
+                color: AppColors.grey500,
               ),
               maxLines: 5,
               textAlign: TextAlign.center,

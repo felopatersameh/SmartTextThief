@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../Core/Services/Firebase/failure_model.dart';
 import '../../../Core/Services/Firebase/firebase_service.dart';
+import '../../../Core/Resources/resources.dart';
 import '../../../Core/LocalStorage/local_storage_keys.dart';
 import '../../../Core/LocalStorage/local_storage_service.dart';
 import '../../../Core/Utils/Enums/collection_key.dart';
@@ -40,7 +41,7 @@ class AuthenticationSource {
             userPhone: '',
             userType: UserType.non,
             userCreatedAt: DateTime.now(),
-            subscribedTopics: ["allUsers"]);
+            subscribedTopics: [AppConstants.allUsersTopic]);
 
         final response = await FirebaseServices.instance.createAccount(
           model.toJson(),

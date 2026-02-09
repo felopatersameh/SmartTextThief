@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/presentation/cubit/create_exam_cubit.dart';
 
@@ -18,7 +17,7 @@ class QuestionNumbersRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppCustomText.generate(
-          text: "Number of Questions",
+          text: CreateExamStrings.numberOfQuestions,
           textStyle: AppTextStyles.h6SemiBold.copyWith(
             color: AppColors.colorPrimary,
           ),
@@ -28,7 +27,7 @@ class QuestionNumbersRow extends StatelessWidget {
           children: [
             Expanded(
               child: _NumberField(
-                label: "Multiple Choice",
+                label: CreateExamStrings.multipleChoice,
                 initialValue: state.numMultipleChoice,
                 onChanged: (v) => cubit.changeQuestionNumbers(multiple: v),
               ),
@@ -36,7 +35,7 @@ class QuestionNumbersRow extends StatelessWidget {
             SizedBox(width: 8.w),
             Expanded(
               child: _NumberField(
-                label: "True/False",
+                label: CreateExamStrings.trueFalse,
                 initialValue: state.numTrueFalse,
                 onChanged: (v) => cubit.changeQuestionNumbers(tf: v),
               ),
@@ -44,7 +43,7 @@ class QuestionNumbersRow extends StatelessWidget {
             SizedBox(width: 8.w),
             Expanded(
               child: _NumberField(
-                label: "Q&A",
+                label: CreateExamStrings.qa,
                 initialValue: state.numQA,
                 onChanged: (v) => cubit.changeQuestionNumbers(qa: v),
               ),
@@ -53,14 +52,14 @@ class QuestionNumbersRow extends StatelessWidget {
         ),
         SizedBox(height: 10.h),
         AppCustomText.generate(
-          text: "Exam Duration (Min)",
+          text: CreateExamStrings.examDurationMin,
           textStyle: AppTextStyles.h6SemiBold.copyWith(
             color: AppColors.colorPrimary,
           ),
         ),
         SizedBox(height: 4.h),
         _NumberField(
-          label: "Min Only",
+          label: CreateExamStrings.minOnly,
           initialValue: state.time.toString(),
           onChanged: (v) => cubit.changeTime(int.tryParse(v) ?? 0),
         ),

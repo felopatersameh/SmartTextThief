@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '/Core/Resources/app_colors.dart';
-import '/Core/Resources/app_fonts.dart';
+import '/Core/Resources/resources.dart';
 import '/Core/Utils/Widget/custom_text_app.dart';
 
 class OptionTile extends StatelessWidget {
@@ -22,9 +21,9 @@ class OptionTile extends StatelessWidget {
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
+          splashColor: AppColors.transparent,
+          highlightColor: AppColors.transparent,
+          hoverColor: AppColors.transparent,
         ),
         child: ListTile(
           contentPadding: EdgeInsets.zero,
@@ -33,9 +32,9 @@ class OptionTile extends StatelessWidget {
             textStyle: AppTextStyles.h6Bold,
           ),
           trailing: Icon(
-            Icons.arrow_forward_ios,
+            AppIcons.arrowForwardIos,
             size: 18.sp,
-            color: Colors.white,
+            color: AppColors.textWhite,
           ),
           onTap: onTap,
         ),

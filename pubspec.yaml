@@ -34,6 +34,7 @@ dependencies:
   google_mlkit_text_recognition: ^0.15.1
   google_sign_in: ^7.2.0
   googleapis_auth: ^2.0.0
+  get_it: ^8.0.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   icon_broken: ^1.1.0
@@ -60,7 +61,6 @@ flutter:
 
   assets:
     - .env
-    - assets/Fonts/
     - assets/Image/
     - assets/service_account.json
 

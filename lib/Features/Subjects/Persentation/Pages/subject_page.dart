@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_teacher.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/add_subject_dialog.dart';
 import 'package:smart_text_thief/Core/Utils/generate_secure_code.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Profile/Persentation/cubit/profile_cubit.dart';
@@ -24,7 +23,7 @@ class SubjectPage extends StatelessWidget {
         if (state.action == SubjectAction.added) {
           showMessageSnackBar(
             context,
-            title: 'Subject added successfully!',
+            title: SubjectStrings.subjectAddedSuccessfully,
             type: MessageType.success,
           );
         }
@@ -32,7 +31,7 @@ class SubjectPage extends StatelessWidget {
         if (state.action == SubjectAction.joined) {
           showMessageSnackBar(
             context,
-            title: 'Joined subject successfully!',
+            title: SubjectStrings.subjectJoinedSuccessfully,
             type: MessageType.success,
           );
         }
@@ -64,9 +63,9 @@ class SubjectPage extends StatelessWidget {
                   )
                 : BodySubjectPage(state: state),
             floatingActionButton: FloatingActionButton(
-              onPressed: () {
+              onPressed: () async {
                 if (isStudent) {
-                  _showJoinSubjectDialog(
+                  await _showJoinSubjectDialog(
                     context,
                     email: email,
                     name: name,
@@ -74,7 +73,7 @@ class SubjectPage extends StatelessWidget {
                   return;
                 }
 
-                _showAddSubjectDialog(
+                await _showAddSubjectDialog(
                   context,
                   email: email,
                   name: name,
@@ -90,56 +89,75 @@ class SubjectPage extends StatelessWidget {
   }
 }
 
-void _showAddSubjectDialog(
+Future<void> _showAddSubjectDialog(
   BuildContext context, {
   required String name,
   required String email,
-}) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => AddSubjectDialog(
-      title: 'Add New Subject',
-      submitButtonText: 'Add Subject',
-      onSubmit: (subjectName) async {
-        final model = SubjectModel(
-          subjectId: generateSubjectId(),
-          subjectCode: generateSubjectJoinCode(),
-          subjectName: subjectName,
-          subjectTeacher: SubjectTeacher(
-            teacherEmail: email,
-            teacherName: name,
-          ),
-          subjectEmailSts: const [],
-          subjectCreatedAt: DateTime.now(),
-          subjectIsOpen: true,
-        );
+}) async {
+  final subjectName = await AppDialogService.showInputDialog(
+    context,
+    title: SubjectStrings.addNewSubject,
+    hintText: SubjectStrings.pleaseEnterSubjectName,
+    confirmText: SubjectStrings.addSubject,
+    validator: (value) {
+      if (value.trim().isEmpty) return SubjectStrings.pleaseEnterSubjectName;
+      return null;
+    },
+  );
 
-        if (!context.mounted) return false;
-        return context.read<SubjectCubit>().addSubject(model);
-      },
+  if (subjectName == null || subjectName.trim().isEmpty || !context.mounted) {
+    return;
+  }
+
+  final model = SubjectModel(
+    subjectId: generateSubjectId(),
+    subjectCode: generateSubjectJoinCode(),
+    subjectName: subjectName,
+    subjectTeacher: SubjectTeacher(
+      teacherEmail: email,
+      teacherName: name,
     ),
+    subjectEmailSts: const [],
+    subjectCreatedAt: DateTime.now(),
+    subjectIsOpen: true,
+  );
+
+  await showMessageSnackBar(
+    context,
+    title: SubjectStrings.creatingSubject,
+    type: MessageType.loading,
+    onLoading: () async {
+      await context.read<SubjectCubit>().addSubject(model);
+    },
   );
 }
 
-void _showJoinSubjectDialog(
+Future<void> _showJoinSubjectDialog(
   BuildContext context, {
   required String email,
   required String name,
-}) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => AddSubjectDialog(
-      title: 'Join Subject',
-      submitButtonText: 'Join',
-      icon: AppIcons.quiz,
-      messageLoading: 'Joining....',
-      nameField: 'Code',
-      nameFieldHint: 'Enter Code',
-      onSubmit: (code) async {
-        return context.read<SubjectCubit>().joinSubject(code, email, name);
-      },
-    ),
+}) async {
+  final code = await AppDialogService.showInputDialog(
+    context,
+    title: SubjectStrings.joinSubject,
+    hintText: SubjectStrings.enterCode,
+    confirmText: SubjectStrings.join,
+    validator: (value) {
+      if (value.trim().isEmpty) return SubjectStrings.pleaseEnterCode;
+      return null;
+    },
+  );
+
+  if (code == null || code.trim().isEmpty || !context.mounted) {
+    return;
+  }
+
+  await showMessageSnackBar(
+    context,
+    title: SubjectStrings.joining,
+    type: MessageType.loading,
+    onLoading: () async {
+      await context.read<SubjectCubit>().joinSubject(code, email, name);
+    },
   );
 }

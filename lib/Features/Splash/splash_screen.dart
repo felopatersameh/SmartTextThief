@@ -4,7 +4,6 @@ import '../Notifications/Persentation/cubit/notifications_cubit.dart';
 import '../../Core/LocalStorage/local_storage_keys.dart';
 import '../../Core/LocalStorage/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
-import '../../Config/Routes/name_routes.dart';
 
 import '../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../Profile/Persentation/cubit/profile_cubit.dart';
@@ -47,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen>
       _updateProgress(0.2);
 
       if (id.isEmpty || !isLoggedIn) {
-        if (mounted) AppRouter.goNamedByPath(context, NameRoutes.login);
+        if (mounted) AppRouter.pushToLogin(context);
         return;
       }
 
@@ -57,12 +56,12 @@ class _SplashScreenState extends State<SplashScreen>
       final user = await context.read<ProfileCubit>().init();
       if (user.userId == "-#") {
         if (!mounted) return;
-        AppRouter.goNamedByPath(context, NameRoutes.login);
+        AppRouter.pushToLogin(context);
         return;
       }
       if (user.userType == UserType.non) {
         if (!mounted) return;
-        AppRouter.goNamedByPath(context, NameRoutes.chooseRole);
+        AppRouter.pushToChooseRole(context);
         return;
       }
       await _smoothProgressUpdate(0.4, .7, 5);
@@ -77,11 +76,11 @@ class _SplashScreenState extends State<SplashScreen>
       await _smoothProgressUpdate(0.7, 1.0, 2);
 
       if (mounted) {
-        AppRouter.goNamedByPath(context, NameRoutes.subject);
+        AppRouter.pushToMainScreen(context);
       }
     } catch (e) {
       if (mounted) {
-        AppRouter.goNamedByPath(context, NameRoutes.login);
+        AppRouter.pushToLogin(context);
       }
     }
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:icon_broken/icon_broken.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 
 class EmptyListExams extends StatelessWidget {
   const EmptyListExams({super.key});
@@ -15,21 +15,21 @@ class EmptyListExams extends StatelessWidget {
           Icon(
             IconBroken.Document,
             size: 64.sp,
-            color: Colors.grey.withValues(alpha: 0.5),
+            color: AppColors.grey.withValues(alpha: 0.5),
           ),
           SizedBox(height: 12.h),
           Text(
-            'No exams available currently',
+            SubjectStrings.noExamsAvailable,
             style: AppTextStyles.bodyLargeSemiBold.copyWith(
-              color: Colors.grey.shade500,
+              color: AppColors.grey500,
             ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 4.h),
           Text(
-            'Check back later for new exams.',
+            SubjectStrings.noExamsAvailableHint,
             style: AppTextStyles.bodyMediumMedium.copyWith(
-              color: Colors.grey.shade600,
+              color: AppColors.grey600,
             ),
             textAlign: TextAlign.center,
           ),

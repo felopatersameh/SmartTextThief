@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/setting.dart';
+import 'package:smart_text_thief/Config/Routes/route_data.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/empty_list_subjects.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/exams_header_card.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subjects_card.dart';
+
 
 class BodySubjectPage extends StatelessWidget {
   const BodySubjectPage({
@@ -41,7 +44,7 @@ class BodySubjectPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.search_off,
+                    AppIcons.searchOff,
                     size: 64,
                     color: Theme.of(context)
                         .colorScheme
@@ -50,14 +53,14 @@ class BodySubjectPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No subjects found',
+                    SubjectStrings.noSubjectsFound,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Try adjusting your search',
+                    SubjectStrings.tryAdjustingSearch,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context)
                               .colorScheme
@@ -80,11 +83,9 @@ class BodySubjectPage extends StatelessWidget {
                     model: model,
                     openSubjectDetails: () {
                       context.read<SubjectCubit>().selectSubject(model);
-                      AppRouter.nextScreenNoPath(
+                      AppRouter.pushToSubjectDetails(
                         context,
-                        NameRoutes.subjectDetails,
-                        pathParameters: {'id': model.subjectId},
-                        extra: model,
+                        data: SubjectDetailsRouteData(subject: model),
                       );
                     },
                   ),

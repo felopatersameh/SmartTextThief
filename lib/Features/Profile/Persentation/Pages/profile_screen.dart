@@ -5,6 +5,7 @@ import '../../../../Config/app_config.dart';
 import '../../../Notifications/Persentation/cubit/notifications_cubit.dart';
 import '../../../../Core/LocalStorage/get_local_storage.dart';
 import '/Core/Services/Firebase/firebase_service.dart';
+import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import '../../../../Core/LocalStorage/local_storage_service.dart';
 import '/Core/Utils/show_message_snack_bar.dart';
 
@@ -65,9 +66,9 @@ class ProfileScreen extends StatelessWidget {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: AppCustomText.generate(
-                          text: 'Manage Account',
+                          text: ProfileStrings.manageAccount,
                           textStyle: AppTextStyles.h7Medium.copyWith(
-                            color: Colors.white70,
+                            color: AppColors.white70,
                           ),
                         ),
                       ),
@@ -81,41 +82,33 @@ class ProfileScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       OptionTile(
-                        title: 'Gemini API Key',
+                        title: ProfileStrings.geminiApiKey,
                         onTap: () async => await _showGeminiApiKeyDialog(
                           context,
                           state.model?.userGeminiApiKey ?? "",
                         ),
                       ),
                       OptionTile(
-                        title: 'About',
-                        onTap: () async => AppRouter.nextScreenNoPath(
+                        title: ProfileStrings.about,
+                        onTap: () async => AppRouter.pushToAbout(
                           context,
-                          NameRoutes.about,
-                          pathParameters: {
-                            "email":
-                                GetLocalStorage.getEmailUser().split("@").first,
-                          },
+                          email: GetLocalStorage.getEmailUser(),
                         ),
                       ),
                       OptionTile(
-                        title: 'Help',
-                        onTap: () async => AppRouter.nextScreenNoPath(
+                        title: ProfileStrings.help,
+                        onTap: () async => AppRouter.pushToHelp(
                           context,
-                          NameRoutes.help,
-                          pathParameters: {
-                            "email":
-                                GetLocalStorage.getEmailUser().split("@").first,
-                          },
+                          email: GetLocalStorage.getEmailUser(),
                         ),
                       ),
                       OptionTile(
-                        title: 'logOut',
-                        color: Colors.redAccent.withValues(alpha: .3),
+                        title: ProfileStrings.logout,
+                        color: AppColors.dangerAccent.withValues(alpha: .3),
                         onTap: () async {
                           await showMessageSnackBar(
                             context,
-                            title: "Waiting...",
+                            title: ProfileStrings.waiting,
                             type: MessageType.loading,
                             onLoading: () async {
                               await LocalStorageService.clear();
@@ -123,17 +116,14 @@ class ProfileScreen extends StatelessWidget {
                               if (!context.mounted) return;
                               await context.read<NotificationsCubit>().clear();
                               if (!context.mounted) return;
-                              AppRouter.goNamedByPath(
-                                context,
-                                NameRoutes.login,
-                              );
+                              AppRouter.pushToLogin(context);
                             },
                           );
                         },
                       ),
                       OptionTile(
-                        title: 'Delete Account',
-                        color: Colors.red.withValues(alpha: .45),
+                        title: ProfileStrings.deleteAccount,
+                        color: AppColors.danger.withValues(alpha: .45),
                         onTap: () async {
                           final isConfirm = await _showDeleteAccountDialog(
                             context,
@@ -143,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                           bool isDeleted = false;
                           await showMessageSnackBar(
                             context,
-                            title: "Deleting account...",
+                            title: ProfileStrings.deletingAccount,
                             type: MessageType.loading,
                             onLoading: () async {
                               isDeleted = await context
@@ -157,14 +147,14 @@ class ProfileScreen extends StatelessWidget {
                               await LocalStorageService.clear();
                               await FirebaseServices.instance.logOut();
                               if (!context.mounted) return;
-                              AppRouter.goNamedByPath(context, NameRoutes.login);
+                              AppRouter.pushToLogin(context);
                             },
                           );
 
                           if (!isDeleted && context.mounted) {
                             await showMessageSnackBar(
                               context,
-                              title: "Failed to delete account",
+                              title: ProfileStrings.failedToDeleteAccount,
                               type: MessageType.error,
                             );
                           }
@@ -185,9 +175,19 @@ class ProfileScreen extends StatelessWidget {
     BuildContext context,
     String currentApiKey,
   ) async {
-    final String? apiKey = await showDialog<String>(
-      context: context,
-      builder: (_) => _GeminiApiKeyDialog(initialValue: currentApiKey),
+    final String? apiKey = await AppDialogService.showInputDialog(
+      context,
+      title: ProfileStrings.geminiApiKey,
+      hintText: ProfileStrings.enterGeminiApiKey,
+      confirmText: AppStrings.save,
+      initialValue: currentApiKey,
+      obscureText: true,
+      validator: (value) {
+        if (value.trim().isEmpty) {
+          return ProfileStrings.enterGeminiApiKey;
+        }
+        return null;
+      },
     );
 
     if (apiKey == null || !context.mounted) return;
@@ -195,7 +195,7 @@ class ProfileScreen extends StatelessWidget {
     bool updated = false;
     await showMessageSnackBar(
       context,
-      title: "Saving Gemini API key...",
+      title: ProfileStrings.savingGeminiApiKey,
       type: MessageType.loading,
       onLoading: () async {
         updated = await context.read<ProfileCubit>().updateGeminiApiKey(apiKey);
@@ -205,147 +205,20 @@ class ProfileScreen extends StatelessWidget {
 
     await showMessageSnackBar(
       context,
-      title: updated ? "Gemini API key updated" : "Failed to update API key",
+      title: updated
+          ? ProfileStrings.geminiApiKeyUpdated
+          : ProfileStrings.failedToUpdateApiKey,
       type: updated ? MessageType.success : MessageType.error,
     );
   }
 
   Future<bool?> _showDeleteAccountDialog(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.colorsBackGround2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-          side: BorderSide(
-            color: AppColors.colorPrimary.withValues(alpha: 0.3),
-          ),
-        ),
-        title: AppCustomText.generate(
-          text: 'Delete Account',
-          textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.redAccent),
-        ),
-        content: AppCustomText.generate(
-          text: 'This will permanently delete your account data. Continue?',
-          textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-            color: AppColors.textCoolGray,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: AppCustomText.generate(
-              text: 'Cancel',
-              textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                color: AppColors.textWhite,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: AppCustomText.generate(
-              text: 'Delete',
-              textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                color: Colors.redAccent,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GeminiApiKeyDialog extends StatefulWidget {
-  const _GeminiApiKeyDialog({required this.initialValue});
-
-  final String initialValue;
-
-  @override
-  State<_GeminiApiKeyDialog> createState() => _GeminiApiKeyDialogState();
-}
-
-class _GeminiApiKeyDialogState extends State<_GeminiApiKeyDialog> {
-  late final TextEditingController _controller;
-  bool _isHidden = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialValue);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: AppColors.colorsBackGround2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.r),
-        side: BorderSide(
-          color: AppColors.colorPrimary.withValues(alpha: 0.3),
-        ),
-      ),
-      title: AppCustomText.generate(
-        text: 'Gemini API Key',
-        textStyle: AppTextStyles.h6Bold.copyWith(
-          color: AppColors.textWhite,
-        ),
-      ),
-      content: TextFormField(
-        controller: _controller,
-        obscureText: _isHidden,
-        keyboardType: TextInputType.visiblePassword,
-        style: AppTextStyles.bodyMediumMedium.copyWith(
-          color: AppColors.textWhite,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Enter your Gemini API key',
-          hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
-            color: Colors.white54,
-          ),
-          fillColor: AppColors.colorTextFieldBackGround,
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide.none,
-          ),
-          suffixIcon: IconButton(
-            onPressed: () {
-              setState(() => _isHidden = !_isHidden);
-            },
-            icon: Icon(
-              _isHidden ? Icons.visibility : Icons.visibility_off,
-              color: Colors.white70,
-            ),
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: AppCustomText.generate(
-            text: 'Cancel',
-            textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-              color: AppColors.textWhite,
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
-          child: AppCustomText.generate(
-            text: 'Save',
-            textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-              color: AppColors.colorPrimary,
-            ),
-          ),
-        ),
-      ],
+    return AppDialogService.showConfirmDialog(
+      context,
+      title: ProfileStrings.deleteAccount,
+      message: ProfileStrings.deleteAccountConfirm,
+      confirmText: AppStrings.delete,
+      destructive: true,
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class ExamField extends StatelessWidget {
@@ -36,7 +35,7 @@ class ExamField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.bodySmallMedium.copyWith(
-              color: Colors.grey,
+              color: AppColors.grey,
             ),
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16.w,

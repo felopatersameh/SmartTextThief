@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Config/app_config.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Config/di/service_locator.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/screenshot_protection_service.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import 'package:smart_text_thief/Features/Exams/view_exam/data/repositories/view_exam_repository.dart';
 import 'package:smart_text_thief/Features/Exams/view_exam/presentation/cubit/view_exam_cubit.dart';
 import 'package:smart_text_thief/Features/Exams/view_exam/presentation/widgets/create_button.dart';
 import 'package:smart_text_thief/Features/Exams/view_exam/presentation/widgets/exam_date_section.dart';
@@ -52,6 +53,7 @@ class _ViewExamState extends State<ViewExam> {
         exam: widget.examModel,
         isEditMode: widget.isEditMode,
         nameSubject: widget.nameSubject,
+        repository: getIt<ViewExamRepository>(),
       )..init(),
       child: const _ViewExamContent(),
     );
@@ -98,8 +100,14 @@ class _ViewExamContent extends StatelessWidget {
                     ],
                     AppCustomText.generate(
                       text: state.isEditMode
-                          ? 'Questions (Edit Mode)'
-                          : 'Results(${state.exam.myTest?.examResultDegree ?? 0} From ${state.exam.examStatic.numberOfQuestions})',
+                          ? ViewExamStrings.questionsEditMode
+                          : ViewExamStrings.resultsTitle(
+                              int.tryParse(
+                                    state.exam.myTest?.examResultDegree ?? '0',
+                                  ) ??
+                                  0,
+                              state.exam.examStatic.numberOfQuestions,
+                            ),
                       textStyle: AppTextStyles.h5SemiBold.copyWith(
                         color: AppColors.textWhite,
                       ),
@@ -135,7 +143,9 @@ class _ViewExamContent extends StatelessWidget {
                     onPress: state.loadingSave
                         ? null
                         : () => context.read<ViewExamCubit>().saveSubmit(context),
-                    text: state.loadingSave ? 'Saving' : 'Save && Submit',
+                    text: state.loadingSave
+                        ? ViewExamStrings.saving
+                        : ViewExamStrings.saveAndSubmit,
                   ),
                   if (state.loadingSave)
                     LinearProgressIndicator(color: AppColors.colorPrimary),

@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/data/models/information_file_model.dart';
@@ -31,7 +30,7 @@ class UploadOptionSection extends StatelessWidget {
             activeColor: AppColors.colorPrimary,
             contentPadding: EdgeInsets.zero,
             title: AppCustomText.generate(
-              text: "Upload Files",
+              text: CreateExamStrings.uploadFiles,
               textStyle: AppTextStyles.bodyMediumBold.copyWith(
                 color: AppColors.colorPrimary,
               ),
@@ -50,17 +49,22 @@ class UploadOptionSection extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
-                    icon: const Icon(Icons.upload_file, color: Colors.white),
-                    label: const Text("Choose Files"),
+                    icon: const Icon(
+                      AppIcons.uploadFile,
+                      color: AppColors.textWhite,
+                    ),
+                    label: const Text(CreateExamStrings.chooseFiles),
                     onPressed: () => cubit.pickFiles(context),
                   ),
                   if (state.uploadedFiles.isNotEmpty) ...[
                     SizedBox(width: 8.w),
                     TextButton.icon(
                       onPressed: () => cubit.clearAllFiles(),
-                      icon: const Icon(Icons.delete_outline, size: 18),
-                      label: const Text("Clear All"),
-                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      icon: const Icon(AppIcons.deleteOutline, size: 18),
+                      label: const Text(CreateExamStrings.clearAll),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.danger,
+                      ),
                     ),
                   ],
                 ],
@@ -73,9 +77,11 @@ class UploadOptionSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppCustomText.generate(
-                      text: "Uploaded Files (${state.uploadedFiles.length})",
+                      text: CreateExamStrings.uploadedFilesCount(
+                        state.uploadedFiles.length,
+                      ),
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: AppColors.colorPrimary.withOpacity(0.7),
+                        color: AppColors.colorPrimary.withValues(alpha: 0.7),
                       ),
                     ),
                     SizedBox(height: 8.h),
@@ -91,14 +97,17 @@ class UploadOptionSection extends StatelessWidget {
                 ),
               ),
           ],
-          Divider(color: AppColors.colorPrimary.withOpacity(0.4), height: 12.h),
+          Divider(
+            color: AppColors.colorPrimary.withValues(alpha: 0.4),
+            height: 12.h,
+          ),
           RadioListTile<UploadOption>(
             value: UploadOption.text,
             groupValue: state.uploadOption,
             activeColor: AppColors.colorPrimary,
             contentPadding: EdgeInsets.zero,
             title: AppCustomText.generate(
-              text: "Enter Text Manually",
+              text: CreateExamStrings.enterTextManually,
               textStyle: AppTextStyles.bodyMediumBold.copyWith(
                 color: AppColors.colorPrimary,
               ),
@@ -115,7 +124,7 @@ class UploadOptionSection extends StatelessWidget {
                 maxLines: 6,
                 style: AppTextStyles.bodyMediumMedium,
                 decoration: InputDecoration(
-                  hintText: 'Enter or paste exam content here...',
+                  hintText: CreateExamStrings.enterOrPasteExamContent,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
                     borderSide: BorderSide(
@@ -146,27 +155,27 @@ class _FileItemCard extends StatelessWidget {
   IconData _getFileIcon() {
     switch (file.type) {
       case FilesType.pdf:
-        return Icons.picture_as_pdf;
+        return AppIcons.pictureAsPdf;
       case FilesType.image:
-        return Icons.image;
+        return AppIcons.image;
     }
   }
 
   Color _getFileColor() {
     switch (file.type) {
       case FilesType.pdf:
-        return Colors.red;
+        return AppColors.danger;
       case FilesType.image:
-        return Colors.blue;
+        return AppColors.blue;
     }
   }
 
   String _getFileTypeLabel() {
     switch (file.type) {
       case FilesType.pdf:
-        return 'PDF';
+        return CreateExamStrings.fileTypePdf;
       case FilesType.image:
-        return 'Image';
+        return CreateExamStrings.fileTypeImage;
     }
   }
 
@@ -176,10 +185,10 @@ class _FileItemCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
-        color: AppColors.colorPrimary.withOpacity(0.05),
+        color: AppColors.colorPrimary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
-          color: AppColors.colorPrimary.withOpacity(0.2),
+          color: AppColors.colorPrimary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -188,7 +197,7 @@ class _FileItemCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: _getFileColor().withOpacity(0.1),
+              color: _getFileColor().withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6.r),
             ),
             child: Icon(_getFileIcon(), color: _getFileColor(), size: 24.sp),
@@ -215,7 +224,7 @@ class _FileItemCard extends StatelessWidget {
                         vertical: 2.h,
                       ),
                       decoration: BoxDecoration(
-                        color: _getFileColor().withOpacity(0.15),
+                        color: _getFileColor().withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                       child: AppCustomText.generate(
@@ -230,7 +239,7 @@ class _FileItemCard extends StatelessWidget {
                     AppCustomText.generate(
                       text: file.sizeFormatted,
                       textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: Colors.grey,
+                        color: AppColors.grey,
                         fontSize: 11.sp,
                       ),
                     ),
@@ -240,8 +249,8 @@ class _FileItemCard extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close),
-            color: Colors.red,
+            icon: const Icon(AppIcons.close),
+            color: AppColors.danger,
             iconSize: 20.sp,
             onPressed: onRemove,
             padding: EdgeInsets.zero,

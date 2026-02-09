@@ -39,8 +39,8 @@ class SubjectInfoCard extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.1),
+        border: Border.all(
+            color: AppColors.textWhite.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -51,7 +51,7 @@ class SubjectInfoCard extends StatelessWidget {
             _buildHeader(),
 
             Divider(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.textWhite.withValues(alpha: 0.08),
               thickness: 1,
               height: 1,
             ),
@@ -64,13 +64,13 @@ class SubjectInfoCard extends StatelessWidget {
                   // Instructor Info
                   InfoRow(
                     icon: AppIcons.profile,
-                    label: 'Instructor',
+                    label: SubjectStrings.instructor,
                     value: subjectModel.subjectTeacher.teacherName,
                   ),
 
                   InfoRow(
                     icon: AppIcons.email,
-                    label: 'Email',
+                    label: SubjectStrings.email,
                     value: subjectModel.subjectTeacher.teacherEmail,
                   ),
 
@@ -82,7 +82,7 @@ class SubjectInfoCard extends StatelessWidget {
                       Expanded(
                         child: _buildStatCard(
                           icon: AppIcons.students,
-                          label: 'Students',
+                          label: SubjectStrings.students,
                           value: '${subjectModel.subjectEmailSts.length}',
                         ),
                       ),
@@ -90,7 +90,7 @@ class SubjectInfoCard extends StatelessWidget {
                       Expanded(
                         child: _buildStatCard(
                           icon: AppIcons.exam,
-                          label: 'Exams',
+                          label: SubjectStrings.exams,
                           value: '$examLength',
                         ),
                       ),
@@ -98,7 +98,7 @@ class SubjectInfoCard extends StatelessWidget {
                       Expanded(
                         child: _buildStatCard(
                           icon: AppIcons.calendar,
-                          label: 'Created',
+                          label: SubjectStrings.created,
                           value: subjectModel.createdAt,
                         ),
                       ),
@@ -133,7 +133,7 @@ class SubjectInfoCard extends StatelessWidget {
       child: AppCustomText.generate(
         text: subjectModel.subjectName,
         textStyle: AppTextStyles.bodyLargeBold.copyWith(
-          color: Colors.white,
+          color: AppColors.textWhite,
           fontSize: 16.sp,
         ),
         maxLines: 2,
@@ -150,10 +150,10 @@ class SubjectInfoCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: AppColors.textWhite.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(10.r),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.textWhite.withValues(alpha: 0.08),
         ),
       ),
       child: Column(
@@ -163,7 +163,7 @@ class SubjectInfoCard extends StatelessWidget {
           AppCustomText.generate(
             text: value,
             textStyle: AppTextStyles.bodyMediumBold.copyWith(
-              color: Colors.white,
+              color: AppColors.textWhite,
               fontSize: 14.sp,
             ),
             maxLines: 1,
@@ -173,7 +173,7 @@ class SubjectInfoCard extends StatelessWidget {
           AppCustomText.generate(
             text: label,
             textStyle: AppTextStyles.bodySmallMedium.copyWith(
-              color: Colors.grey.shade400,
+              color: AppColors.grey400,
               fontSize: 10.sp,
             ),
           ),
@@ -186,7 +186,7 @@ class SubjectInfoCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: AppColors.textWhite.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(10.r),
         border: Border.all(
           color: AppColors.colorPrimary.withValues(alpha: 0.3),
@@ -202,16 +202,16 @@ class SubjectInfoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppCustomText.generate(
-                  text: 'Subject Code',
+                  text: SubjectStrings.subjectCode,
                   textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                    color: Colors.grey.shade400,
+                    color: AppColors.grey400,
                     fontSize: 10.sp,
                   ),
                 ),
                 AppCustomText.generate(
                   text: subjectModel.subjectCode,
                   textStyle: AppTextStyles.bodyMediumBold.copyWith(
-                    color: Colors.white,
+                    color: AppColors.textWhite,
                     fontSize: 14.sp,
                     letterSpacing: 1,
                   ),
@@ -226,7 +226,7 @@ class SubjectInfoCard extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.all(8.w),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: AppColors.textWhite.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Icon(
@@ -250,8 +250,10 @@ class SubjectInfoCard extends StatelessWidget {
 
   Widget _buildStatusSection() {
     final isOpen = subjectModel.subjectIsOpen;
-    final color = isOpen ? Colors.green : Colors.red;
-    final text = isOpen ? 'Open for joining' : 'Closed for joining';
+    final color = isOpen ? AppColors.success : AppColors.danger;
+    final text = isOpen
+        ? SubjectStrings.openForJoining
+        : SubjectStrings.closedForJoining;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
@@ -263,7 +265,7 @@ class SubjectInfoCard extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            isOpen ? Icons.lock_open_rounded : Icons.lock_outline_rounded,
+            isOpen ? AppIcons.lockOpenRounded : AppIcons.lockOutlineRounded,
             color: color,
             size: 16.sp,
           ),
@@ -286,21 +288,23 @@ class SubjectInfoCard extends StatelessWidget {
               Expanded(
                 child: _buildActionButton(
                   title:
-                      subjectModel.subjectIsOpen ? 'Close Subject' : 'Open Subject',
+                      subjectModel.subjectIsOpen
+                          ? SubjectStrings.closeSubject
+                          : SubjectStrings.openSubject,
                   onTap: onToggleOpen,
-                  background: Colors.amber.withValues(alpha: 0.18),
-                  borderColor: Colors.amber.withValues(alpha: 0.5),
-                  textColor: Colors.amber.shade300,
+                  background: AppColors.amber.withValues(alpha: 0.18),
+                  borderColor: AppColors.amber.withValues(alpha: 0.5),
+                  textColor: AppColors.warningDark,
                 ),
               ),
               SizedBox(width: 8.w),
               Expanded(
                 child: _buildActionButton(
-                  title: 'Delete Subject',
+                  title: SubjectStrings.deleteSubject,
                   onTap: onDeleteSubject,
-                  background: Colors.red.withValues(alpha: 0.18),
-                  borderColor: Colors.red.withValues(alpha: 0.5),
-                  textColor: Colors.red.shade300,
+                  background: AppColors.danger.withValues(alpha: 0.18),
+                  borderColor: AppColors.danger.withValues(alpha: 0.5),
+                  textColor: AppColors.dangerSoft,
                 ),
               ),
             ],
@@ -308,7 +312,7 @@ class SubjectInfoCard extends StatelessWidget {
           if (onOpenDashboard != null) ...[
             SizedBox(height: 8.h),
             _buildActionButton(
-              title: 'Subject Dashboard',
+              title: SubjectStrings.subjectDashboard,
               onTap: onOpenDashboard,
               background: AppColors.colorPrimary.withValues(alpha: 0.18),
               borderColor: AppColors.colorPrimary.withValues(alpha: 0.5),
@@ -321,11 +325,11 @@ class SubjectInfoCard extends StatelessWidget {
     }
 
     return _buildActionButton(
-      title: 'Leave Subject',
+      title: SubjectStrings.leaveSubject,
       onTap: onLeaveSubject,
-      background: Colors.red.withValues(alpha: 0.18),
-      borderColor: Colors.red.withValues(alpha: 0.5),
-      textColor: Colors.red.shade300,
+      background: AppColors.danger.withValues(alpha: 0.18),
+      borderColor: AppColors.danger.withValues(alpha: 0.5),
+      textColor: AppColors.dangerSoft,
     );
   }
 
@@ -364,9 +368,9 @@ class SubjectInfoCard extends StatelessWidget {
         content: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_circle, color: Colors.white, size: 18.sp),
+            Icon(AppIcons.checkCircle, color: AppColors.textWhite, size: 18.sp),
             SizedBox(width: 8.w),
-            Text('Code copied', style: TextStyle(fontSize: 13.sp)),
+            Text(SubjectStrings.codeCopied, style: TextStyle(fontSize: 13.sp)),
           ],
         ),
         backgroundColor: AppColors.colorPrimary,

@@ -70,7 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (selectedSubject == null) {
       return Scaffold(
         appBar: AppBar(title: Text(NameRoutes.dashboard.titleAppBar)),
-        body: const Center(child: Text('No subject selected')),
+        body: const Center(child: Text(DashboardStrings.noSubjectSelected)),
       );
     }
 
@@ -78,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return Scaffold(
         appBar: AppBar(title: Text(NameRoutes.dashboard.titleAppBar)),
         body: const Center(
-          child: Text('Dashboard is available for teachers only.'),
+          child: Text(DashboardStrings.teacherOnlyMessage),
         ),
       );
     }
@@ -164,14 +164,16 @@ class _DashboardBody extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: count == 0 ? null : () => _showStudentScoresBottomSheet(context),
-        icon: const Icon(Icons.people_alt_outlined),
+        icon: const Icon(AppIcons.peopleAltOutlined),
         label: Text(
-          count == 0 ? 'No student records yet' : 'Students scores details ($count)',
+          count == 0
+              ? DashboardStrings.noStudentRecordsYet
+              : DashboardStrings.studentsScoreButton(count),
         ),
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
           backgroundColor: AppColors.colorPrimary,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.textWhite,
           disabledBackgroundColor: AppColors.colorBackgroundCardProjects,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
@@ -242,7 +244,7 @@ class _DashboardBody extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: AppColors.textWhite.withValues(alpha: 0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +258,7 @@ class _DashboardBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
-                  Icons.analytics_outlined,
+                  AppIcons.analyticsOutlined,
                   color: AppColors.colorPrimary,
                   size: 20.sp,
                 ),
@@ -265,7 +267,7 @@ class _DashboardBody extends StatelessWidget {
               Expanded(
                 child: Text(
                   subject.subjectName,
-                  style: AppTextStyles.h6Bold.copyWith(color: Colors.white),
+                  style: AppTextStyles.h6Bold.copyWith(color: AppColors.textWhite),
                 ),
               ),
             ],
@@ -276,16 +278,16 @@ class _DashboardBody extends StatelessWidget {
             runSpacing: 8.h,
             children: [
               _HeaderChip(
-                icon: Icons.menu_book_rounded,
-                text: '${analytics.examsCount} exams',
+                icon: AppIcons.menuBookRounded,
+                text: DashboardStrings.examsChip(analytics.examsCount),
               ),
               _HeaderChip(
-                icon: Icons.groups_2_outlined,
-                text: '${analytics.studentsCount} students',
+                icon: AppIcons.groups2Outlined,
+                text: DashboardStrings.studentsChip(analytics.studentsCount),
               ),
               _HeaderChip(
-                icon: Icons.calendar_month_outlined,
-                text: 'Created ${subject.createdAt}',
+                icon: AppIcons.calendarMonthOutlined,
+                text: DashboardStrings.createdChip(subject.createdAt),
               ),
             ],
           ),
@@ -297,34 +299,34 @@ class _DashboardBody extends StatelessWidget {
   Widget _buildOverviewSection({required bool wideMode}) {
     final cards = <_OverviewMetricData>[
       _OverviewMetricData(
-        icon: Icons.assignment_outlined,
-        title: 'Exams Count',
+        icon: AppIcons.assignmentOutlined,
+        title: DashboardStrings.examsCount,
         value: '${analytics.examsCount}',
-        color: const Color(0xFF4FC3F7),
+        color: AppColors.dashboardMetricBlue,
       ),
       _OverviewMetricData(
-        icon: Icons.groups_rounded,
-        title: 'Students Count',
+        icon: AppIcons.groupsRounded,
+        title: DashboardStrings.studentsCount,
         value: '${analytics.studentsCount}',
-        color: const Color(0xFF81C784),
+        color: AppColors.dashboardMetricGreen,
       ),
       _OverviewMetricData(
-        icon: Icons.percent_rounded,
-        title: 'Average Score',
+        icon: AppIcons.percentRounded,
+        title: DashboardStrings.averageScore,
         value: '${_formatPercent(analytics.averageScorePercent)}%',
-        color: const Color(0xFFFFB74D),
+        color: AppColors.dashboardMetricOrange,
       ),
       _OverviewMetricData(
-        icon: Icons.verified_rounded,
-        title: 'Pass Rate',
+        icon: AppIcons.verifiedRounded,
+        title: DashboardStrings.passRate,
         value: '${_formatPercent(analytics.passRatePercent)}%',
-        color: const Color(0xFFBA68C8),
+        color: AppColors.dashboardMetricPurple,
       ),
     ];
 
     return _SectionCard(
-      title: 'Overview',
-      subtitle: 'Quick metrics for this subject',
+      title: DashboardStrings.overview,
+      subtitle: DashboardStrings.overviewSubtitle,
       child: wideMode
           ? GridView.builder(
               shrinkWrap: true,
@@ -360,16 +362,16 @@ class _DashboardBody extends StatelessWidget {
   Widget _buildDifficultySection() {
     if (analytics.examsCount == 0) {
       return _SectionCard(
-        title: 'Exam Difficulty',
-        subtitle: 'Distribution by level',
-        child: const _SectionEmptyState(message: 'No exams yet to analyze.'),
+        title: DashboardStrings.examDifficulty,
+        subtitle: DashboardStrings.examDifficultySubtitle,
+        child: const _SectionEmptyState(message: DashboardStrings.noExamsToAnalyze),
       );
     }
 
     final segments = analytics.difficultySegments;
     return _SectionCard(
-      title: 'Exam Difficulty',
-      subtitle: 'Easy vs normal vs hard',
+      title: DashboardStrings.examDifficulty,
+      subtitle: DashboardStrings.examDifficultyChartSubtitle,
       child: Column(
         children: [
           Row(
@@ -390,7 +392,7 @@ class _DashboardBody extends StatelessWidget {
                           child: _LegendItem(
                             color: segment.color,
                             label: segment.label,
-                            value: '${segment.value.toInt()} exams',
+                            value: DashboardStrings.examsChip(segment.value.toInt()),
                           ),
                         ),
                       )
@@ -404,8 +406,10 @@ class _DashboardBody extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               analytics.latestDifficultyLabel == null
-                  ? 'Latest exam: -'
-                  : 'Latest exam: ${analytics.latestDifficultyLabel}',
+                  ? DashboardStrings.latestDifficultyEmpty()
+                  : DashboardStrings.latestDifficulty(
+                      analytics.latestDifficultyLabel!,
+                    ),
               style: AppTextStyles.bodyMediumMedium.copyWith(
                 color: AppColors.textCoolGray,
               ),
@@ -420,25 +424,25 @@ class _DashboardBody extends StatelessWidget {
     final questions = analytics.questionStats;
     if (questions.isEmpty) {
       return _SectionCard(
-        title: 'Question Performance',
-        subtitle: 'Tap a bar for more details',
+        title: DashboardStrings.questionPerformance,
+        subtitle: DashboardStrings.questionPerformanceSubtitle,
         child: const _SectionEmptyState(
-          message: 'No answered questions available yet.',
+          message: DashboardStrings.noAnsweredQuestions,
         ),
       );
     }
 
     return _SectionCard(
-      title: 'Question Performance',
-      subtitle: 'Green = correct, Red = wrong',
+      title: DashboardStrings.questionPerformance,
+      subtitle: DashboardStrings.questionPerformanceLegend,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              _LegendItem(color: Color(0xFF4CAF50), label: 'Correct'),
+              _LegendItem(color: AppColors.success, label: DashboardStrings.correct),
               SizedBox(width: 14),
-              _LegendItem(color: Color(0xFFE53935), label: 'Wrong'),
+              _LegendItem(color: AppColors.danger, label: DashboardStrings.wrong),
             ],
           ),
           SizedBox(height: 12.h),
@@ -457,17 +461,17 @@ class _DashboardBody extends StatelessWidget {
     final topics = analytics.topicStats;
     if (topics.isEmpty) {
       return _SectionCard(
-        title: 'Topic / Lesson Analysis',
-        subtitle: 'Weak lessons are highlighted',
+        title: DashboardStrings.topicAnalysis,
+        subtitle: DashboardStrings.topicAnalysisSubtitle,
         child: const _SectionEmptyState(
-          message: 'No topic performance available yet.',
+          message: DashboardStrings.noTopicPerformance,
         ),
       );
     }
 
     return _SectionCard(
-      title: 'Topic / Lesson Analysis',
-      subtitle: 'Each bar represents one lesson',
+      title: DashboardStrings.topicAnalysis,
+      subtitle: DashboardStrings.topicAnalysisChartSubtitle,
       child: Column(
         children: [
           SizedBox(
@@ -486,7 +490,7 @@ class _DashboardBody extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.bodySmallMedium.copyWith(
-                        color: Colors.white,
+                        color: AppColors.textWhite,
                       ),
                     ),
                   ),
@@ -495,16 +499,16 @@ class _DashboardBody extends StatelessWidget {
                     '${topic.successPercent.toStringAsFixed(1)}%',
                     style: AppTextStyles.bodySmallBold.copyWith(
                       color: topic.needsReview
-                          ? const Color(0xFFE57373)
+                          ? AppColors.dangerSoft
                           : AppColors.colorPrimary,
                     ),
                   ),
                   if (topic.needsReview) ...[
                     SizedBox(width: 8.w),
                     Text(
-                      'Review this lesson',
+                      DashboardStrings.reviewThisLesson,
                       style: AppTextStyles.bodyExtraSmallMedium.copyWith(
-                        color: const Color(0xFFE57373),
+                        color: AppColors.dangerSoft,
                       ),
                     ),
                   ],
@@ -521,10 +525,10 @@ class _DashboardBody extends StatelessWidget {
     final timePoints = analytics.timeTrend;
     if (timePoints.isEmpty) {
       return _SectionCard(
-        title: 'Time Analysis',
-        subtitle: 'Average exam time trend',
+        title: DashboardStrings.timeAnalysis,
+        subtitle: DashboardStrings.timeAnalysisSubtitle,
         child: const _SectionEmptyState(
-          message: 'No time data available yet.',
+          message: DashboardStrings.noTimeData,
         ),
       );
     }
@@ -534,8 +538,8 @@ class _DashboardBody extends StatelessWidget {
         : null;
 
     return _SectionCard(
-      title: 'Time Analysis',
-      subtitle: 'Average solving time across exams',
+      title: DashboardStrings.timeAnalysis,
+      subtitle: DashboardStrings.timeAnalysisChartSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -545,13 +549,16 @@ class _DashboardBody extends StatelessWidget {
               points: timePoints,
               color: AppColors.colorPrimary,
               highlightedIndex: analytics.longestTimeIndex,
-              ySuffix: 'm',
+              ySuffix: DashboardStrings.minuteSuffix,
             ),
           ),
           if (longest != null) ...[
             SizedBox(height: 8.h),
             Text(
-              'Longest: ${longest.fullLabel} (${longest.value.toStringAsFixed(0)} min)',
+              DashboardStrings.longestValue(
+                longest.fullLabel,
+                longest.value.toStringAsFixed(0),
+              ),
               style: AppTextStyles.bodySmallMedium.copyWith(
                 color: AppColors.textCoolGray,
               ),
@@ -566,35 +573,35 @@ class _DashboardBody extends StatelessWidget {
     final split = analytics.studentSplit;
     if (!split.hasData) {
       return _SectionCard(
-        title: 'Student Performance Split',
-        subtitle: 'Privacy-friendly distribution',
+        title: DashboardStrings.studentPerformanceSplit,
+        subtitle: DashboardStrings.studentPerformanceSplitSubtitle,
         child: const _SectionEmptyState(
-          message: 'No student results yet.',
+          message: DashboardStrings.noStudentResults,
         ),
       );
     }
 
     final segments = <_SplitSegment>[
       _SplitSegment(
-        label: 'Excellent',
+        label: DashboardStrings.excellent,
         percent: split.excellent,
-        color: const Color(0xFF43A047),
+        color: AppColors.dashboardSplitExcellent,
       ),
       _SplitSegment(
-        label: 'Average',
+        label: DashboardStrings.average,
         percent: split.average,
-        color: const Color(0xFFFFB300),
+        color: AppColors.dashboardSplitAverage,
       ),
       _SplitSegment(
-        label: 'Needs Support',
+        label: DashboardStrings.needsSupport,
         percent: split.needsSupport,
-        color: const Color(0xFFE53935),
+        color: AppColors.danger,
       ),
     ];
 
     return _SectionCard(
-      title: 'Student Performance Split',
-      subtitle: 'No names, percentages only',
+      title: DashboardStrings.studentPerformanceSplit,
+      subtitle: DashboardStrings.studentPerformanceSplitChartSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -619,10 +626,10 @@ class _DashboardBody extends StatelessWidget {
     final trend = analytics.examComparison;
     if (trend.isEmpty) {
       return _SectionCard(
-        title: 'Exam Comparison',
-        subtitle: 'Progress across exams',
+        title: DashboardStrings.examComparison,
+        subtitle: DashboardStrings.examComparisonSubtitle,
         child: const _SectionEmptyState(
-          message: 'Not enough exam results for comparison yet.',
+          message: DashboardStrings.noComparisonData,
         ),
       );
     }
@@ -630,8 +637,8 @@ class _DashboardBody extends StatelessWidget {
     final improving = analytics.isImproving;
 
     return _SectionCard(
-      title: 'Exam Comparison',
-      subtitle: 'Trend for average scores',
+      title: DashboardStrings.examComparison,
+      subtitle: DashboardStrings.examComparisonTrendSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -640,8 +647,8 @@ class _DashboardBody extends StatelessWidget {
             child: _LineTrendChart(
               points: trend,
               color: improving
-                  ? const Color(0xFF43A047)
-                  : const Color(0xFFE53935),
+                  ? AppColors.dashboardSplitExcellent
+                  : AppColors.danger,
               ySuffix: '%',
             ),
           ),
@@ -650,21 +657,21 @@ class _DashboardBody extends StatelessWidget {
             children: [
               Icon(
                 improving
-                    ? Icons.trending_up_rounded
-                    : Icons.trending_down_rounded,
+                    ? AppIcons.trendingUpRounded
+                    : AppIcons.trendingDownRounded,
                 color: improving
-                    ? const Color(0xFF43A047)
-                    : const Color(0xFFE53935),
+                    ? AppColors.dashboardSplitExcellent
+                    : AppColors.danger,
                 size: 20.sp,
               ),
               SizedBox(width: 8.w),
               Expanded(
                 child: Text(
-                  improving ? 'Performance is improving' : 'Performance needs attention',
+                  DashboardStrings.trendMessage(improving),
                   style: AppTextStyles.bodyMediumBold.copyWith(
                     color: improving
-                        ? const Color(0xFF43A047)
-                        : const Color(0xFFE53935),
+                        ? AppColors.dashboardSplitExcellent
+                        : AppColors.danger,
                   ),
                 ),
               ),
@@ -690,8 +697,8 @@ class _DashboardBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${question.examName} - ${question.label}',
-                style: AppTextStyles.bodyLargeBold.copyWith(color: Colors.white),
+                DashboardStrings.insightTitle(question.examName, question.label),
+                style: AppTextStyles.bodyLargeBold.copyWith(color: AppColors.textWhite),
               ),
               SizedBox(height: 8.h),
               Text(
@@ -704,20 +711,20 @@ class _DashboardBody extends StatelessWidget {
               ),
               SizedBox(height: 14.h),
               _BottomSheetInfoRow(
-                icon: Icons.percent_rounded,
-                title: 'Success Rate',
+                icon: AppIcons.percentRounded,
+                title: DashboardStrings.successRate,
                 value: '${_formatPercent(question.successPercent)}%',
               ),
               SizedBox(height: 8.h),
               _BottomSheetInfoRow(
-                icon: Icons.how_to_vote_outlined,
-                title: 'Most Selected',
+                icon: AppIcons.howToVoteOutlined,
+                title: DashboardStrings.mostSelected,
                 value: question.mostSelectedAnswer,
               ),
               SizedBox(height: 8.h),
               _BottomSheetInfoRow(
-                icon: Icons.groups_outlined,
-                title: 'Attempts',
+                icon: AppIcons.groupsOutlined,
+                title: DashboardStrings.attemptsLabel,
                 value: '${question.attempts}',
               ),
             ],
@@ -750,12 +757,12 @@ class _DashboardBody extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Students Score Matrix',
-                    style: AppTextStyles.bodyLargeBold.copyWith(color: Colors.white),
+                    DashboardStrings.studentsScoreMatrix,
+                    style: AppTextStyles.bodyLargeBold.copyWith(color: AppColors.textWhite),
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Each student total score + red box for exams not attempted or score 0',
+                    DashboardStrings.studentsScoreMatrixHint,
                     style: AppTextStyles.bodySmallMedium.copyWith(
                       color: AppColors.textCoolGray,
                     ),
@@ -763,7 +770,7 @@ class _DashboardBody extends StatelessWidget {
                   SizedBox(height: 12.h),
                   if (summaries.isEmpty)
                     const Expanded(
-                      child: _SectionEmptyState(message: 'No student data available yet.'),
+                      child: _SectionEmptyState(message: DashboardStrings.noStudentData),
                     )
                   else
                     Expanded(
@@ -889,19 +896,19 @@ class _DashboardAnalytics {
 
     final segments = [
       _ChartSegment(
-        label: 'Easy',
+        label: DashboardStrings.easy,
         value: (difficultyCount[LevelExam.easy] ?? 0).toDouble(),
-        color: const Color(0xFF4CAF50),
+        color: AppColors.success,
       ),
       _ChartSegment(
-        label: 'Normal',
+        label: DashboardStrings.normal,
         value: (difficultyCount[LevelExam.normal] ?? 0).toDouble(),
-        color: const Color(0xFFFFC107),
+        color: AppColors.warning,
       ),
       _ChartSegment(
-        label: 'Hard',
+        label: DashboardStrings.hard,
         value: (difficultyCount[LevelExam.hard] ?? 0).toDouble(),
-        color: const Color(0xFFE53935),
+        color: AppColors.danger,
       ),
     ];
 
@@ -1000,7 +1007,7 @@ class _DashboardAnalytics {
         final exam = exams[examIndex];
         final result = _findResultByEmail(exam.examResult, email);
         final examName = exam.examStatic.typeExam.trim().isEmpty
-            ? 'Exam ${examIndex + 1}'
+            ? DashboardStrings.examLabel(examIndex)
             : exam.examStatic.typeExam;
         final fallbackTotal = exam.examStatic.numberOfQuestions;
         final resultTotal = result?.numberOfQuestions ?? 0;
@@ -1073,7 +1080,8 @@ class _DashboardAnalytics {
             correctCount++;
           }
 
-          if (normalizedAnswer.isNotEmpty && normalizedAnswer != 'no answer') {
+          if (normalizedAnswer.isNotEmpty &&
+              normalizedAnswer != DashboardStrings.noAnswer) {
             answerCount[normalizedAnswer] = (answerCount[normalizedAnswer] ?? 0) + 1;
             answerLabel[normalizedAnswer] = rawAnswer;
           }
@@ -1090,13 +1098,13 @@ class _DashboardAnalytics {
 
         output.add(
           _QuestionStat(
-            label: 'Q${index + 1}',
+            label: DashboardStrings.questionLabel(index),
             examName: exam.examStatic.typeExam,
             questionText: examQuestion.questionText,
             successPercent: success,
             attempts: attempts,
             mostSelectedAnswer: mostCommonKey == null
-                ? 'No clear answer'
+                ? DashboardStrings.noClearAnswer
                 : (answerLabel[mostCommonKey] ?? mostCommonKey),
           ),
         );
@@ -1119,7 +1127,12 @@ class _DashboardAnalytics {
       final avg = _calculateExamAveragePercent(exam);
       if (avg == null) continue;
       final label = exam.examStatic.typeExam.trim().isEmpty
-          ? 'Exam ${exam.examId.substring(0, math.min(4, exam.examId.length))}'
+          ? DashboardStrings.examIdLabel(
+              exam.examId.substring(
+                0,
+                math.min(AppConstants.examIdPreviewLength, exam.examId.length),
+              ),
+            )
           : exam.examStatic.typeExam;
       map.putIfAbsent(label, () => []).add(avg);
     }
@@ -1174,19 +1187,19 @@ class _DashboardAnalytics {
   static String _difficultyLabel(LevelExam level) {
     switch (level) {
       case LevelExam.easy:
-        return 'Easy';
+        return DashboardStrings.easy;
       case LevelExam.normal:
-        return 'Normal';
+        return DashboardStrings.normal;
       case LevelExam.hard:
-        return 'Hard';
+        return DashboardStrings.hard;
     }
   }
 
   static String _shortLabel(String value, int fallbackIndex) {
     final trimmed = value.trim();
-    if (trimmed.isEmpty) return 'Exam $fallbackIndex';
-    if (trimmed.length <= 8) return trimmed;
-    return '${trimmed.substring(0, 8)}...';
+    if (trimmed.isEmpty) return DashboardStrings.examFallbackLabel(fallbackIndex);
+    if (trimmed.length <= AppConstants.examLabelMaxLength) return trimmed;
+    return '${trimmed.substring(0, AppConstants.examLabelMaxLength)}...';
   }
 
   static String _extractUserName(String email) {
@@ -1286,14 +1299,14 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.colorsBackGround2,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: AppColors.textWhite.withValues(alpha: 0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: AppTextStyles.bodyLargeBold.copyWith(color: Colors.white),
+            style: AppTextStyles.bodyLargeBold.copyWith(color: AppColors.textWhite),
           ),
           SizedBox(height: 3.h),
           Text(
@@ -1349,7 +1362,7 @@ class _HeaderChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: AppColors.textWhite.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999.r),
       ),
       child: Row(
@@ -1359,7 +1372,7 @@ class _HeaderChip extends StatelessWidget {
           SizedBox(width: 6.w),
           Text(
             text,
-            style: AppTextStyles.bodySmallMedium.copyWith(color: Colors.white),
+            style: AppTextStyles.bodySmallMedium.copyWith(color: AppColors.textWhite),
           ),
         ],
       ),
@@ -1394,7 +1407,7 @@ class _OverviewMetricCard extends StatelessWidget {
           Text(
             data.value,
             style: (wideMode ? AppTextStyles.bodyLargeBold : AppTextStyles.h6Bold)
-                .copyWith(color: Colors.white),
+                .copyWith(color: AppColors.textWhite),
           ),
           SizedBox(height: 2.h),
           Text(
@@ -1457,7 +1470,7 @@ class _DifficultyPieChartState extends State<_DifficultyPieChart> {
       (sum, item) => sum + item.value,
     );
     if (total <= 0) {
-      return const Center(child: Text('No data'));
+      return const Center(child: Text(DashboardStrings.noData));
     }
 
     return PieChart(
@@ -1490,7 +1503,7 @@ class _DifficultyPieChartState extends State<_DifficultyPieChart> {
             showTitle: segment.value > 0,
             title: segment.value.toInt().toString(),
             titleStyle: AppTextStyles.bodySmallBold.copyWith(
-              color: Colors.white,
+              color: AppColors.textWhite,
             ),
           );
         }),
@@ -1517,7 +1530,7 @@ class _QuestionPerformanceChart extends StatelessWidget {
           horizontalInterval: 25,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) => FlLine(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.textWhite.withValues(alpha: 0.08),
             strokeWidth: 1,
           ),
         ),
@@ -1568,8 +1581,8 @@ class _QuestionPerformanceChart extends StatelessWidget {
         borderData: FlBorderData(
           show: true,
           border: Border(
-            left: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+            left: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
+            bottom: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
           ),
         ),
         barTouchData: BarTouchData(
@@ -1595,8 +1608,8 @@ class _QuestionPerformanceChart extends StatelessWidget {
                 width: 14.w,
                 borderRadius: BorderRadius.circular(4.r),
                 rodStackItems: [
-                  BarChartRodStackItem(0, wrong, const Color(0xFFE53935)),
-                  BarChartRodStackItem(wrong, 100, const Color(0xFF4CAF50)),
+                  BarChartRodStackItem(0, wrong, AppColors.danger),
+                  BarChartRodStackItem(wrong, 100, AppColors.success),
                 ],
               ),
             ],
@@ -1624,7 +1637,7 @@ class _TopicBarChart extends StatelessWidget {
           horizontalInterval: 25,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) => FlLine(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.textWhite.withValues(alpha: 0.08),
             strokeWidth: 1,
           ),
         ),
@@ -1659,7 +1672,7 @@ class _TopicBarChart extends StatelessWidget {
                 return Padding(
                   padding: EdgeInsets.only(top: 8.h),
                   child: Text(
-                    'T${index + 1}',
+                    DashboardStrings.topicLabel(index),
                     style: AppTextStyles.bodyExtraSmallMedium.copyWith(
                       color: AppColors.textCoolGray,
                     ),
@@ -1672,8 +1685,8 @@ class _TopicBarChart extends StatelessWidget {
         borderData: FlBorderData(
           show: true,
           border: Border(
-            left: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+            left: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
+            bottom: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
           ),
         ),
         barGroups: List.generate(topics.length, (index) {
@@ -1686,7 +1699,7 @@ class _TopicBarChart extends StatelessWidget {
                 width: 16.w,
                 borderRadius: BorderRadius.circular(4.r),
                 color: item.needsReview
-                    ? const Color(0xFFE57373)
+                    ? AppColors.dangerSoft
                     : AppColors.colorPrimary,
               ),
             ],
@@ -1712,7 +1725,7 @@ class _LineTrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (points.isEmpty) {
-      return const _SectionEmptyState(message: 'No chart data');
+      return const _SectionEmptyState(message: DashboardStrings.noChartData);
     }
 
     final values = points.map((point) => point.value).toList();
@@ -1736,15 +1749,15 @@ class _LineTrendChart extends StatelessWidget {
           horizontalInterval: interval,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) => FlLine(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.textWhite.withValues(alpha: 0.08),
             strokeWidth: 1,
           ),
         ),
         borderData: FlBorderData(
           show: true,
           border: Border(
-            left: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+            left: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
+            bottom: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
           ),
         ),
         titlesData: FlTitlesData(
@@ -1804,10 +1817,13 @@ class _LineTrendChart extends StatelessWidget {
               final index = spot.x.toInt();
               final label = index >= 0 && index < points.length
                   ? points[index].fullLabel
-                  : 'Point';
+                  : DashboardStrings.point;
               return LineTooltipItem(
-                '$label\n${spot.y.toStringAsFixed(1)}$ySuffix',
-                AppTextStyles.bodyExtraSmallBold.copyWith(color: Colors.white),
+                DashboardStrings.chartValueWithSuffix(
+                  label,
+                  '${spot.y.toStringAsFixed(1)}$ySuffix',
+                ),
+                AppTextStyles.bodyExtraSmallBold.copyWith(color: AppColors.textWhite),
               );
             }).toList(),
           ),
@@ -1833,7 +1849,7 @@ class _LineTrendChart extends StatelessWidget {
                   radius: isHighlighted ? 4.5 : 3,
                   color: color,
                   strokeWidth: 1.5,
-                  strokeColor: Colors.white,
+                  strokeColor: AppColors.textWhite,
                 );
               },
             ),
@@ -1853,7 +1869,7 @@ class _StudentSplitChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = segments.fold<double>(0, (sum, item) => sum + item.percent);
     if (total <= 0) {
-      return const _SectionEmptyState(message: 'No student split data');
+      return const _SectionEmptyState(message: DashboardStrings.noStudentSplitData);
     }
 
     var start = 0.0;
@@ -1875,7 +1891,7 @@ class _StudentSplitChart extends StatelessWidget {
           horizontalInterval: 50,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) => FlLine(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.textWhite.withValues(alpha: 0.08),
             strokeWidth: 1,
           ),
         ),
@@ -1904,8 +1920,8 @@ class _StudentSplitChart extends StatelessWidget {
         borderData: FlBorderData(
           show: true,
           border: Border(
-            left: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+            left: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
+            bottom: BorderSide(color: AppColors.textWhite.withValues(alpha: 0.15)),
           ),
         ),
         barTouchData: const BarTouchData(enabled: false),
@@ -1969,8 +1985,8 @@ class _BottomSheetInfoRow extends StatelessWidget {
         SizedBox(width: 8.w),
         Expanded(
           child: Text(
-            '$title: $value',
-            style: AppTextStyles.bodyMediumMedium.copyWith(color: Colors.white),
+            DashboardStrings.matrixHintText(title, value),
+            style: AppTextStyles.bodyMediumMedium.copyWith(color: AppColors.textWhite),
           ),
         ),
       ],
@@ -1993,7 +2009,7 @@ class _StudentScoreCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.colorBackgroundCardProjects.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: AppColors.textWhite.withValues(alpha: 0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2003,7 +2019,7 @@ class _StudentScoreCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   summary.displayName,
-                  style: AppTextStyles.bodyMediumBold.copyWith(color: Colors.white),
+                  style: AppTextStyles.bodyMediumBold.copyWith(color: AppColors.textWhite),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -2015,7 +2031,7 @@ class _StudentScoreCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999.r),
                 ),
                 child: Text(
-                  'Total $totalLabel',
+                  DashboardStrings.totalLabel(totalLabel),
                   style: AppTextStyles.bodyExtraSmallBold.copyWith(
                     color: AppColors.colorPrimary,
                   ),
@@ -2038,10 +2054,10 @@ class _StudentScoreCard extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: const Color(0xFFE53935).withValues(alpha: 0.14),
+                color: AppColors.danger.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(
-                  color: const Color(0xFFE53935).withValues(alpha: 0.45),
+                  color: AppColors.danger.withValues(alpha: 0.45),
                 ),
               ),
               child: Column(
@@ -2051,9 +2067,9 @@ class _StudentScoreCard extends StatelessWidget {
                       (examName) => Padding(
                         padding: EdgeInsets.only(bottom: 4.h),
                         child: Text(
-                          '- $examName',
+                          DashboardStrings.flaggedExamLabel(examName),
                           style: AppTextStyles.bodyExtraSmallBold.copyWith(
-                            color: const Color(0xFFFFCDD2),
+                            color: AppColors.dashboardLightRed,
                           ),
                         ),
                       ),
@@ -2065,9 +2081,9 @@ class _StudentScoreCard extends StatelessWidget {
           if (summary.flaggedExamNames.isNotEmpty) SizedBox(height: 2.h),
           if (summary.flaggedExamNames.isEmpty)
             Text(
-              'No missing or zero-score exams.',
+              DashboardStrings.noMissingOrZeroScores,
               style: AppTextStyles.bodyExtraSmallMedium.copyWith(
-                color: const Color(0xFF81C784),
+                color: AppColors.dashboardMetricGreen,
               ),
             ),
         ],
@@ -2220,3 +2236,4 @@ class _ResultWithQuestionCount {
   final ExamResultModel result;
   final int fallbackQuestions;
 }
+

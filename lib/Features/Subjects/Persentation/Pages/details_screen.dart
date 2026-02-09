@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Config/Routes/app_router.dart';
+import 'package:smart_text_thief/Config/Routes/route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/PDF/pdf_services.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
@@ -62,7 +62,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             body = CenteredSection(
               child: Text(
                 state.error!,
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(color: AppColors.danger),
               ),
             );
           } else if (exams.isEmpty) {
@@ -81,14 +81,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     return ExamCard(
                       exam: exam,
                       againTest: () {
-                        AppRouter.nextScreenNoPath(
+                        AppRouter.pushToDoExam(
                           context,
-                          NameRoutes.doExam,
-                          extra: exam,
-                          pathParameters: {
-                            'exam': exam.examId,
-                            'id': exam.examIdSubject,
-                          },
+                          data: DoExamRouteData(exam: exam),
                         );
                       },
                       pdf: () async {
@@ -98,22 +93,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         );
                       },
                       showQA: () {
-                        final email =
-                            GetLocalStorage.getEmailUser().split('@').first;
-
-                        AppRouter.nextScreenNoPath(
+                        AppRouter.pushToResult(
                           context,
-                          NameRoutes.result,
-                          extra: {
-                            'exam': exam,
-                            'isEditMode': false,
-                            'nameSubject': selected.subjectName,
-                          },
-                          pathParameters: {
-                            'exam': exam.examId,
-                            'id': exam.examIdSubject,
-                            'email': email,
-                          },
+                          data: ViewExamRouteData(
+                            exam: exam,
+                            isEditMode: false,
+                            nameSubject: selected.subjectName,
+                          ),
+                          email: GetLocalStorage.getEmailUser(),
                         );
                       },
                     );
@@ -155,11 +142,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
             floatingActionButton: selected.isME
                 ? FloatingActionButton(
                     onPressed: () {
-                      AppRouter.nextScreenNoPath(
+                      AppRouter.pushToCreateExam(
                         context,
-                        NameRoutes.createExam,
-                        extra: selected,
-                        pathParameters: {'id': selected.subjectId},
+                        data: CreateExamRouteData(subject: selected),
                       );
                     },
                     backgroundColor: AppColors.colorPrimary,
@@ -185,11 +170,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final nextStatus = !subject.subjectIsOpen;
     final confirmed = await showSubjectActionDialog(
       context,
-      title: nextStatus ? 'Open Subject' : 'Close Subject',
+      title: nextStatus
+          ? SubjectStrings.openSubject
+          : SubjectStrings.closeSubject,
       message: nextStatus
-          ? 'Students will be able to join this subject again.'
-          : 'No new student will be able to join this subject.',
-      confirmText: nextStatus ? 'Open' : 'Close',
+          ? SubjectStrings.openSubjectMessage
+          : SubjectStrings.closeSubjectMessage,
+      confirmText: nextStatus
+          ? SubjectStrings.openSubject
+          : SubjectStrings.closeSubject,
     );
     if (confirmed != true || !context.mounted) return;
     await context.read<SubjectCubit>().toggleSubjectOpen(subject, nextStatus);
@@ -198,9 +187,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Future<void> _deleteSubject(BuildContext context, SubjectModel subject) async {
     final confirmed = await showSubjectActionDialog(
       context,
-      title: 'Delete Subject',
-      message: 'This will permanently delete the subject and all related exams.',
-      confirmText: 'Delete',
+      title: SubjectStrings.deleteSubject,
+      message: SubjectStrings.deleteSubjectMessage,
+      confirmText: AppStrings.delete,
       destructive: true,
     );
     if (confirmed != true || !context.mounted) return;
@@ -210,9 +199,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Future<void> _leaveSubject(BuildContext context, SubjectModel subject) async {
     final confirmed = await showSubjectActionDialog(
       context,
-      title: 'Leave Subject',
-      message: 'You will lose access to this subject. Continue?',
-      confirmText: 'Leave',
+      title: SubjectStrings.leaveSubject,
+      message: SubjectStrings.leaveSubjectMessage,
+      confirmText: SubjectStrings.leave,
       destructive: true,
     );
     if (confirmed != true || !context.mounted) return;
@@ -229,14 +218,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final results = <ExamResultModel>[
       for (final exam in exams) ...exam.examResult,
     ];
-    AppRouter.nextScreenNoPath(
+    AppRouter.pushToDashboard(
       context,
-      NameRoutes.dashboard,
-      extra: {
-        'subject': subject,
-        'exams': exams,
-        'results': results,
-      },
+      data: DashboardRouteData(
+        subject: subject,
+        exams: exams,
+        results: results,
+      ),
     );
   }
 }

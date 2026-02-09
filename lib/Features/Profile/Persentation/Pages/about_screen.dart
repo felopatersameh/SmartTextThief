@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../Core/Resources/app_fonts.dart';
-import '../../../../Core/Resources/app_colors.dart';
 
 import '../../../../Config/Routes/name_routes.dart';
+import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -20,25 +19,20 @@ class _AboutScreenState extends State<AboutScreen> {
       backgroundColor: AppColors.colorsBackGround,
       appBar: AppBar(title: Text(NameRoutes.about.titleAppBar)),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Image/Logo (Optional - if you have one)
             Center(
               child: Image.asset(
-                'assets/Image/s2.png', // Replace with your logo path
+                AppConstants.appLogoAsset,
                 height: 100.h,
               ),
             ),
-            // const SizedBox(height: 24),
-
-            // Overview Section
-            _buildSectionTitle('📚 Overview'),
+            _buildSectionTitle(AboutStrings.overview),
             const SizedBox(height: 12),
             AppCustomText.generate(
-              text:
-                  'Smart Text Thief is a revolutionary educational platform that enables instructors to create comprehensive exams faster than traditional methods using AI technology.',
+              text: AboutStrings.overviewText1,
               textStyle: AppTextStyles.bodySmallMedium.copyWith(
                 color: AppColors.textWhite,
               ),
@@ -46,17 +40,14 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
             const SizedBox(height: 8),
             AppCustomText.generate(
-              text:
-                  'The system bridges the gap between instructors and students, providing a complete exam lifecycle management solution.',
+              text: AboutStrings.overviewText2,
               textStyle: AppTextStyles.bodySmallMedium.copyWith(
                 color: AppColors.textWhite,
               ),
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 24),
-
-            // Key Concept Section
-            _buildSectionTitle('💡 Key Concept'),
+            _buildSectionTitle(AboutStrings.keyConcept),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
@@ -69,8 +60,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 ),
               ),
               child: AppCustomText.generate(
-                text:
-                    'Create exams with AI faster than any instructor could manually, while maintaining quality and customization options.',
+                text: AboutStrings.keyConceptText,
                 textStyle: AppTextStyles.bodyMediumMedium.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textWhite,
@@ -79,89 +69,39 @@ class _AboutScreenState extends State<AboutScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Key Advantages Section
-            _buildSectionTitle('⭐ Key Advantages'),
+            _buildSectionTitle(AboutStrings.keyAdvantages),
             const SizedBox(height: 12),
-            _buildAdvantageItem(
-              '⚡',
-              'Speed',
-              'Generate comprehensive exams in minutes, not hours',
-            ),
-            _buildAdvantageItem(
-              '🎨',
-              'Flexibility',
-              'Multiple input formats (PDF, images, text, documents)',
-            ),
-            _buildAdvantageItem(
-              '🔀',
-              'Fairness',
-              'Question shuffling prevents cheating',
-            ),
-            _buildAdvantageItem(
-              '📊',
-              'Insights',
-              'Detailed performance analytics',
-            ),
-            _buildAdvantageItem(
-              '🤖',
-              'AI-Powered',
-              'Leverages Google\'s Gemini AI for intelligent question generation',
-            ),
-            _buildAdvantageItem(
-              '📱',
-              'Cross-Platform',
-              'Works on iOS and Android',
-            ),
-            _buildAdvantageItem(
-              '☁️',
-              'Cloud-Based',
-              'Access from anywhere, data always synced',
-            ),
-            _buildAdvantageItem(
-              '🔔',
-              'Real-Time',
-              'Instant notifications and updates',
-            ),
-            _buildAdvantageItem(
-              '📈',
-              'Scalable',
-              'Supports institutions of any size',
+            ...AppList.aboutAdvantages.map(
+              (item) => _buildAdvantageItem(
+                item.$1,
+                item.$2,
+                item.$3,
+              ),
             ),
             const SizedBox(height: 24),
-
-            // Technical Stack Section
-            _buildSectionTitle('🛠️ Technical Stack'),
+            _buildSectionTitle(AboutStrings.technicalStack),
             const SizedBox(height: 12),
-            _buildTechStackCard('Framework & Language', [
-              'Flutter - Cross-platform mobile development',
-              'Dart - Programming language',
-            ]),
+            _buildTechStackCard(
+              AboutStrings.frameworkLanguage,
+              AppList.aboutFrameworkLanguage,
+            ),
             const SizedBox(height: 12),
-            _buildTechStackCard('Backend & Database', [
-              'Firebase Firestore - NoSQL cloud database',
-              'Firebase Realtime Database - Real-time sync',
-              'Firebase Cloud Messaging (FCM) - Push notifications',
-            ]),
+            _buildTechStackCard(
+              AboutStrings.backendDatabase,
+              AppList.aboutBackendDatabase,
+            ),
             const SizedBox(height: 12),
-            _buildTechStackCard('AI & ML', [
-              'Google Generative AI - Gemini AI model',
-              'Custom-engineered prompts - Optimized quality',
-              'Google ML Kit - Text recognition (OCR)',
-            ]),
+            _buildTechStackCard(
+              AboutStrings.aiMl,
+              AppList.aboutAiMl,
+            ),
             const SizedBox(height: 12),
-            _buildTechStackCard('Additional Technologies', [
-              'Google Authentication - Secure OAuth 2.0',
-              'Cubit - State management',
-              'Hive - Local storage',
-              'go_router - Navigation',
-              'flutter_screenutil - Responsive design',
-              'Syncfusion PDF - PDF creation',
-            ]),
+            _buildTechStackCard(
+              AboutStrings.additionalTechnologies,
+              AppList.aboutAdditionalTechnologies,
+            ),
             const SizedBox(height: 24),
-
-            // Vision Section
-            _buildSectionTitle('🔮 Vision'),
+            _buildSectionTitle(AboutStrings.vision),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
@@ -177,8 +117,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: AppCustomText.generate(
-                text:
-                    'Smart Text Thief aims to become the leading AI-powered educational assessment platform, empowering institutions worldwide to deliver fair, efficient, and insightful examinations while saving instructors countless hours of manual work.',
+                text: AboutStrings.visionText,
                 textStyle: AppTextStyles.bodySmallMedium.copyWith(
                   color: AppColors.textWhite,
                 ),
@@ -236,7 +175,7 @@ class _AboutScreenState extends State<AboutScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.colorsBackGround2, // Darker background for card
+        color: AppColors.colorsBackGround2,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppColors.colorPrimary.withValues(alpha: 0.2),
@@ -259,7 +198,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.check_circle_outline,
+                    AppIcons.checkCircleOutline,
                     size: 16,
                     color: AppColors.colorPrimary.withValues(alpha: 0.7),
                   ),

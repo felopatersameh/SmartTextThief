@@ -3,7 +3,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/setting.dart';
+import 'package:smart_text_thief/Config/Routes/route_data.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
@@ -83,7 +85,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+        allowedExtensions: AppConstants.supportedExamFileExtensions,
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -94,9 +96,9 @@ class CreateExamCubit extends Cubit<CreateExamState> {
             FilesType fileType;
             String extension = file.extension?.toLowerCase() ?? '';
 
-            if (extension == 'pdf') {
+            if (extension == AppConstants.fileExtensionPdf) {
               fileType = FilesType.pdf;
-            } else if (['jpg', 'jpeg', 'png'].contains(extension)) {
+            } else if (AppConstants.imageFileExtensions.contains(extension)) {
               fileType = FilesType.image;
             } else {
               continue;
@@ -122,7 +124,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
           if (!context.mounted) return;
           await showMessageSnackBar(
             context,
-            title: "${newFiles.length} file(s) uploaded successfully",
+            title: CreateExamStrings.uploadFilesSuccess(newFiles.length),
             type: MessageType.success,
           );
         }
@@ -131,7 +133,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       if (!context.mounted) return;
       await showMessageSnackBar(
         context,
-        title: "Error picking files: $e",
+        title: CreateExamStrings.errorPickingFiles('$e'),
         type: MessageType.error,
       );
     }
@@ -165,7 +167,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         currentState.name.trim().isEmpty) {
       await showMessageSnackBar(
         context,
-        title: "All fields must be filled",
+        title: CreateExamStrings.allFieldsRequired,
         type: MessageType.error,
       );
       emit(state.copyWith(loadingCreating: false));
@@ -178,17 +180,17 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     if (totalQuestions <= 0) {
       await showMessageSnackBar(
         context,
-        title: "You must select a number of questions",
+        title: CreateExamStrings.selectQuestionCount,
         type: MessageType.error,
       );
       emit(state.copyWith(loadingCreating: false));
       return;
     }
 
-    if (currentState.time < 10) {
+    if (currentState.time < AppConstants.minExamDurationMinutes) {
       await showMessageSnackBar(
         context,
-        title: "Exam time cannot be less than 10 minutes",
+        title: CreateExamStrings.minExamTime,
         type: MessageType.warning,
       );
       emit(state.copyWith(loadingCreating: false));
@@ -198,7 +200,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     if (currentState.startDate == null || currentState.endDate == null) {
       await showMessageSnackBar(
         context,
-        title: "Please specify start and end time",
+        title: CreateExamStrings.specifyStartEnd,
         type: MessageType.warning,
       );
       emit(state.copyWith(loadingCreating: false));
@@ -208,7 +210,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     if (!currentState.endDate!.isAfter(currentState.startDate!)) {
       await showMessageSnackBar(
         context,
-        title: "End date must be after start date",
+        title: CreateExamStrings.endAfterStart,
         type: MessageType.warning,
       );
       emit(state.copyWith(loadingCreating: false));
@@ -219,7 +221,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         currentState.uploadedFiles.isEmpty) {
       await showMessageSnackBar(
         context,
-        title: "No Files Uploaded",
+        title: CreateExamStrings.noFilesUploaded,
         type: MessageType.error,
       );
       emit(state.copyWith(loadingCreating: false));
@@ -230,7 +232,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         currentState.uploadText.trim().isEmpty) {
       await showMessageSnackBar(
         context,
-        title: "No text found",
+        title: CreateExamStrings.noTextFound,
         type: MessageType.error,
       );
       emit(state.copyWith(loadingCreating: false));
@@ -259,7 +261,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     if (userApiKey.isEmpty) {
       await showMessageSnackBar(
         context,
-        title: "Please add your Gemini API key from profile first",
+        title: CreateExamStrings.addGeminiKeyFirst,
         type: MessageType.warning,
       );
       return;
@@ -284,7 +286,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         context,
         title: errorMessage.isNotEmpty
             ? errorMessage
-            : "Failed to generate exam questions",
+            : CreateExamStrings.generationFailed,
         type: MessageType.error,
       );
       return;
@@ -311,19 +313,17 @@ class CreateExamCubit extends Cubit<CreateExamState> {
 
     await showMessageSnackBar(
       context,
-      title: "Created is Done",
+      title: CreateExamStrings.createdDone,
       type: MessageType.success,
     );
     if (!context.mounted) return;
-    AppRouter.nextScreenNoPath(
+    AppRouter.pushToViewExam(
       context,
-      NameRoutes.view,
-      extra: {
-        "exam": exam,
-        "isEditMode": true,
-        "nameSubject": state.subject.subjectName,
-      },
-      pathParameters: {"exam": exam.examId, "id": exam.examIdSubject},
+      data: ViewExamRouteData(
+        exam: exam,
+        isEditMode: true,
+        nameSubject: state.subject.subjectName,
+      ),
     );
   }
 }

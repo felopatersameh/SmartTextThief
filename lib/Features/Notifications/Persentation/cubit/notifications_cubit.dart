@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../Core/LocalStorage/get_local_storage.dart';
+import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Services/Notifications/notification_services.dart';
 
 import '../../../../Core/Services/Notifications/notification_model.dart';
@@ -99,7 +100,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     await _subscription?.cancel();
 
     for (var topic in state.subscribedTopics) {
-      if (keepAllUsers && topic == 'allUsers') continue;
+      if (keepAllUsers && topic == AppConstants.allUsersTopic) continue;
       await NotificationServices.unSubscribeToTopic(topic);
     }
 
@@ -107,7 +108,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       state.copyWith(
         badgeCount: 0,
         notificationsList: [],
-        subscribedTopics: keepAllUsers ? ['allUsers'] : [],
+        subscribedTopics: keepAllUsers ? [AppConstants.allUsersTopic] : [],
       ),
     );
   }

@@ -3,9 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../Core/Resources/app_fonts.dart';
+import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
-import '/Core/Resources/app_colors.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String name;
@@ -45,7 +44,7 @@ class ProfileAvatar extends StatelessWidget {
                         children: [
                           BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(color: Colors.transparent),
+                            child: Container(color: AppColors.transparent),
                           ),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(16.r),
@@ -85,7 +84,11 @@ class ProfileAvatar extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 14.r,
                   backgroundColor: AppColors.colorPrimary,
-                  child: Icon(Icons.edit, color: Colors.white, size: 14.sp),
+                  child: Icon(
+                    AppIcons.edit,
+                    color: AppColors.textWhite,
+                    size: 14.sp,
+                  ),
                 ),
               ),
           ],
@@ -95,7 +98,7 @@ class ProfileAvatar extends StatelessWidget {
         SizedBox(height: 4.h),
         AppCustomText.generate(
           text: email,
-          textStyle: AppTextStyles.h7Medium.copyWith(color: Colors.white70),
+          textStyle: AppTextStyles.h7Medium.copyWith(color: AppColors.white70),
         ),
       ],
     );
@@ -105,13 +108,16 @@ class ProfileAvatar extends StatelessWidget {
     return Container(
       width: 150.r,
       height: 150.r,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.blueGrey),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.blueGrey,
+      ),
       alignment: Alignment.center,
       child: Text(
         name.isNotEmpty ? name[0].toUpperCase() : '?',
         style: TextStyle(
           fontSize: 30.sp,
-          color: Colors.white,
+          color: AppColors.textWhite,
           fontWeight: FontWeight.bold,
         ),
       ),

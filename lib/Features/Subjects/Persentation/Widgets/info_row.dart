@@ -25,7 +25,7 @@ class InfoRow extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(6.w),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.textWhite.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(6.r),
             ),
             child: Icon(icon, color: AppColors.colorPrimary, size: 14.sp),
@@ -38,7 +38,7 @@ class InfoRow extends StatelessWidget {
                 AppCustomText.generate(
                   text: label,
                   textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                    color: Colors.grey.shade400,
+                    color: AppColors.grey400,
                     fontSize: 11.sp,
                   ),
                 ),
@@ -46,7 +46,7 @@ class InfoRow extends StatelessWidget {
                 AppCustomText.generate(
                   text: value,
                   textStyle: AppTextStyles.bodySmallBold.copyWith(
-                    color: Colors.white,
+                    color: AppColors.textWhite,
                     fontSize: 13.sp,
                   ),
                   maxLines: 2,

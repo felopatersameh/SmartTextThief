@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
@@ -136,13 +135,13 @@ class _QuestionCardState extends State<_QuestionCard> {
         color: widget.isEditMode
             ? AppColors.colorsBackGround2
             : (isCorrect
-                ? Colors.green.withValues(alpha: 0.1)
-                : Colors.red.withValues(alpha: 0.1)),
+                ? AppColors.green.withValues(alpha: 0.1)
+                : AppColors.red.withValues(alpha: 0.1)),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
           color: widget.isEditMode
               ? AppColors.colorPrimary.withValues(alpha: 0.3)
-              : (isCorrect ? Colors.green : Colors.red),
+              : (isCorrect ? AppColors.green : AppColors.red),
           width: 1.5,
         ),
       ),
@@ -158,7 +157,7 @@ class _QuestionCardState extends State<_QuestionCard> {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: AppCustomText.generate(
-                  text: "Q${widget.index + 1}",
+                  text: DashboardStrings.questionLabel(widget.index),
                   textStyle: AppTextStyles.bodyMediumMedium.copyWith(
                     color: AppColors.colorPrimary,
                     fontWeight: FontWeight.bold,
@@ -174,14 +173,14 @@ class _QuestionCardState extends State<_QuestionCard> {
                   ),
                   decoration: BoxDecoration(
                     color: isCorrect
-                        ? Colors.green.withValues(alpha: 0.2)
-                        : Colors.red.withValues(alpha: 0.2),
+                        ? AppColors.green.withValues(alpha: 0.2)
+                        : AppColors.red.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: AppCustomText.generate(
-                    text: "Score: $score/1",
+                    text: '${ViewExamStrings.score}: $score/1',
                     textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                      color: isCorrect ? Colors.green : Colors.red,
+                      color: isCorrect ? AppColors.green : AppColors.red,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -190,7 +189,7 @@ class _QuestionCardState extends State<_QuestionCard> {
               if (widget.isEditMode) ...[
                 IconButton(
                   onPressed: widget.onDelete,
-                  icon: Icon(Icons.delete, color: Colors.red, size: 20.sp),
+                  icon: Icon(AppIcons.delete, color: AppColors.red, size: 20.sp),
                 ),
               ],
             ],
@@ -199,7 +198,7 @@ class _QuestionCardState extends State<_QuestionCard> {
 
           // Question
           AppCustomText.generate(
-            text: "Question:",
+            text: ViewExamStrings.questionLabel,
             textStyle: AppTextStyles.bodySmallMedium.copyWith(
               color: AppColors.textCoolGray,
               fontSize: 11.sp,
@@ -240,8 +239,8 @@ class _QuestionCardState extends State<_QuestionCard> {
           if (options.isNotEmpty) ...[
             AppCustomText.generate(
               text: widget.isEditMode
-                  ? "Options (Tap to select correct answer):"
-                  : "Options:",
+                  ? ViewExamStrings.optionsEditMode
+                  : ViewExamStrings.options,
               textStyle: AppTextStyles.bodySmallMedium.copyWith(
                 color: AppColors.textCoolGray,
                 fontSize: 11.sp,
@@ -262,30 +261,30 @@ class _QuestionCardState extends State<_QuestionCard> {
               if (widget.isEditMode) {
                 // Edit Mode
                 backgroundColor = isCorrectAnswer
-                    ? Colors.green.withValues(alpha: 0.2)
+                    ? AppColors.green.withValues(alpha: 0.2)
                     : AppColors.colorTextFieldBackGround;
                 borderColor = isCorrectAnswer
-                    ? Colors.green
+                    ? AppColors.green
                     : AppColors.colorPrimary.withValues(alpha: 0.3);
                 textColor =
-                    isCorrectAnswer ? Colors.green : AppColors.textWhite;
+                    isCorrectAnswer ? AppColors.green : AppColors.textWhite;
               } else {
                 // View Results Mode
                 if (isCorrectAnswer && isStudentAnswer) {
                   // Correct answer and student selected it
-                  backgroundColor = Colors.green.withValues(alpha: 0.2);
-                  borderColor = Colors.green;
-                  textColor = Colors.green;
+                  backgroundColor = AppColors.green.withValues(alpha: 0.2);
+                  borderColor = AppColors.green;
+                  textColor = AppColors.green;
                 } else if (isCorrectAnswer) {
                   // Correct answer but student didn't select it
-                  backgroundColor = Colors.green.withValues(alpha: 0.1);
-                  borderColor = Colors.green;
-                  textColor = Colors.green;
+                  backgroundColor = AppColors.green.withValues(alpha: 0.1);
+                  borderColor = AppColors.green;
+                  textColor = AppColors.green;
                 } else if (isStudentAnswer) {
                   // Wrong answer but student selected it
-                  backgroundColor = Colors.red.withValues(alpha: 0.2);
-                  borderColor = Colors.red;
-                  textColor = Colors.red;
+                  backgroundColor = AppColors.red.withValues(alpha: 0.2);
+                  borderColor = AppColors.red;
+                  textColor = AppColors.red;
                 } else {
                   // Normal option
                   backgroundColor = AppColors.colorTextFieldBackGround;
@@ -315,13 +314,13 @@ class _QuestionCardState extends State<_QuestionCard> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: isCorrectAnswer || isStudentAnswer
-                                ? (isCorrectAnswer ? Colors.green : Colors.red)
-                                : Colors.transparent,
+                                ? (isCorrectAnswer ? AppColors.green : AppColors.red)
+                                : AppColors.transparent,
                             border: Border.all(
                               color: isCorrectAnswer || isStudentAnswer
                                   ? (isCorrectAnswer
-                                      ? Colors.green
-                                      : Colors.red)
+                                      ? AppColors.green
+                                      : AppColors.red)
                                   : AppColors.textCoolGray,
                               width: 2,
                             ),
@@ -333,7 +332,7 @@ class _QuestionCardState extends State<_QuestionCard> {
                               ), // A, B, C, D
                               textStyle: AppTextStyles.bodySmallMedium.copyWith(
                                 color: isCorrectAnswer || isStudentAnswer
-                                    ? Colors.white
+                                    ? AppColors.textWhite
                                     : AppColors.textCoolGray,
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
@@ -355,15 +354,15 @@ class _QuestionCardState extends State<_QuestionCard> {
                         ),
                         if (isCorrectAnswer && !widget.isEditMode) ...[
                           Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
+                            AppIcons.checkCircle,
+                            color: AppColors.green,
                             size: 20.sp,
                           ),
                         ],
                         if (!isCorrectAnswer &&
                             isStudentAnswer &&
                             !widget.isEditMode) ...[
-                          Icon(Icons.cancel, color: Colors.red, size: 20.sp),
+                          Icon(AppIcons.cancel, color: AppColors.red, size: 20.sp),
                         ],
                       ],
                     ),
@@ -376,7 +375,7 @@ class _QuestionCardState extends State<_QuestionCard> {
           // For questions without options (Text Answer)
           if (options.isEmpty) ...[
             AppCustomText.generate(
-              text: "Correct Answer:",
+              text: ViewExamStrings.correctAnswer,
               textStyle: AppTextStyles.bodySmallMedium.copyWith(
                 color: AppColors.textCoolGray,
                 fontSize: 11.sp,
@@ -386,14 +385,14 @@ class _QuestionCardState extends State<_QuestionCard> {
             Container(
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
+                color: AppColors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(color: Colors.green, width: 1),
+                border: Border.all(color: AppColors.green, width: 1),
               ),
               child: AppCustomText.generate(
                 text: widget.question.correctAnswer,
                 textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                  color: Colors.green,
+                  color: AppColors.green,
                 ),
               ),
             ),
@@ -402,7 +401,7 @@ class _QuestionCardState extends State<_QuestionCard> {
             if (!widget.isEditMode && widget.studentAnswer != null) ...[
               SizedBox(height: 12.h),
               AppCustomText.generate(
-                text: "Student Answer:",
+                text: ViewExamStrings.studentAnswer,
                 textStyle: AppTextStyles.bodySmallMedium.copyWith(
                   color: AppColors.textCoolGray,
                   fontSize: 11.sp,
@@ -413,18 +412,18 @@ class _QuestionCardState extends State<_QuestionCard> {
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
                   color: isCorrect
-                      ? Colors.green.withValues(alpha: 0.1)
-                      : Colors.red.withValues(alpha: 0.1),
+                      ? AppColors.green.withValues(alpha: 0.1)
+                      : AppColors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.r),
                   border: Border.all(
-                    color: isCorrect ? Colors.green : Colors.red,
+                    color: isCorrect ? AppColors.green : AppColors.red,
                     width: 1,
                   ),
                 ),
                 child: AppCustomText.generate(
                   text: widget.studentAnswer!.studentAnswer,
                   textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                    color: isCorrect ? Colors.green : Colors.red,
+                    color: isCorrect ? AppColors.green : AppColors.red,
                   ),
                 ),
               ),
@@ -435,3 +434,4 @@ class _QuestionCardState extends State<_QuestionCard> {
     );
   }
 }
+

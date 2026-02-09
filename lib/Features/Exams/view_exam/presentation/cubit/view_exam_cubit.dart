@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
@@ -122,18 +123,18 @@ class ViewExamCubit extends Cubit<ViewExamState> {
       (error) async {
         await showMessageSnackBar(
           context,
-          title: "Error to Saved... please Try Again Later",
+          title: ViewExamStrings.errorSaving,
           type: MessageType.error,
         );
       },
       (done) async {
         await showMessageSnackBar(
           context,
-          title: "Uploaded",
+          title: ViewExamStrings.uploaded,
           type: MessageType.success,
         );
         if (!context.mounted) return;
-        AppRouter.goNamedByPath(context, NameRoutes.subject);
+        AppRouter.pushToMainScreen(context);
       },
     );
     emit(state.copyWith(loadingSave: false));

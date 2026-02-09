@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../Core/Resources/resources.dart';
 import '../../Config/Routes/name_routes.dart';
+import '../../Config/di/service_locator.dart';
 import '../Notifications/Persentation/cubit/notifications_cubit.dart';
 import 'cubit/main_cubit.dart';
 
@@ -17,7 +18,7 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => MainCubit(),
+      create: (_) => getIt<MainCubit>(),
       child: Builder(
         builder: (context) {
           final badgeCount =
@@ -36,7 +37,7 @@ class MainScreen extends StatelessWidget {
                     : Container(
                         decoration: const BoxDecoration(
                           border: Border(
-                            top: BorderSide(color: Colors.white54),
+                            top: BorderSide(color: AppColors.white54),
                           ),
                         ),
                         child: BottomNavigationBar(

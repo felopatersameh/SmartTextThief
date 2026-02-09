@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
@@ -33,7 +32,7 @@ class StudentSelector extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppCustomText.generate(
-            text: "Select Student",
+            text: ViewExamStrings.selectStudent,
             textStyle: AppTextStyles.h6SemiBold.copyWith(
               color: AppColors.textWhite,
             ),
@@ -68,8 +67,7 @@ class StudentSelector extends StatelessWidget {
                       AppCustomText.generate(
                         text: result.examResultEmailSt,
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                          color:
-                              isSelected ? Colors.white : AppColors.textWhite,
+                          color: AppColors.textWhite,
                           fontSize: 12.sp,
                         ),
                       ),
@@ -81,7 +79,7 @@ class StudentSelector extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.white.withValues(alpha: 0.2)
+                              ? AppColors.textWhite.withValues(alpha: 0.2)
                               : AppColors.colorPrimary.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4.r),
                         ),
@@ -89,7 +87,7 @@ class StudentSelector extends StatelessWidget {
                           text: result.examResultDegree,
                           textStyle: AppTextStyles.bodySmallMedium.copyWith(
                             color: isSelected
-                                ? Colors.white
+                                ? AppColors.textWhite
                                 : AppColors.colorPrimary,
                             fontSize: 10.sp,
                           ),

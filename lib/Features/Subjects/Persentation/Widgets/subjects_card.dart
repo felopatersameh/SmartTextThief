@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
@@ -20,8 +18,8 @@ class SubjectsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color primary = AppColors.colorPrimary;
     final Color background = primary.withValues(alpha: 0.13);
-    final Color titleColor = Colors.white;
-    final Color subtitleColor = Colors.grey.shade600;
+    final Color titleColor = AppColors.textWhite;
+    final Color subtitleColor = AppColors.grey600;
     final String title = model.subjectName;
     final String date = model.createdAt;
 
@@ -63,7 +61,7 @@ class SubjectsCard extends StatelessWidget {
                 SizedBox(width: 6.w),
                 Flexible(
                   child: AppCustomText.generate(
-                    text: 'Created on: $date',
+                    text: '${SubjectStrings.createdOn}: $date',
                     textStyle: AppTextStyles.bodySmallMedium.copyWith(
                       color: subtitleColor,
                     ),

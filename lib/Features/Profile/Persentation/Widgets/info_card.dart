@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '/Core/Resources/app_colors.dart';
-import '/Core/Resources/app_fonts.dart';
+import '/Core/Resources/resources.dart';
 import '/Core/Utils/Widget/custom_text_app.dart';
 
 class InfoCard extends StatelessWidget {
@@ -26,7 +25,7 @@ class InfoCard extends StatelessWidget {
           AppCustomText.generate(
             text: subtitle,
             textStyle: AppTextStyles.bodySmallSemiBold.copyWith(
-              color: Colors.white60,
+              color: AppColors.white60,
             ),
           ),
         ],

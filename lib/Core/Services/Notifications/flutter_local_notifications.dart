@@ -6,7 +6,7 @@ class LocalNotificationService {
 
   static Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
@@ -41,7 +41,7 @@ class LocalNotificationService {
       priority: Priority.high,
       ticker: 'ticker',
       playSound: true,
-      icon: '@mipmap/ic_launcher',
+      icon: '@mipmap/launcher_icon',
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(

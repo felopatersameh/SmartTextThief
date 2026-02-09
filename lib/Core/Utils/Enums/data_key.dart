@@ -61,7 +61,8 @@ enum DataKey {
   options('options'),
   correctAnswer('correctAnswer'),
   studentAnswer('studentAnswer'),
-  score('score');
+  score('score'),
+  evaluated('evaluated');
 
   final String key;
   const DataKey(this.key);

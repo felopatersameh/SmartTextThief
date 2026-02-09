@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '/Core/Resources/app_icons.dart';
+import '/Core/Resources/resources.dart';
 
 class LoadingIndicator extends StatelessWidget {
   final AnimationController controller;
@@ -24,18 +24,18 @@ class LoadingIndicator extends StatelessWidget {
               width: 100.w,
               height: 100.h,
               decoration: BoxDecoration(
-                color: Colors.blue.shade100,
+                color: AppColors.blue.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: AppIcons.splash,
             ),
             SizedBox(height: 30.h),
             Text(
-              'Loading...',
+              AppStrings.loading,
               style: TextStyle(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey.shade700,
+                color: AppColors.grey700,
               ),
             ),
             SizedBox(height: 20.h),
@@ -44,7 +44,7 @@ class LoadingIndicator extends StatelessWidget {
               height: 6.h,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: Colors.grey.shade300,
+                color: AppColors.grey300,
               ),
               child: Stack(
                 children: [
@@ -55,9 +55,9 @@ class LoadingIndicator extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       gradient: LinearGradient(
                         colors: [
-                          Colors.blue.shade400,
-                          Colors.blue.shade600,
-                          Colors.blue.shade800,
+                          AppColors.blue.withValues(alpha: 0.6),
+                          AppColors.blue.withValues(alpha: 0.8),
+                          AppColors.blue,
                         ],
                       ),
                     ),
@@ -68,7 +68,7 @@ class LoadingIndicator extends StatelessWidget {
             SizedBox(height: 10.h),
             Text(
               '${(value * 100).toInt()}%',
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 14.sp, color: AppColors.grey600),
             ),
           ],
         );

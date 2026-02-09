@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 
 import '../../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../../Core/Services/Firebase/failure_model.dart';
@@ -91,7 +92,7 @@ class SubjectsRemoteDataSource {
       return Left(
         FailureModel(
           error: error.toString(),
-          message: 'An error occurred while creating the subject.',
+          message: DataSourceStrings.subjectCreationError,
         ),
       );
     }
@@ -222,7 +223,7 @@ class SubjectsRemoteDataSource {
         return Left(
           FailureModel(
             error: exists.failure?.error.toString(),
-            message: 'Invalid subject code. Please try again.',
+            message: DataSourceStrings.invalidSubjectCode,
           ),
         );
       }
@@ -242,8 +243,8 @@ class SubjectsRemoteDataSource {
       if (!subjectBeforeJoin.subjectIsOpen) {
         return Left(
           FailureModel(
-            error: 'subject_closed',
-            message: 'This subject is closed by the teacher right now.',
+            error: AppConstants.subjectClosedErrorCode,
+            message: DataSourceStrings.subjectClosed,
           ),
         );
       }
@@ -275,15 +276,17 @@ class SubjectsRemoteDataSource {
       );
       await NotificationServices.subscribeToTopic(data.subscribeToTopicForMembers);
 
-      final hasMembers = data.subjectEmailSts.length > 1;
-      final andMembers = hasMembers ? 'and ${data.subjectEmailSts.length} members' : '';
       final notification = NotificationModel(
         topicId: data.subscribeToTopicForAdmin,
         type: NotificationType.joinedSubject,
-        body: '$name has joined ${data.subjectName} $andMembers',
+        body: DataSourceStrings.subjectJoinedBody(
+          name,
+          data.subjectName,
+          data.subjectEmailSts.length,
+        ),
       );
       await NotificationServices.sendNotificationToTopic(
-        id: 'joined_${data.subjectId}',
+        id: '${AppConstants.joinedSubjectNotificationPrefix}${data.subjectId}',
         data: notification.toJson(),
         stringData: notification.toJsonString(),
       );

@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
 import 'package:smart_text_thief/Features/Exams/do_exam/data/repositories/do_exam_repository.dart';
@@ -14,7 +15,8 @@ class DoExamCubit extends Cubit<DoExamState> {
       : _repository = repository ?? DoExamRepository(),
         super(DoExamState());
 
-  static const Duration backgroundGraceDuration = Duration(minutes: 2);
+  static const Duration backgroundGraceDuration =
+      AppConstants.doExamBackgroundGraceDuration;
 
   final DoExamRepository _repository;
 
@@ -36,7 +38,7 @@ class DoExamCubit extends Cubit<DoExamState> {
     final shuffledQuestions = List<ExamResultQA>.from(questions)..shuffle(random);
 
     return shuffledQuestions.map((question) {
-      if (question.questionType == 'multiple_choice' &&
+      if (question.questionType == AppConstants.multipleChoiceType &&
           question.options.length > 1) {
         final shuffledOptions = List<String>.from(question.options)
           ..shuffle(random);
@@ -58,7 +60,8 @@ class DoExamCubit extends Cubit<DoExamState> {
     _startTime = DateTime.now();
 
     final totalQuestions = model.examStatic.examResultQA.length;
-    final examDurationMinutes = int.tryParse(model.examStatic.time) ?? 10;
+    final examDurationMinutes =
+        int.tryParse(model.examStatic.time) ?? AppConstants.minExamDurationMinutes;
     final examDuration = Duration(minutes: examDurationMinutes);
     final questions = _shuffleExam(
       model.examStatic.examResultQA,

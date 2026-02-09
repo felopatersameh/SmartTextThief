@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import '../../../Core/LocalStorage/get_local_storage.dart';
+import '../../../Core/Resources/resources.dart';
 import '../../../Core/Utils/Models/data_model.dart';
 import '../../../Core/Services/Firebase/analysis_data.dart';
 import '../../../Core/Services/Firebase/failure_model.dart';
@@ -156,7 +157,7 @@ class ProfileSource {
   ) async {
     final filteredTopics = topics
         .map((topic) => topic.trim())
-        .where((topic) => topic.isNotEmpty && topic != "allUsers")
+        .where((topic) => topic.isNotEmpty && topic != AppConstants.allUsersTopic)
         .toSet()
         .toList();
 
@@ -168,13 +169,18 @@ class ProfileSource {
 
     final topicsToDeleteNotifications = <String>{};
     for (final topic in filteredTopics) {
-      final baseTopic = topic.endsWith('_admin')
-          ? topic.substring(0, topic.length - '_admin'.length)
+      final baseTopic = topic.endsWith(AppConstants.adminTopicSuffix)
+          ? topic.substring(
+              0,
+              topic.length - AppConstants.adminTopicSuffix.length,
+            )
           : topic;
       if (baseTopic.isEmpty) continue;
 
       topicsToDeleteNotifications.add(baseTopic);
-      topicsToDeleteNotifications.add('${baseTopic}_admin');
+      topicsToDeleteNotifications.add(
+        '$baseTopic${AppConstants.adminTopicSuffix}',
+      );
     }
 
     await _deleteNotificationsByTopics(topicsToDeleteNotifications);

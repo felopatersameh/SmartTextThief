@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class ExamDateSection extends StatelessWidget {
@@ -22,7 +21,7 @@ class ExamDateSection extends StatelessWidget {
 
   Future<void> _pickDate(BuildContext context, bool isStart) async {
     if (!isEditMode) return;
-    final year = DateTime.now().year + 2;
+    final year = DateTime.now().year + AppConstants.maxDatePickerYearsAhead;
     final initialDate =
         isStart ? (startDate ?? DateTime.now()) : (endDate ?? DateTime.now());
 
@@ -36,7 +35,7 @@ class ExamDateSection extends StatelessWidget {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.dark(
               primary: AppColors.colorPrimary,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.textWhite,
               surface: AppColors.colorsBackGround2,
               onSurface: AppColors.textWhite,
             ),
@@ -64,26 +63,11 @@ class ExamDateSection extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return "${date.day} ${months[date.month - 1]} ${date.year}";
+    return "${date.day} ${AppList.monthsShort[date.month - 1]} ${date.year}";
   }
 
   String _getWeekDay(DateTime date) {
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return weekDays[date.weekday - 1];
+    return AppList.weekDaysShort[date.weekday - 1];
   }
 
   @override
@@ -118,14 +102,14 @@ class ExamDateSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Icon(
-                  Icons.event_note_rounded,
+                  AppIcons.eventNoteRounded,
                   color: AppColors.colorPrimary,
                   size: 20.sp,
                 ),
               ),
               SizedBox(width: 12.w),
               AppCustomText.generate(
-                text: "Exam Duration",
+                text: CreateExamStrings.examDuration,
                 textStyle: AppTextStyles.h6SemiBold.copyWith(
                   color: AppColors.textWhite,
                   fontSize: 16.sp,
@@ -142,9 +126,9 @@ class ExamDateSection extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => _pickDate(context, true),
                   child: _DateCard(
-                    label: "Start Date",
+                    label: CreateExamStrings.startDate,
                     date: startDate,
-                    icon: Icons.play_circle_outline_rounded,
+                    icon: AppIcons.playCircleOutlineRounded,
                     formatDate: _formatDate,
                     getWeekDay: _getWeekDay,
                     isEditable: isEditMode,
@@ -153,7 +137,7 @@ class ExamDateSection extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               Icon(
-                Icons.arrow_forward_rounded,
+                AppIcons.arrowForwardRounded,
                 color: AppColors.colorPrimary,
                 size: 18.sp,
               ),
@@ -162,9 +146,9 @@ class ExamDateSection extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => _pickDate(context, false),
                   child: _DateCard(
-                    label: "End Date",
+                    label: CreateExamStrings.endDate,
                     date: endDate,
-                    icon: Icons.stop_circle_outlined,
+                    icon: AppIcons.stopCircleOutlined,
                     formatDate: _formatDate,
                     getWeekDay: _getWeekDay,
                     isEditable: isEditMode,
@@ -191,14 +175,14 @@ class ExamDateSection extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.access_time_rounded,
+                    AppIcons.accessTimeRounded,
                     color: AppColors.colorPrimary,
                     size: 16.sp,
                   ),
                   SizedBox(width: 6.w),
                   AppCustomText.generate(
                     text:
-                        "Duration: ${endDate!.difference(startDate!).inDays} days",
+                        "${CreateExamStrings.duration}: ${endDate!.difference(startDate!).inDays} ${CreateExamStrings.days}",
                     textStyle: AppTextStyles.bodySmallMedium.copyWith(
                       color: AppColors.colorPrimary,
                       fontSize: 12.sp,
@@ -235,7 +219,7 @@ class _DateCard extends StatelessWidget {
     final hasDate = date != null;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: AppConstants.animationFast,
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: AppColors.colorTextFieldBackGround,
@@ -281,7 +265,7 @@ class _DateCard extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(left: 4.w),
                   child: Icon(
-                    Icons.edit,
+                    AppIcons.edit,
                     size: 12.sp,
                     color: AppColors.colorPrimary.withValues(alpha: 0.6),
                   ),
@@ -292,7 +276,7 @@ class _DateCard extends StatelessWidget {
 
           /// Date Text
           AppCustomText.generate(
-            text: hasDate ? formatDate(date!) : "Select Date",
+            text: hasDate ? formatDate(date!) : CreateExamStrings.selectDate,
             textStyle: AppTextStyles.bodyMediumMedium.copyWith(
               color: hasDate ? AppColors.textWhite : AppColors.textCoolGray,
               fontSize: 13.sp,

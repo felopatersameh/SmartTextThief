@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
-import 'package:smart_text_thief/Core/Resources/app_icons.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
@@ -35,7 +33,7 @@ class ExamCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: AppColors.textWhite.withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -45,7 +43,7 @@ class ExamCard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(14.w),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.15),
+              color: AppColors.black.withValues(alpha: 0.15),
               borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
             ),
             child: Row(
@@ -58,7 +56,7 @@ class ExamCard extends StatelessWidget {
                       AppCustomText.generate(
                         text: exam.examStatic.typeExam.toUpperCase(),
                         textStyle: AppTextStyles.bodyLargeBold.copyWith(
-                          color: Colors.white,
+                          color: AppColors.textWhite,
                           fontSize: 15.sp,
                         ),
                       ),
@@ -66,7 +64,7 @@ class ExamCard extends StatelessWidget {
                       AppCustomText.generate(
                         text: '#${exam.examId.substring(5, 10)}',
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                          color: Colors.grey.shade400,
+                          color: AppColors.grey400,
                           fontSize: 11.sp,
                         ),
                       ),
@@ -105,17 +103,17 @@ class ExamCard extends StatelessWidget {
     IconData badgeIcon;
 
     if (exam.isEnded) {
-      badgeColor = Colors.red;
-      badgeText = 'Ended';
-      badgeIcon = Icons.check_circle;
+      badgeColor = AppColors.danger;
+      badgeText = ExamCardStrings.ended;
+      badgeIcon = AppIcons.checkCircle;
     } else if (exam.isStart) {
-      badgeColor = Colors.green;
-      badgeText = 'Live';
-      badgeIcon = Icons.circle;
+      badgeColor = AppColors.success;
+      badgeText = ExamCardStrings.live;
+      badgeIcon = AppIcons.circle;
     } else {
-      badgeColor = Colors.amber;
-      badgeText = 'Upcoming';
-      badgeIcon = Icons.schedule;
+      badgeColor = AppColors.amber;
+      badgeText = ExamCardStrings.upcoming;
+      badgeIcon = AppIcons.schedule;
     }
 
     return Container(
@@ -160,19 +158,19 @@ class ExamCard extends StatelessWidget {
             // ),
             Expanded(
               child: _buildInfoItem(
-                icon: Icons.play_circle_outline,
-                label: 'Start',
+                icon: AppIcons.playCircleOutline,
+                label: ExamCardStrings.start,
                 value: exam.started,
-                color: Colors.green,
+                color: AppColors.success,
               ),
             ),
             SizedBox(width: 8.w),
             Expanded(
               child: _buildInfoItem(
-                icon: Icons.stop_circle_outlined,
-                label: 'End',
+                icon: AppIcons.stopCircleOutlined,
+                label: ExamCardStrings.end,
                 value: exam.ended,
-                color: Colors.red,
+                color: AppColors.danger,
               ),
             ),
           ],
@@ -182,19 +180,19 @@ class ExamCard extends StatelessWidget {
           children: [
             Expanded(
               child: _buildInfoItem(
-                icon: Icons.repeat,
-                label: 'Attempts',
+                icon: AppIcons.repeat,
+                label: ExamCardStrings.attempts,
                 value: '${exam.examResult.length}',
-                color: Colors.purple,
+                color: AppColors.purple,
               ),
             ),
             SizedBox(width: 8.w),
             Expanded(
               child: _buildInfoItem(
-                icon: Icons.quiz_outlined,
-                label: 'Questions',
+                icon: AppIcons.quizOutlined,
+                label: ExamCardStrings.questions,
                 value: '${exam.examStatic.numberOfQuestions}',
-                color: Colors.orange,
+                color: AppColors.orange,
               ),
             ),
           ],
@@ -213,7 +211,7 @@ class ExamCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppColors.textWhite.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(10.r),
         border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
       ),
@@ -236,14 +234,14 @@ class ExamCard extends StatelessWidget {
                 AppCustomText.generate(
                   text: label,
                   textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                    color: Colors.grey.shade400,
+                    color: AppColors.grey400,
                     fontSize: 10.sp,
                   ),
                 ),
                 AppCustomText.generate(
                   text: value,
                   textStyle: AppTextStyles.bodySmallBold.copyWith(
-                    color: Colors.white,
+                    color: AppColors.textWhite,
                     fontSize: 12.sp,
                   ),
                   maxLines: 1,
@@ -268,7 +266,7 @@ class ExamCard extends StatelessWidget {
             child: _buildActionButton(
               onPressed: showQA,
               icon: AppIcons.showQuestions,
-              label: 'View Results',
+              label: ExamCardStrings.viewResults,
               isPrimary: true,
             ),
           ),
@@ -278,7 +276,7 @@ class ExamCard extends StatelessWidget {
             child: _buildActionButton(
               onPressed: pdf,
               icon: AppIcons.download,
-              label: 'PDF',
+              label: ExamCardStrings.pdf,
               isPrimary: false,
             ),
           ),
@@ -288,32 +286,32 @@ class ExamCard extends StatelessWidget {
 
     if (!exam.isStart) {
       return _buildInfoMessage(
-        message: 'Exam starts in ${exam.durationBeforeStarted}',
-        icon: Icons.schedule,
-        color: Colors.amber,
+        message: ExamCardStrings.examStartsIn(exam.durationBeforeStarted),
+        icon: AppIcons.schedule,
+        color: AppColors.amber,
       );
     } else if (exam.isStart && !exam.isEnded) {
       if (exam.doExam) {
         return _buildInfoMessage(
-          message: 'Waiting for results...',
-          subtitle: 'Time left: ${exam.durationAfterStarted}',
-          icon: Icons.hourglass_empty,
-          color: Colors.blue,
+          message: ExamCardStrings.waitingForResults,
+          subtitle: ExamCardStrings.timeLeft(exam.durationAfterStarted),
+          icon: AppIcons.hourglassEmpty,
+          color: AppColors.blue,
         );
       } else {
         return Column(
           children: [
             _buildInfoMessage(
-              message: 'Time remaining: ${exam.durationAfterStarted}',
-              icon: Icons.timer,
-              color: Colors.green,
+              message: ExamCardStrings.timeRemaining(exam.durationAfterStarted),
+              icon: AppIcons.timer,
+              color: AppColors.success,
               compact: true,
             ),
             SizedBox(height: 10.h),
             _buildActionButton(
               onPressed: againTest,
               icon: AppIcons.quiz,
-              label: 'Start Exam Now',
+              label: ExamCardStrings.startExamNow,
               isPrimary: true,
               fullWidth: true,
             ),
@@ -324,7 +322,7 @@ class ExamCard extends StatelessWidget {
       return _buildActionButton(
         onPressed: showQA,
         icon: AppIcons.showQuestions,
-        label: 'Show My Results',
+        label: ExamCardStrings.showMyResults,
         isPrimary: true,
         fullWidth: true,
       );
@@ -344,7 +342,7 @@ class ExamCard extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: isPrimary ? primary : primary.withValues(alpha: 0.15),
-        foregroundColor: isPrimary ? Colors.white : primary,
+        foregroundColor: isPrimary ? AppColors.textWhite : primary,
         padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.r),
@@ -363,7 +361,7 @@ class ExamCard extends StatelessWidget {
           AppCustomText.generate(
             text: label,
             textStyle: AppTextStyles.bodySmallBold.copyWith(
-              color: isPrimary ? Colors.white : primary,
+              color: isPrimary ? AppColors.textWhite : primary,
               fontSize: 12.sp,
             ),
           ),
@@ -413,8 +411,8 @@ class ExamCard extends StatelessWidget {
                   SizedBox(height: 2.h),
                   AppCustomText.generate(
                     text: subtitle,
-                    textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                      color: Colors.grey.shade400,
+                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                      color: AppColors.grey400,
                       fontSize: 10.sp,
                     ),
                   ),

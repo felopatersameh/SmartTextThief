@@ -5,12 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Config/di/service_locator.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import 'package:smart_text_thief/Core/Services/screenshot_protection_service.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import 'package:smart_text_thief/Features/Exams/do_exam/data/repositories/do_exam_repository.dart';
 import 'package:smart_text_thief/Features/Exams/do_exam/presentation/cubit/do_exam_cubit.dart';
 
 class DoExam extends StatefulWidget {
@@ -81,7 +83,9 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        _cubit = DoExamCubit()..init(widget.model);
+        _cubit = DoExamCubit(
+          repository: getIt<DoExamRepository>(),
+        )..init(widget.model);
         return _cubit!;
       },
       child: BlocConsumer<DoExamCubit, DoExamState>(
@@ -91,7 +95,9 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(const SnackBar(content: Text('Exam finished!')));
+            ).showSnackBar(
+              const SnackBar(content: Text(DoExamStrings.examFinished)),
+            );
           }
         },
         builder: (context, state) {
@@ -103,13 +109,13 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
             return Scaffold(
               appBar: AppBar(
                 title: AppCustomText.generate(
-                  text: 'Error',
+                  text: DoExamStrings.error,
                   textStyle: AppTextStyles.h5Bold,
                 ),
               ),
               body: Center(
                 child: AppCustomText.generate(
-                  text: 'No questions available in this exam',
+                  text: DoExamStrings.noQuestionsAvailable,
                   textStyle: AppTextStyles.h6Bold,
                 ),
               ),
@@ -178,11 +184,11 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: duration.inSeconds < 60
-            ? Colors.red.withValues(alpha: 0.2)
+            ? AppColors.red.withValues(alpha: 0.2)
             : AppColors.colorPrimary.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: duration.inSeconds < 60 ? Colors.red : AppColors.colorPrimary,
+          color: duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
           width: 2,
         ),
       ),
@@ -190,17 +196,19 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.timer,
+            AppIcons.timer,
             color:
-                duration.inSeconds < 60 ? Colors.red : AppColors.colorPrimary,
+                duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
           ),
           const SizedBox(width: 8),
           AppCustomText.generate(
-            text:
-                '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+            text: DoExamStrings.timerText(
+              minutes.toString().padLeft(2, '0'),
+              seconds.toString().padLeft(2, '0'),
+            ),
             textStyle: AppTextStyles.h6Bold.copyWith(
               color:
-                  duration.inSeconds < 60 ? Colors.red : AppColors.colorPrimary,
+                  duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
             ),
           ),
         ],
@@ -218,8 +226,10 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppCustomText.generate(
-              text:
-                  'Question ${state.currentQuestionIndex + 1} of ${state.totalQuestions}',
+              text: DoExamStrings.questionProgress(
+                state.currentQuestionIndex + 1,
+                state.totalQuestions,
+              ),
               textStyle: AppTextStyles.bodyMediumMedium,
             ),
             const SizedBox(height: 4),
@@ -266,24 +276,24 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                 color: isCurrent
                     ? AppColors.colorPrimary
                     : isAnswered
-                        ? Colors.green.withValues(alpha: 0.3)
+                        ? AppColors.green.withValues(alpha: 0.3)
                         : AppColors.colorBackgroundCardProjects,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isCurrent
                       ? AppColors.colorPrimary
                       : isAnswered
-                          ? Colors.green
+                          ? AppColors.green
                           : AppColors.colorUnActiveIcons,
                   width: isCurrent ? 3 : 1,
                 ),
               ),
               child: Center(
                 child: AppCustomText.generate(
-                  text: '${index + 1}',
+                  text: (index + 1).toString(),
                   textStyle: AppTextStyles.bodyMediumBold.copyWith(
                     color: isCurrent || isAnswered
-                        ? Colors.white
+                        ? AppColors.textWhite
                         : AppColors.textCoolGray,
                   ),
                 ),
@@ -301,7 +311,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     DoExamCubit cubit,
   ) {
     final currentAnswer = state.userAnswers[question.questionId];
-    final isShortAnswer = question.questionType == 'short_answer';
+    final isShortAnswer = question.questionType == AppConstants.shortAnswerType;
 
     return Expanded(
       child: Container(
@@ -343,7 +353,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.colorPrimary
-                                    : Colors.transparent,
+                                    : AppColors.transparent,
                                 width: 2,
                               ),
                             ),
@@ -362,13 +372,13 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                                     ),
                                     color: isSelected
                                         ? AppColors.colorPrimary
-                                        : Colors.transparent,
+                                        : AppColors.transparent,
                                   ),
                                   child: isSelected
                                       ? const Icon(
-                                          Icons.check,
+                                          AppIcons.check,
                                           size: 16,
-                                          color: Colors.white,
+                                          color: AppColors.textWhite,
                                         )
                                       : null,
                                 ),
@@ -405,7 +415,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     return ListView(
       children: [
         TextFormField(
-          key: ValueKey('short_answer_${question.questionId}'),
+          key: ValueKey('${AppConstants.shortAnswerType}_${question.questionId}'),
           initialValue: currentAnswer ?? '',
           minLines: 5,
           maxLines: 8,
@@ -415,7 +425,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
             color: AppColors.textWhite,
           ),
           decoration: InputDecoration(
-            hintText: 'Write your answer here...',
+            hintText: DoExamStrings.writeAnswerHere,
             hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
               color: AppColors.textCoolGray,
             ),
@@ -438,7 +448,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         color: AppColors.colorsBackGround2,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: AppColors.black.withValues(alpha: 0.2),
             offset: const Offset(0, -2),
             blurRadius: 8,
           ),
@@ -451,8 +461,8 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
               onPressed: state.currentQuestionIndex == 0
                   ? null
                   : cubit.previousQuestion,
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('Previous'),
+              icon: const Icon(AppIcons.arrowBackMaterial),
+              label: const Text(DoExamStrings.previous),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.colorBackgroundCardProjects,
                 foregroundColor: AppColors.textWhite,
@@ -473,11 +483,11 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                     _showValidationDialog(context, cubit);
                   }
                 },
-                icon: const Icon(Icons.check_circle),
-                label: const Text('Submit Exam'),
+                icon: const Icon(AppIcons.checkCircle),
+                label: const Text(DoExamStrings.submitExam),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.green,
+                  foregroundColor: AppColors.textWhite,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -489,11 +499,11 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: cubit.nextQuestion,
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Next'),
+                icon: const Icon(AppIcons.arrowForwardMaterial),
+                label: const Text(DoExamStrings.next),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.colorPrimary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.textWhite,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -510,72 +520,25 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     BuildContext context,
     DoExamCubit cubit,
   ) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.colorsBackGround2,
-        title: AppCustomText.generate(
-          text: 'Exit Exam?',
-          textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.orange),
-        ),
-        content: AppCustomText.generate(
-          text:
-              'Are you sure you want to exit the exam? Your progress will be saved.',
-          textStyle: AppTextStyles.bodyMediumMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: AppCustomText.generate(
-              text: 'Cancel',
-              textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                color: AppColors.colorPrimary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: AppCustomText.generate(
-              text: 'Exit',
-              textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AppDialogService.showConfirmDialog(
+      context,
+      title: DoExamStrings.exitExam,
+      message: DoExamStrings.exitExamConfirm,
+      confirmText: DoExamStrings.exit,
+      destructive: true,
     );
   }
 
   void _showValidationDialog(BuildContext context, DoExamCubit cubit) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.colorsBackGround2,
-        title: AppCustomText.generate(
-          text: 'Incomplete Exam',
-          textStyle: AppTextStyles.h6Bold.copyWith(color: Colors.orange),
-        ),
-        content: AppCustomText.generate(
-          text:
-              'You have ${cubit.unansweredQuestionsCount} unanswered question(s).\n\nPlease answer all questions before submitting.',
-          textStyle: AppTextStyles.bodyMediumMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: AppCustomText.generate(
-              text: 'OK',
-              textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                color: AppColors.colorPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
+    AppDialogService.showInfoDialog(
+      context,
+      title: DoExamStrings.incompleteExam,
+      message: DoExamStrings.unansweredText(cubit.unansweredQuestionsCount),
+      actionText: AppStrings.ok,
     );
   }
 }
+
 
 
 

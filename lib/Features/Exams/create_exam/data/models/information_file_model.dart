@@ -1,4 +1,5 @@
 import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 
 class InformationFileModel {
   final String name;
@@ -14,8 +15,10 @@ class InformationFileModel {
   });
 
   String get sizeFormatted {
-    if (size < 1024) return '$size B';
-    if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)} KB';
-    return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (size < 1024) return '$size ${AppConstants.sizeUnitBytes}';
+    if (size < 1024 * 1024) {
+      return '${(size / 1024).toStringAsFixed(1)} ${AppConstants.sizeUnitKilobytes}';
+    }
+    return '${(size / (1024 * 1024)).toStringAsFixed(1)} ${AppConstants.sizeUnitMegabytes}';
   }
 }

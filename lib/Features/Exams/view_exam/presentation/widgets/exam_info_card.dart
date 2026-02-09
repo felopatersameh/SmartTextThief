@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
@@ -33,14 +32,14 @@ class ExamInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _InfoRow(
-            icon: Icons.signal_cellular_alt,
-            label: "Level",
+            icon: AppIcons.signalCellularAlt,
+            label: ViewExamStrings.level,
             value: exam.examStatic.levelExam.name,
           ),
           SizedBox(height: 8.h),
           _InfoRow(
-            icon: Icons.numbers,
-            label: "Questions",
+            icon: AppIcons.numbers,
+            label: ViewExamStrings.questions,
             value: exam.examStatic.numberOfQuestions.toString(),
           ),
           SizedBox(height: 8.h),

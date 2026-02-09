@@ -6,12 +6,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'Core/Services/Notifications/notification_model.dart';
 
+import 'Config/di/service_locator.dart';
 import 'Config/setting.dart';
 import 'Core/Services/Firebase/firebase_service.dart';
 import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/LocalStorage/local_storage_service.dart';
+import 'Core/Utils/Enums/notification_type.dart';
 import 'Features/Notifications/Persentation/cubit/notifications_cubit.dart';
 import 'Features/Profile/Persentation/cubit/profile_cubit.dart';
 import 'Features/Subjects/Persentation/cubit/subjects_cubit.dart';
@@ -19,13 +21,14 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await setupDependencies();
   await dotenv.load(fileName: '.env');
   await Future.wait([
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
     LocalStorageService.init(),
   ]);
   await Future.wait([
-    FirebaseServices.instance.initialize(),
+    getIt<FirebaseServices>().initialize(),
     RealtimeFirebase.initialize(),
     NotificationServices.initFCM(),
   ]);
@@ -41,8 +44,8 @@ Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
   }
   final NotificationModel message = NotificationModel.fromJson(onData.data);
   await LocalNotificationService.showNotification(
-    title: message.body,
-    body: "",
+    title:NotificationType.fromString(message.title).title ,
+    body:  message.body,
   );
 }
 
@@ -80,12 +83,12 @@ class _MyAppState extends State<MyApp> {
         ScreenUtil.init(context);
         return MultiBlocProvider(
           providers: [
-            BlocProvider(
-              create: (context) => SettingsCubit(),
+            BlocProvider<SettingsCubit>.value(value: getIt<SettingsCubit>()),
+            BlocProvider<ProfileCubit>.value(value: getIt<ProfileCubit>()),
+            BlocProvider<SubjectCubit>.value(value: getIt<SubjectCubit>()),
+            BlocProvider<NotificationsCubit>.value(
+              value: getIt<NotificationsCubit>(),
             ),
-            BlocProvider(create: (context) => ProfileCubit()),
-            BlocProvider(create: (context) => SubjectCubit()),
-            BlocProvider(create: (context) => NotificationsCubit()),
           ],
           child: BlocBuilder<SettingsCubit, SettingsState>(
             builder: (context, state) {

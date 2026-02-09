@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import '../../../../Core/Services/Notifications/notification_model.dart';
 
 class NotificationCard extends StatelessWidget {
@@ -12,7 +13,7 @@ class NotificationCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E2630),
+        color: AppColors.notificationCardBackground,
         borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
@@ -45,7 +46,7 @@ class NotificationCard extends StatelessWidget {
                     Text(
                       notification.body,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textWhite,
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
@@ -56,7 +57,7 @@ class NotificationCard extends StatelessWidget {
                     Text(
                       notification.formattedTime,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: AppColors.textWhite.withValues(alpha: 0.5),
                         fontSize: 13,
                       ),
                     ),

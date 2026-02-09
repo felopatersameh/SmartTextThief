@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:icon_broken/icon_broken.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -14,7 +14,7 @@ class AppIcons {
     color: Colors.blue.shade700,
   );
 
-  //******************************************************** for Login && SingUp
+  //******************************************************** for Login && SignUp
   static Icon google = Icon(
     FontAwesome.google_brand,
     size: 24.sp,
@@ -56,25 +56,17 @@ class AppIcons {
     clipBehavior: Clip.antiAliasWithSaveLayer,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(8),
-
-      // color: AppColors.colorPrimary,
     ),
     width: 40,
     height: 40,
     child: Icon(
       BoxIcons.bx_circle,
-      color: Color.fromRGBO(255, 237, 237, 1),
+      color: const Color.fromRGBO(255, 237, 237, 1),
       size: 27.w,
     ),
   );
-  // static const IconData add = EvaIcons.plus;
   static const IconData notificationPage = IconBroken.Notification;
 
-  //******************************************************** for Home Page
-  // static const Icon search = Icon(
-  //   IconBroken.Search,
-  //   color: AppColors.colorTitleTextOut,
-  // );
   //******************************************************** for Chat Page
   static const IconData send = IconBroken.Send;
   static const IconData voice = IconBroken.Voice;
@@ -118,4 +110,62 @@ class AppIcons {
   static const IconData code = Bootstrap.code;
   static const IconData avarege = Bootstrap.percent;
   static const IconData copy = Bootstrap.copy;
+
+  //******************************************************** Centralized Material Icons
+  static const IconData verifiedUserOutlined = Icons.verified_user_outlined;
+  static const IconData search = Icons.search;
+  static const IconData searchOff = Icons.search_off;
+  static const IconData lockOpenRounded = Icons.lock_open_rounded;
+  static const IconData lockOutlineRounded = Icons.lock_outline_rounded;
+  static const IconData checkCircle = Icons.check_circle;
+  static const IconData circle = Icons.circle;
+  static const IconData schedule = Icons.schedule;
+  static const IconData playCircleOutline = Icons.play_circle_outline;
+  static const IconData stopCircleOutlined = Icons.stop_circle_outlined;
+  static const IconData repeat = Icons.repeat;
+  static const IconData quizOutlined = Icons.quiz_outlined;
+  static const IconData hourglassEmpty = Icons.hourglass_empty;
+  static const IconData timer = Icons.timer;
+  static const IconData arrowBackMaterial = Icons.arrow_back;
+  static const IconData arrowForwardMaterial = Icons.arrow_forward;
+  static const IconData eventNoteRounded = Icons.event_note_rounded;
+  static const IconData arrowForwardRounded = Icons.arrow_forward_rounded;
+  static const IconData playCircleOutlineRounded =
+      Icons.play_circle_outline_rounded;
+  static const IconData accessTimeRounded = Icons.access_time_rounded;
+  static const IconData edit = Icons.edit;
+  static const IconData uploadFile = Icons.upload_file;
+  static const IconData deleteOutline = Icons.delete_outline;
+  static const IconData delete = Icons.delete;
+  static const IconData pictureAsPdf = Icons.picture_as_pdf;
+  static const IconData image = Icons.image;
+  static const IconData close = Icons.close;
+  static const IconData check = Icons.check;
+  static const IconData numbers = Icons.numbers;
+  static const IconData signalCellularAlt = Icons.signal_cellular_alt;
+  static const IconData cancel = Icons.cancel;
+  static const IconData notificationsNone = Icons.notifications_none;
+  static const IconData helpOutlineRounded = Icons.help_outline_rounded;
+  static const IconData supportAgentRounded = Icons.support_agent_rounded;
+  static const IconData checkCircleOutline = Icons.check_circle_outline;
+  static const IconData expandLess = Icons.expand_less;
+  static const IconData expandMore = Icons.expand_more;
+  static const IconData notificationsActive = Icons.notifications_active;
+  static const IconData upcoming = Icons.upcoming;
+  static const IconData verifiedUser = Icons.verified_user;
+  static const IconData visibilityOff = Icons.visibility_off;
+  static const IconData arrowForwardIos = Icons.arrow_forward_ios;
+  static const IconData peopleAltOutlined = Icons.people_alt_outlined;
+  static const IconData analyticsOutlined = Icons.analytics_outlined;
+  static const IconData menuBookRounded = Icons.menu_book_rounded;
+  static const IconData groups2Outlined = Icons.groups_2_outlined;
+  static const IconData calendarMonthOutlined = Icons.calendar_month_outlined;
+  static const IconData assignmentOutlined = Icons.assignment_outlined;
+  static const IconData groupsRounded = Icons.groups_rounded;
+  static const IconData percentRounded = Icons.percent_rounded;
+  static const IconData verifiedRounded = Icons.verified_rounded;
+  static const IconData trendingUpRounded = Icons.trending_up_rounded;
+  static const IconData trendingDownRounded = Icons.trending_down_rounded;
+  static const IconData howToVoteOutlined = Icons.how_to_vote_outlined;
+  static const IconData groupsOutlined = Icons.groups_outlined;
 }

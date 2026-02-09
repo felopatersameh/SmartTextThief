@@ -1,4 +1,5 @@
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/real_time_firbase.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
@@ -14,15 +15,15 @@ class DoExamRemoteDataSource {
   Future<void> createLiveExam(ExamModel model) async {
     final map = <String, dynamic>{};
     final otherMap = <String, dynamic>{
-      'start_time': DateTime.now().millisecondsSinceEpoch,
-      'time': 0,
-      'dispose_exam': 0,
+      AppConstants.liveExamStartTimeKey: DateTime.now().millisecondsSinceEpoch,
+      AppConstants.liveExamTimeKey: 0,
+      AppConstants.liveExamDisposeKey: 0,
     };
     for (final element in model.examStatic.examResultQA) {
       map[element.questionId] = element.toJson();
     }
     await RealtimeFirebase.create(
-      'Exam_Live',
+      AppConstants.liveExamCollection,
       map,
       otherData: otherMap,
       id: model.specialIdLiveExam,
@@ -35,7 +36,7 @@ class DoExamRemoteDataSource {
     void Function(dynamic error)? onError,
   }) {
     return RealtimeFirebase.listen(
-      'Exam_Live/${model.specialIdLiveExam}',
+      '${AppConstants.liveExamCollection}/${model.specialIdLiveExam}',
       (data, key) {
         onData(data, key);
         return null;
@@ -50,11 +51,11 @@ class DoExamRemoteDataSource {
 
   Future<void> updateLiveExamTimer(ExamModel model, int timerExam) async {
     final timerUpdate = <String, dynamic>{
-      'time': timerExam,
-      'dispose_exam': 0,
+      AppConstants.liveExamTimeKey: timerExam,
+      AppConstants.liveExamDisposeKey: 0,
     };
     await RealtimeFirebase.updateData(
-      'Exam_Live/${model.specialIdLiveExam}',
+      '${AppConstants.liveExamCollection}/${model.specialIdLiveExam}',
       {},
       otherUpdates: timerUpdate,
     );
@@ -74,7 +75,7 @@ class DoExamRemoteDataSource {
     final updatedQuestion = question.copyWith(studentAnswer: answer);
     final updateData = {questionId: updatedQuestion.toJson()};
     await RealtimeFirebase.updateData(
-      'Exam_Live/${model.specialIdLiveExam}',
+      '${AppConstants.liveExamCollection}/${model.specialIdLiveExam}',
       updateData,
     );
   }
@@ -93,9 +94,9 @@ class DoExamRemoteDataSource {
       totalScore += score;
       resultsUpdate[question.questionId] = {
         ...question.toJson(),
-        'studentAnswer': studentAnswer,
-        'score': score,
-        'evaluated': true,
+        DataKey.studentAnswer.key: studentAnswer,
+        DataKey.score.key: score,
+        DataKey.evaluated.key: true,
       };
     }
 
@@ -154,7 +155,9 @@ class DoExamRemoteDataSource {
   }
 
   Future<void> deleteLiveExam(ExamModel model) {
-    return RealtimeFirebase.deleteData('Exam_Live/${model.specialIdLiveExam}');
+    return RealtimeFirebase.deleteData(
+      '${AppConstants.liveExamCollection}/${model.specialIdLiveExam}',
+    );
   }
 
   Future<void> notifySubmitted(ExamModel model) async {
@@ -162,14 +165,17 @@ class DoExamRemoteDataSource {
     final name = nameParts.length >= 2
         ? '${nameParts[0]} ${nameParts[1]}'
         : GetLocalStorage.getNameUser();
-    final length = model.examResult.isEmpty || model.examResult.length - 1 == 0;
-    final and = length ? '' : 'and ${model.examResult.length} members';
+    final membersCount = model.examResult.length;
     final notification = NotificationModel(
-      id: 'doExam_${model.examId}',
-      topicId: '${model.examIdSubject}_admin',
+      id: '${AppConstants.submittedExamNotificationPrefix}${model.examId}',
+      topicId: '${model.examIdSubject}${AppConstants.adminTopicSuffix}',
       type: NotificationType.submit,
-      body:
-          '$name Submitted Exam ${model.examStatic.typeExam} ${model.specialIdLiveExam} $and',
+      body: DataSourceStrings.examSubmittedBody(
+        name,
+        model.examStatic.typeExam,
+        model.specialIdLiveExam,
+        membersCount,
+      ),
     );
     await NotificationServices.sendNotificationToTopic(
       id: notification.id,

@@ -2,8 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart' as pa;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Core/Resources/app_colors.dart';
-import 'package:smart_text_thief/Core/Resources/app_fonts.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/presentation/cubit/create_exam_cubit.dart';
@@ -20,7 +19,7 @@ class LevelDropdown extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppCustomText.generate(
-          text: "Level Exam",
+          text: CreateExamStrings.levelExam,
           textStyle: AppTextStyles.h6SemiBold.copyWith(
             color: AppColors.colorPrimary,
           ),
@@ -29,7 +28,7 @@ class LevelDropdown extends StatelessWidget {
         DropdownButtonHideUnderline(
           child: pa.DropdownButton2<LevelExam>(
             hint: AppCustomText.generate(
-              text: 'Select Level',
+              text: CreateExamStrings.selectLevel,
               textStyle: AppTextStyles.bodyMediumMedium,
             ),
             items: LevelExam.values

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../Config/Routes/app_router.dart';
-import '../../../Config/Routes/name_routes.dart';
 import '../../../Core/Resources/resources.dart';
 import '../../../Core/Utils/Enums/enum_user.dart';
 import '../../../Core/Utils/Widget/ButtonsStyle/build_button_app.dart';
@@ -34,7 +33,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
       setState(() => _loading = false);
       await showMessageSnackBar(
         context,
-        title: 'Failed to save role, please try again',
+        title: RoleStrings.failedToSaveRole,
         type: MessageType.error,
       );
       return;
@@ -50,7 +49,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
     if (!mounted) return;
 
     setState(() => _loading = false);
-    AppRouter.goNamedByPath(context, NameRoutes.subject);
+    AppRouter.pushToMainScreen(context);
   }
 
   @override
@@ -61,7 +60,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: AppCustomText.generate(
-            text: 'Choose your role',
+            text: RoleStrings.chooseYourRole,
             textStyle: AppTextStyles.h6Bold,
           ),
         ),
@@ -81,7 +80,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.2),
+                        color: AppColors.black.withValues(alpha: 0.2),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -98,19 +97,19 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.verified_user_outlined,
+                          AppIcons.verifiedUserOutlined,
                           color: AppColors.colorPrimary,
                           size: 28.sp,
                         ),
                       ),
                       SizedBox(height: 16.h),
                       AppCustomText.generate(
-                        text: 'Select your role',
+                        text: RoleStrings.selectYourRole,
                         textStyle: AppTextStyles.h6Bold,
                       ),
                       SizedBox(height: 8.h),
                       AppCustomText.generate(
-                        text: 'Choose how you want to use the app first.',
+                        text: RoleStrings.chooseHowToUse,
                         textStyle: AppTextStyles.bodyMediumMedium.copyWith(
                           color: AppColors.textCoolGray,
                         ),
@@ -118,14 +117,14 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                       ),
                       SizedBox(height: 24.h),
                       BuildButtonApp(
-                        text: 'I am a Teacher',
+                        text: RoleStrings.iAmTeacher,
                         background: AppColors.colorPrimary,
                         textStyle: AppTextStyles.bodyLargeSemiBold,
                         actions: () => _selectRole(UserType.te),
                       ),
                       SizedBox(height: 12.h),
                       BuildButtonApp(
-                        text: 'I am a Student',
+                        text: RoleStrings.iAmStudent,
                         background: AppColors.colorTextFieldBackGround,
                         textStyle: AppTextStyles.bodyLargeSemiBold,
                         actions: () => _selectRole(UserType.st),

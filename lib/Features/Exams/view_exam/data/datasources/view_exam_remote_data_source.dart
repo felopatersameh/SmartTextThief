@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
@@ -45,8 +46,12 @@ class ViewExamRemoteDataSource {
       final model = NotificationModel(
         topicId: examModel.examIdSubject,
         type: NotificationType.createdExam,
-        body:
-            'New Exam Created ${examModel.specialIdLiveExam} in $nameSubject\n${examModel.durationBeforeStarted} and ${examModel.durationAfterStarted}',
+        body: DataSourceStrings.examCreatedBody(
+          examModel.specialIdLiveExam,
+          nameSubject,
+          examModel.durationBeforeStarted,
+          examModel.durationAfterStarted,
+        ),
       );
       await NotificationServices.sendNotificationToTopic(
         data: model.toJson(),

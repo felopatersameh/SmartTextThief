@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Config/app_config.dart';
+import '../../../Core/Resources/resources.dart';
 import 'Widgets/notification_card.dart';
 import 'cubit/notifications_cubit.dart';
 import '../../../Config/Routes/name_routes.dart';
@@ -45,25 +46,25 @@ class _NotificationPageState extends State<NotificationPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(
-                              Icons.notifications_none,
+                              AppIcons.notificationsNone,
                               size: 80,
-                              color: Colors.white38,
+                              color: AppColors.white38,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No notifications yet',
+                              NotificationStrings.noNotificationsYet,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleLarge
-                                  ?.copyWith(color: Colors.white70),
+                                  ?.copyWith(color: AppColors.white70),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'We\'ll let you know when something new happens.',
+                              NotificationStrings.noNotificationsHint,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
-                                  ?.copyWith(color: Colors.white54),
+                                  ?.copyWith(color: AppColors.white54),
                               textAlign: TextAlign.center,
                             ),
                           ],
