@@ -70,6 +70,12 @@ class _CreateExamBody extends StatelessWidget {
               title: CreateExamStrings.contentContextTitle,
               onChanged: cubit.changeContent,
             ),
+            ExamField(
+              hint: CreateExamStrings.geminiModelHint,
+              initialValue: state.geminiModel,
+              title: CreateExamStrings.geminiModelTitle,
+              onChanged: cubit.changeGeminiModel,
+            ),
             Row(
               children: [
                 Checkbox(

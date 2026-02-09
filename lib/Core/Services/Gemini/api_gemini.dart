@@ -1,12 +1,19 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 
 /// Gemini API client
 class ApiGemini {
   final String _keyApi;
-  final String _nameModel = "gemini-2.5-flash";
+  final String _nameModel;
   late final GenerativeModel _model;
 
-  ApiGemini({required String apiKey}) : _keyApi = apiKey {
+  ApiGemini({
+    required String apiKey,
+    String modelName = AppConstants.defaultGeminiModel,
+  })  : _keyApi = apiKey,
+        _nameModel = modelName.trim().isEmpty
+            ? AppConstants.defaultGeminiModel
+            : modelName.trim() {
     _model = GenerativeModel(
       model: _nameModel,
       apiKey: _keyApi,

@@ -83,17 +83,15 @@ class AppList {
 
   static const List<String> helpInstructorGettingStarted = [
     'Sign up with Google or Email',
-    'Select your institution',
     'Create your first subject',
     'Generate subject code',
     'Share code with students',
     'Create exams using AI',
-    'Monitor student performance',
+    'Publish and monitor student performance',
   ];
 
   static const List<String> helpStudentGettingStarted = [
     'Sign up with Google or Email',
-    'Select your institution',
     'Enter subject code from instructor',
     'Wait for exams to be published',
     'Take exams during scheduled time',
@@ -110,9 +108,9 @@ class AppList {
   static const List<String> helpAiExamGeneration = [
     'Upload PDF files',
     'Upload images (text extracted)',
-    'Upload any document file',
     'Direct text input',
     'Add context for better quality',
+    'Choose Gemini model (default: gemini-2.5-flash)',
     'Shuffle questions per student',
     'Set difficulty levels',
     'Edit questions before publishing',
@@ -130,6 +128,7 @@ class AppList {
     'Start after scheduled time',
     'Clean, distraction-free interface',
     'Immediate result display',
+    'Short-answer grading based on meaning',
     'View answers after deadline',
     'Personal grade history',
   ];

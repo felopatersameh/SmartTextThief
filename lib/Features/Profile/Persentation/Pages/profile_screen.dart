@@ -81,13 +81,16 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      OptionTile(
-                        title: ProfileStrings.geminiApiKey,
-                        onTap: () async => await _showGeminiApiKeyDialog(
-                          context,
-                          state.model?.userGeminiApiKey ?? "",
+                      if(state.model?.isTe??false)
+                    ...[
+                        OptionTile(
+                          title: ProfileStrings.geminiApiKey,
+                          onTap: () async => await _showGeminiApiKeyDialog(
+                            context,
+                            state.model?.userGeminiApiKey ?? "",
+                          ),
                         ),
-                      ),
+                      ],
                       OptionTile(
                         title: ProfileStrings.about,
                         onTap: () async => AppRouter.pushToAbout(

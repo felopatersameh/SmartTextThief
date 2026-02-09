@@ -40,6 +40,7 @@ enum DataKey {
   numberOfQuestions('numberOfQuestions'),
   levelExam('levelExam'),
   time('time'),
+  geminiModel('geminiModel'),
 
   // 🔹 Subject fields
   subjectIdSubject('subject_idSubject'),

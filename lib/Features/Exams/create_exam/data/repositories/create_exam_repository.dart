@@ -13,6 +13,7 @@ class CreateExamRepository {
 
   Future<ExamGenerationResultModel> generateExamQuestions({
     required String apiKey,
+    required String modelName,
     required LevelExam level,
     required String multipleChoiceCount,
     required String trueFalseCount,
@@ -24,6 +25,7 @@ class CreateExamRepository {
   }) {
     return _remoteDataSource.generateExamQuestions(
       apiKey: apiKey,
+      modelName: modelName,
       level: level,
       multipleChoiceCount: multipleChoiceCount,
       trueFalseCount: trueFalseCount,

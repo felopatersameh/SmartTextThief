@@ -54,4 +54,11 @@ class AppConstants {
   static const String routeKeyResults = 'results';
 
   static const String appLogoAsset = 'assets/Image/s2.png';
+  static const String defaultGeminiModel = 'gemini-2.5-flash';
+  static const List<String> supportedGeminiModels = [
+    defaultGeminiModel,
+    'gemini-2.5-pro',
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-lite',
+  ];
 }

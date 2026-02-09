@@ -1,21 +1,29 @@
 {
-    "flutter": {
-        "platforms": {
-            "android": {
-                "default": {
-                    "projectId": "smarttextthief",
-                    "appId": "1:231951979413:android:47e535deec779f90ec5c9c",
-                    "fileOutput": "android/app/google-services.json"
-                }
-            },
-            "dart": {
-                "lib/firebase_options.dart": {
-                    "projectId": "smarttextthief",
-                    "configurations": {
-                        "ios": "1:231951979413:ios:d2397ae00e4ec880ec5c9c"
-                    }
-                }
-            }
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "smarttextthief",
+          "appId": "1:231951979413:android:47e535deec779f90ec5c9c",
+          "fileOutput": "android/app/google-services.json"
         }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "smarttextthief",
+          "configurations": {
+            "ios": "1:231951979413:ios:d2397ae00e4ec880ec5c9c"
+          }
+        }
+      }
     }
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
 }

@@ -277,16 +277,16 @@ class ProfileStrings {
 }
 
 class HelpStrings {
-  static const String header = 'How can we help you?';
-  static const String userRoles = 'User Roles';
+  static const String header = 'Help Center';
+  static const String userRoles = 'Roles & Permissions';
   static const String instructor = 'Instructor';
   static const String student = 'Student';
   static const String organizationAdmin = 'Organization/Admin';
   static const String comingSoon = 'Coming Soon';
-  static const String gettingStarted = 'Getting Started';
+  static const String gettingStarted = 'Quick Start';
   static const String forInstructors = 'For Instructors';
   static const String forStudents = 'For Students';
-  static const String coreFeatures = 'Core Features';
+  static const String coreFeatures = 'Feature Guides';
   static const String subjectManagement = 'Subject Management';
   static const String aiExamGeneration = 'AI-Powered Exam Generation';
   static const String performanceTracking = 'Performance Tracking';
@@ -295,29 +295,33 @@ class HelpStrings {
   static const String authenticationSecurity = 'Authentication & Security';
   static const String currentImplementation = 'Current Implementation';
   static const String futureSecurityFeatures = 'Future Security Features';
-  static const String needMoreHelp = 'Need more help?';
-  static const String contactSupport = 'Contact our support team';
+  static const String needMoreHelp = 'Need direct support?';
+  static const String contactSupport =
+      'Contact your instructor or system admin for account and access issues.';
   static const String soon = 'Soon';
 }
 
 class AboutStrings {
-  static const String overview = 'Overview';
+  static const String overview = 'What Is Smart Text Thief?';
   static const String overviewText1 =
-      'Smart Text Thief is a revolutionary educational platform that enables instructors to create comprehensive exams faster than traditional methods using AI technology.';
+      'Smart Text Thief helps instructors create high-quality exams quickly using AI.';
   static const String overviewText2 =
-      'The system bridges the gap between instructors and students, providing a complete exam lifecycle management solution.';
-  static const String keyConcept = 'Key Concept';
+      'It supports the full exam workflow: creating, publishing, taking exams, and reviewing performance.';
+  static const String keyConcept = 'Core Idea';
   static const String keyConceptText =
-      'Create exams with AI faster than any instructor could manually, while maintaining quality and customization options.';
-  static const String keyAdvantages = 'Key Advantages';
-  static const String technicalStack = 'Technical Stack';
+      'Make assessment creation faster while keeping control over quality, context, and difficulty.';
+  static const String keyAdvantages = 'Why Instructors Use It';
+  static const String technicalStack = 'Technology Stack';
   static const String frameworkLanguage = 'Framework & Language';
   static const String backendDatabase = 'Backend & Database';
   static const String aiMl = 'AI & ML';
   static const String additionalTechnologies = 'Additional Technologies';
   static const String vision = 'Vision';
   static const String visionText =
-      'Smart Text Thief aims to become the leading AI-powered educational assessment platform, empowering institutions worldwide to deliver fair, efficient, and insightful examinations while saving instructors countless hours of manual work.';
+      'Our vision is to deliver fair, efficient, and insight-driven assessments while saving instructors significant manual effort.';
+  static const String appInfoTitle = 'Platform Summary';
+  static const String appInfoBody =
+      'Designed for teachers and students to manage subjects, generate exams, and track outcomes in one place.';
 }
 
 class CreateExamStrings {
@@ -328,6 +332,9 @@ class CreateExamStrings {
   static const String contentContextHint =
       'e.g., Religious, Scientific, Training, etc.';
   static const String contentContextTitle = 'Content Context';
+  static const String geminiModelTitle = 'Gemini Model (Optional)';
+  static const String geminiModelHint =
+      'Leave empty to use gemini-2.5-flash';
   static const String unorderedQuestionsLabel =
       'Can each open exam have questions unordered?';
   static const String createExam = 'Create Exam';

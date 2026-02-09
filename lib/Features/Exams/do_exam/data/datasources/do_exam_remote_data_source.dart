@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:smart_text_thief/Config/env_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
+import 'package:smart_text_thief/Core/Services/Gemini/api_gemini.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/real_time_firbase.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
@@ -86,10 +90,21 @@ class DoExamRemoteDataSource {
   }) async {
     final resultsUpdate = <String, dynamic>{};
     var totalScore = 0;
+    final shortAnswerEvaluations = await _evaluateShortAnswers(
+      model: model,
+      userAnswers: userAnswers,
+    );
 
     for (final question in model.examStatic.examResultQA) {
-      final studentAnswer = userAnswers[question.questionId] ?? '';
-      final isCorrect = studentAnswer == question.correctAnswer;
+      final studentAnswer = (userAnswers[question.questionId] ?? '').trim();
+      bool isCorrect;
+
+      if (question.questionType == AppConstants.shortAnswerType) {
+        isCorrect = shortAnswerEvaluations[question.questionId] ?? false;
+      } else {
+        isCorrect = _isExactMatch(studentAnswer, question.correctAnswer);
+      }
+
       final score = isCorrect ? 1 : 0;
       totalScore += score;
       resultsUpdate[question.questionId] = {
@@ -152,6 +167,136 @@ class DoExamRemoteDataSource {
       subCollections: [CollectionKey.exams.key],
       subIds: [model.examId],
     );
+  }
+
+  Future<Map<String, bool>> _evaluateShortAnswers({
+    required ExamModel model,
+    required Map<String, String> userAnswers,
+  }) async {
+    final payload = <Map<String, String>>[];
+    for (final question in model.examStatic.examResultQA) {
+      if (question.questionType != AppConstants.shortAnswerType) continue;
+      final studentAnswer = (userAnswers[question.questionId] ?? '').trim();
+      if (studentAnswer.isEmpty) continue;
+      payload.add({
+        DataKey.questionId.key: question.questionId,
+        DataKey.questionText.key: question.questionText,
+        DataKey.correctAnswer.key: question.correctAnswer,
+        DataKey.studentAnswer.key: studentAnswer,
+      });
+    }
+
+    if (payload.isEmpty) return {};
+
+    final apiKey = await _resolveGeminiApiKey(model);
+    if (apiKey.isEmpty) return {};
+
+    final modelName = model.examStatic.geminiModel.trim().isEmpty
+        ? AppConstants.defaultGeminiModel
+        : model.examStatic.geminiModel.trim();
+
+    try {
+      final api = ApiGemini(
+        apiKey: apiKey,
+        modelName: modelName,
+      );
+      final response = await api.generateContent(
+        _buildSemanticEvaluationPrompt(payload),
+      );
+      return _parseBooleanMap(response.text ?? '');
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<String> _resolveGeminiApiKey(ExamModel model) async {
+    try {
+      final teacherResponse = await FirebaseServices.instance.getData(
+        model.examIdTeacher,
+        CollectionKey.users.key,
+      );
+      if (teacherResponse.status && teacherResponse.data is Map) {
+        final teacherData =
+            Map<String, dynamic>.from(teacherResponse.data as Map);
+        final teacherApiKey =
+            (teacherData[DataKey.userGeminiApiKey.key] ?? '').toString().trim();
+        if (teacherApiKey.isNotEmpty) {
+          return teacherApiKey;
+        }
+      }
+    } catch (_) {}
+
+    return EnvConfig.geminiFallbackApiKey;
+  }
+
+  String _buildSemanticEvaluationPrompt(List<Map<String, String>> payload) {
+    final payloadJson = jsonEncode(payload);
+    return '''
+You are grading short-answer exam responses.
+Compare each studentAnswer against the correctAnswer by semantic meaning.
+
+Return true when:
+- The meaning is correct.
+- The answer is very close to the correct meaning (minor wording differences are acceptable).
+
+Return false when:
+- The meaning is wrong, opposite, irrelevant, or incomplete in a way that changes correctness.
+
+Return ONLY valid JSON object with questionId keys and boolean values.
+Example:
+{"Q1": true, "Q2": false}
+
+Input:
+$payloadJson
+''';
+  }
+
+  Map<String, bool> _parseBooleanMap(String responseText) {
+    if (responseText.trim().isEmpty) return {};
+    try {
+      final cleaned = _extractJsonObject(responseText);
+      final decoded = jsonDecode(cleaned);
+      if (decoded is! Map) return {};
+
+      final result = <String, bool>{};
+      for (final entry in decoded.entries) {
+        final value = _toBool(entry.value);
+        if (value != null) {
+          result[entry.key.toString()] = value;
+        }
+      }
+      return result;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  String _extractJsonObject(String rawText) {
+    final text = rawText.trim();
+    final start = text.indexOf('{');
+    final end = text.lastIndexOf('}');
+    if (start == -1 || end == -1 || end <= start) {
+      return text;
+    }
+    return text.substring(start, end + 1);
+  }
+
+  bool? _toBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true') return true;
+      if (normalized == 'false') return false;
+    }
+    return null;
+  }
+
+  bool _isExactMatch(String studentAnswer, String correctAnswer) {
+    return _normalizeAnswer(studentAnswer) == _normalizeAnswer(correctAnswer);
+  }
+
+  String _normalizeAnswer(String text) {
+    return text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   Future<void> deleteLiveExam(ExamModel model) {

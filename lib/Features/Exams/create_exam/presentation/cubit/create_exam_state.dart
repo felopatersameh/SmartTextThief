@@ -5,6 +5,7 @@ class CreateExamState extends Equatable {
   final LevelExam? selectedLevel;
   final String name;
   final String content;
+  final String geminiModel;
   final bool canOpenQuestions;
   final String numMultipleChoice;
   final String numTrueFalse;
@@ -22,6 +23,7 @@ class CreateExamState extends Equatable {
     this.selectedLevel,
     this.name = '',
     this.content = '',
+    this.geminiModel = AppConstants.defaultGeminiModel,
     this.canOpenQuestions = false,
     this.numMultipleChoice = '0',
     this.numTrueFalse = '0',
@@ -40,6 +42,7 @@ class CreateExamState extends Equatable {
     LevelExam? selectedLevel,
     String? name,
     String? content,
+    String? geminiModel,
     bool? canOpenQuestions,
     String? numMultipleChoice,
     String? numTrueFalse,
@@ -57,6 +60,7 @@ class CreateExamState extends Equatable {
       selectedLevel: selectedLevel ?? this.selectedLevel,
       name: name ?? this.name,
       content: content ?? this.content,
+      geminiModel: geminiModel ?? this.geminiModel,
       canOpenQuestions: canOpenQuestions ?? this.canOpenQuestions,
       numMultipleChoice: numMultipleChoice ?? this.numMultipleChoice,
       numTrueFalse: numTrueFalse ?? this.numTrueFalse,
@@ -77,6 +81,7 @@ class CreateExamState extends Equatable {
         selectedLevel,
         name,
         content,
+        geminiModel,
         canOpenQuestions,
         numMultipleChoice,
         numTrueFalse,

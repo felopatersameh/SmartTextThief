@@ -44,6 +44,11 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     emit(state.copyWith(content: value));
   }
 
+  void changeGeminiModel(String value) {
+    if (state.loadingCreating) return;
+    emit(state.copyWith(geminiModel: value));
+  }
+
   void toggleCanOpenQuestions(bool value) {
     if (state.loadingCreating) return;
     emit(state.copyWith(canOpenQuestions: value));
@@ -282,6 +287,9 @@ class CreateExamCubit extends Cubit<CreateExamState> {
 
     final response = await _repository.generateExamQuestions(
       apiKey: userApiKey,
+      modelName: state.geminiModel.trim().isEmpty
+          ? AppConstants.defaultGeminiModel
+          : state.geminiModel.trim(),
       level: state.selectedLevel!,
       multipleChoiceCount: numChose,
       trueFalseCount: numTF,
@@ -320,6 +328,9 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         numberOfQuestions: sum,
         time: state.time.toString(),
         typeExam: state.name,
+        geminiModel: state.geminiModel.trim().isEmpty
+            ? AppConstants.defaultGeminiModel
+            : state.geminiModel.trim(),
         randomQuestions: state.canOpenQuestions,
       ),
     );

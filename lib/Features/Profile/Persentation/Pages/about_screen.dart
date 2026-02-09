@@ -5,14 +5,9 @@ import '../../../../Config/Routes/name_routes.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
 
-class AboutScreen extends StatefulWidget {
+class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  @override
-  State<AboutScreen> createState() => _AboutScreenState();
-}
-
-class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +24,9 @@ class _AboutScreenState extends State<AboutScreen> {
                 height: 100.h,
               ),
             ),
+            const SizedBox(height: 12),
+            _buildSummaryCard(),
+            const SizedBox(height: 24),
             _buildSectionTitle(AboutStrings.overview),
             const SizedBox(height: 12),
             AppCustomText.generate(
@@ -127,6 +125,38 @@ class _AboutScreenState extends State<AboutScreen> {
             const SizedBox(height: 32),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.colorsBackGround2,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.colorPrimary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppCustomText.generate(
+            text: AboutStrings.appInfoTitle,
+            textStyle: AppTextStyles.bodyMediumBold.copyWith(
+              color: AppColors.colorPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          AppCustomText.generate(
+            text: AboutStrings.appInfoBody,
+            textStyle: AppTextStyles.bodySmallMedium.copyWith(
+              color: AppColors.textWhite.withValues(alpha: 0.9),
+            ),
+          ),
+        ],
       ),
     );
   }

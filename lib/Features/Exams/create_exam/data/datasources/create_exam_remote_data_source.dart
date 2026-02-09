@@ -7,6 +7,7 @@ import '../models/information_file_model.dart';
 class CreateExamRemoteDataSource {
   Future<ExamGenerationResultModel> generateExamQuestions({
     required String apiKey,
+    required String modelName,
     required LevelExam level,
     required String multipleChoiceCount,
     required String trueFalseCount,
@@ -16,7 +17,10 @@ class CreateExamRemoteDataSource {
     required String contentContext,
     required String manualText,
   }) {
-    return ExamGeneratorService(apiKey: apiKey).generateExamQuestions(
+    return ExamGeneratorService(
+      apiKey: apiKey,
+      modelName: modelName,
+    ).generateExamQuestions(
       level: level,
       multipleChoiceCount: multipleChoiceCount,
       trueFalseCount: trueFalseCount,

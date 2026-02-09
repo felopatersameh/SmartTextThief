@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../Resources/app_constants.dart';
 import '../Enums/data_key.dart';
 import '../Enums/level_exam.dart';
 
@@ -12,6 +13,7 @@ class ExamStaticModel extends Equatable {
     this.randomQuestions = false,
     required this.typeExam,
     required this.time,
+    this.geminiModel = AppConstants.defaultGeminiModel,
   });
 
   final List<ExamResultQA> examResultQA;
@@ -20,6 +22,7 @@ class ExamStaticModel extends Equatable {
   final bool randomQuestions;
   final String typeExam;
   final String time;
+  final String geminiModel;
 
   ExamStaticModel copyWith({
     List<ExamResultQA>? examResultQA,
@@ -28,6 +31,7 @@ class ExamStaticModel extends Equatable {
     bool? randomQuestions,
     String? typeExam,
     String? time,
+    String? geminiModel,
   }) {
     return ExamStaticModel(
       examResultQA: examResultQA ?? this.examResultQA,
@@ -36,6 +40,7 @@ class ExamStaticModel extends Equatable {
       randomQuestions: randomQuestions ?? this.randomQuestions,
       typeExam: typeExam ?? this.typeExam,
       time: time ?? this.time,
+      geminiModel: geminiModel ?? this.geminiModel,
     );
   }
 
@@ -55,6 +60,9 @@ class ExamStaticModel extends Equatable {
       randomQuestions: json[DataKey.randomQuestions.key] ?? false,
       typeExam: json[DataKey.typeExam.key] ?? "Quiz",
       time: json[DataKey.time.key] ?? '',
+      geminiModel: (json[DataKey.geminiModel.key] ?? '').toString().trim().isEmpty
+          ? AppConstants.defaultGeminiModel
+          : json[DataKey.geminiModel.key].toString().trim(),
     );
   }
 
@@ -66,6 +74,7 @@ class ExamStaticModel extends Equatable {
         DataKey.randomQuestions.key: randomQuestions,
         DataKey.typeExam.key: typeExam,
         DataKey.time.key: time,
+        DataKey.geminiModel.key: geminiModel,
       };
 
   @override
@@ -76,5 +85,6 @@ class ExamStaticModel extends Equatable {
         randomQuestions,
         typeExam,
         time,
+        geminiModel,
       ];
 }

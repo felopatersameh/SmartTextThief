@@ -40,6 +40,8 @@ class _HelpScreenState extends State<HelpScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            _buildQuickHintCard(),
             const SizedBox(height: 24),
             _buildSectionTitle(HelpStrings.userRoles),
             const SizedBox(height: 12),
@@ -52,12 +54,7 @@ class _HelpScreenState extends State<HelpScreen> {
               HelpStrings.student,
               AppList.helpStudentFeatures,
             ),
-            const SizedBox(height: 12),
-            _buildRoleCard(
-              HelpStrings.organizationAdmin,
-              AppList.helpAdminFeatures,
-              isComingSoon: true,
-            ),
+          
             const SizedBox(height: 24),
             _buildSectionTitle(HelpStrings.gettingStarted),
             const SizedBox(height: 12),
@@ -161,6 +158,40 @@ class _HelpScreenState extends State<HelpScreen> {
     return AppCustomText.generate(
       text: title,
       textStyle: AppTextStyles.h6Bold.copyWith(color: AppColors.textWhite),
+    );
+  }
+
+  Widget _buildQuickHintCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.colorsBackGround2,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.colorPrimary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            AppIcons.quizOutlined,
+            color: AppColors.colorPrimary,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: AppCustomText.generate(
+              text:
+                  'Use the sections below based on your role to quickly find setup steps and feature usage.',
+              textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                color: AppColors.textWhite.withValues(alpha: 0.9),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
 
 import '../../../Features/Exams/create_exam/data/models/information_file_model.dart';
 import 'api_gemini.dart';
@@ -13,8 +14,13 @@ class ExamGeneratorService {
   final FileTextExtractor _fileExtractor;
   static const int _maxEducationalTextChars = 20000;
 
-  ExamGeneratorService({required String apiKey})
-      : _apiGemini = ApiGemini(apiKey: apiKey),
+  ExamGeneratorService({
+    required String apiKey,
+    String modelName = AppConstants.defaultGeminiModel,
+  })  : _apiGemini = ApiGemini(
+          apiKey: apiKey,
+          modelName: modelName,
+        ),
         _fileExtractor = FileTextExtractor();
 
   /// Main method: Generate exam questions
