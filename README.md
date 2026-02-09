@@ -1,165 +1,390 @@
-﻿# Smart Text Thief
+﻿<div align="center">
 
-AI-powered exam management app for teachers and students.
+# 📚 Smart Text Thief
 
-## Current Status
+### Intelligent SaaS platform for secure online exam creation and management
 
-- App is in a stable handover/sale-ready state.
-- Current app version: `1.4.0+1`.
-- Scope is intentionally frozen right now (no roadmap/future-plan section).
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Gemini AI](https://img.shields.io/badge/Gemini_AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 
-## What the app does now
+**An educational app focused solely on exams: creation, execution, monitoring, and analysis**
 
-### Teacher workflow
+• [Setup](#-quick-setup) • [Screens](#-screens)
 
-1. Sign in with Google and choose role.
-2. Create subjects and get join codes.
-3. Open/close subject join access.
-4. Create AI exams from:
-   - PDF files
-   - Images (`jpg/jpeg/png`) via OCR
-   - Direct text input
-5. Configure exam:
-   - Difficulty (`easy`, `normal`, `hard`)
-   - Question count by type (MCQ, True/False, Short answer)
-   - Start/end date
-   - Duration
-   - Optional question shuffling
-   - Content context prompt
-6. Review generated questions before publish:
-   - Edit question text/options/answer
-   - Delete questions
-7. Publish exam to students.
-8. View results and export exam + answer key as PDF.
-9. Open subject dashboard with analytics:
-   - Overview metrics
-   - Difficulty distribution
-   - Question performance
-   - Topic/lesson analysis
-   - Time trend
-   - Student performance split
-   - Exam-to-exam comparison
-   - Student score matrix with flagged missing/zero exams
+</div>
 
-### Student workflow
+---
 
-1. Sign in with Google and choose role.
-2. Join subjects with code (if subject is open).
-3. View exam status (upcoming/live/ended).
-4. Take live exam with:
-   - Timer
-   - Question navigation timeline
-   - Answer autosave to Realtime Database
-   - Full-screen immersive mode
-   - Screenshot protection
-   - Auto-finish if app stays in background for more than 2 minutes
-5. Submit and view results according to exam timing/rules.
-6. Leave subject when needed.
+## 🎯 What Makes It Different
 
-### Account/Profile features
+```
+✓ Create exams quickly using artificial intelligence
+✓ Simple and straightforward design without complexity
+✓ Robust security system during exams
+✓ Analytics that help improve assessment quality
+```
 
-- Profile analytics cards (teacher/student specific).
-- Save personal Gemini API key from profile.
-- Logout.
-- Delete account with related data cleanup.
+**Goal:** Deliver a faster experience for teachers, a fair experience for students, and complete administrative control at the platform level.
 
-### Notifications
+---
 
-- FCM topic-based notifications for:
-  - Subject join events
-  - Exam creation
-  - Exam submission
-  - Other app notifications
-- In-app notifications list with read-in/read-out states and badge count.
+## 👥 User Types
 
-## Technical Stack
+<table>
+<tr>
+<td width="33%" align="center">
 
-- Flutter + Dart
-- State management: `flutter_bloc` / Cubit
-- Routing: `go_router`
-- Cloud:
-  - Firestore (users, subjects, exams, notifications)
-  - Realtime Database (live exam session state)
-  - Firebase Messaging (push notifications)
-- AI:
-  - Gemini (`google_generative_ai`)
-  - OCR (`google_mlkit_text_recognition`)
-- Local storage: Hive
-- PDF export: `pdf` + `syncfusion_flutter_pdf`
-- Charts/analytics UI: `fl_chart`
+### 👨‍🏫 Teacher
 
-## Project Structure (high level)
+Create courses and exams, manage settings, track results
 
-- `lib/Features/login`: auth and role selection
-- `lib/Features/Subjects`: subjects listing/details/dashboard
-- `lib/Features/Exams/create_exam`: AI exam generation
-- `lib/Features/Exams/view_exam`: exam review/results view
-- `lib/Features/Exams/do_exam`: live exam runtime
-- `lib/Features/Notifications`: notifications page + cubit
-- `lib/Features/Profile`: profile, help, about, account actions
-- `lib/Core`: shared models, services, widgets, enums, storage
-- `lib/Config`: routes, themes, app/env config
+</td>
+<td width="33%" align="center">
 
-## Setup
+### 🎓 Student
 
-### Prerequisites
+Join courses, take exams, track results
 
-- Flutter SDK compatible with Dart `>=3.2.0 <4.0.0`
-- Firebase project (Firestore, Realtime Database, Messaging, Auth)
-- Android environment (project is currently configured for Android only)
+</td>
+<td width="33%" align="center">
 
-### 1) Install dependencies
+### 👨‍💼 Admin
+
+Manage the system, data, and users at the platform level
+
+</td>
+</tr>
+</table>
+
+> **Note:** The current app interface supports Teacher/Student selection for end users, while the Admin role exists within the scope of system and platform management.
+
+---
+
+## 👨‍🏫 Teacher Highlights
+
+<details open>
+<summary><b>📚 Courses & Exams</b></summary>
+
+- ✅ Create educational subjects (Open / Closed)
+- ✅ Create exams and link them to subjects
+- ✅ Review and edit questions before first publication only
+- ✅ Export exams as PDF
+
+</details>
+
+<details>
+<summary><b>⚙️ Flexible Exam Settings</b></summary>
+
+- 🎯 **Difficulty Level:** Easy / Medium / Hard
+- ⏰ **Timing:** Start and end time
+- 📝 **Questions:** Question types and quantities
+- 📎 **Content:** Link exam to content (PDF / Image / Text)
+
+</details>
+
+<details>
+<summary><b>📊 Analytics & Notifications</b></summary>
+
+- 📈 Analytical dashboard to track student results and overall performance
+- 🔔 Real-time notifications for important events within the course
+
+</details>
+
+---
+
+## 🎓 Student Highlights
+
+### 📚 Exam Experience
+
+- ➕ Quick access to courses and exams
+- ⏰ Take exams within the specified time
+- 📊 View results according to exam policy
+
+### 📝 Supported Question Types
+
+| Type | Description |
+|------|-------------|
+| **MCQ** | Multiple choice questions |
+| **True/False** | True or false questions |
+| **Essay** | Essay questions |
+
+### 🔐 Protection During Testing
+
+```
+🚫 Screenshot prevention on Android & iOS
+⏱️ 2-minute grace period when exiting the app
+⚠️ Automatic exam termination after grace period expires
+```
+
+---
+
+## 👨‍💼 Admin Highlights
+
+<div align="center">
+
+| Area | Description |
+|------|-------------|
+| 👥 **Users** | Manage users and roles |
+| 📚 **Content** | Manage subjects and exams |
+| 📊 **Data** | Monitor platform-wide data |
+| ⚙️ **Settings** | Control system settings and plans |
+
+</div>
+
+---
+
+## 🔐 Security and Authentication
+
+<div align="center">
+
+```mermaid
+graph LR
+    A[Google Sign-In] --> B[Firebase Auth]
+    B --> C[Identity & Data Flow]
+    C --> D[Exam Session Protection]
+```
+
+</div>
+
+- 🔑 Login via **Google Sign-In**
+- 🔥 Firebase-based identity and data flow
+- 🛡️ Exam session protection to reduce cheating and leaks
+
+---
+
+## 🤖 AI Engine
+
+<div align="center">
+
+### Powered by **Gemini 2.5 Flash** ⚡
+
+</div>
+
+#### 🎯 Use Cases
+
+- 💡 Support question generation from content
+- 📝 Essay answer analysis
+
+#### ⚙️ Flexibility
+
+```yaml
+Default Model: gemini-2.5-flash
+Custom API: Support for user API Key (from profile)
+```
+
+---
+
+## 💎 SaaS Plans
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+### 🆓 Free Plan
+
+**For Basic Use**
+
+Limited features suitable for personal use
+
+</td>
+<td width="50%" align="center">
+
+### 👑 Pro Plan
+
+**For Professional Use**
+
+All advanced features and full support
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🌐 Web Version
+
+> **Landing Page Only**
+
+<div align="center">
+
+| Features | Description |
+|----------|-------------|
+| ℹ️ **Introduction** | Introduce the app |
+| ✨ **Showcase** | Display features |
+| 📱 **Conversion** | Direct users to download the app |
+
+**❌ Does not include exam execution or Dashboard**
+
+</div>
+
+---
+
+## 📱 Screens
+
+> Add images inside `assets/screens/` then link them here
+
+<details>
+<summary><b>View All Screens (Click to Expand)</b></summary>
+
+### 🎨 General Flow
+
+| Screen | Path |
+|--------|------|
+| **Login** | `assets/screens/Login1.jpg` |
+| **Login** | `assets/screens/Login3.jpg` |
+| **Login** | `assets/screens/Login2.jpg` |
+| **Choose Role** | `assets/screens/choose_role.jpg` |
+
+### 📚 Main Screens
+
+| Screen | Path |
+|--------|------|
+| **Subjects** | `assets/screens/subjects.jpg` |
+| **Subject Details** | `assets/screens/subject_details.jpg` |
+| **Create Exam** | `assets/screens/create_exam.jpg` |
+
+### 🎓 Exam Screens
+
+| Screen | Path |
+|--------|------|
+| **Do Exam** | `assets/screens/do_exam.jpg` |
+| **Exam Result** | `assets/screens/exam_result.jpg` |
+
+### ⚙️ Common Screens
+
+| Screen | Path |
+|--------|------|
+| **Dashboard** | `assets/screens/dashboard.jpg` |
+| **Notifications** | `assets/screens/notifications.jpg` |
+| **Profile** | `assets/screens/profile.jpg` |
+
+</details>
+
+---
+
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+### Frontend
+
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+
+### Backend & Services
+
+![Firebase Auth](https://img.shields.io/badge/Firebase_Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Firestore](https://img.shields.io/badge/Cloud_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Realtime DB](https://img.shields.io/badge/Realtime_Database-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![FCM](https://img.shields.io/badge/FCM-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+
+### State Management
+
+![BLoC](https://img.shields.io/badge/BLoC-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+![Cubit](https://img.shields.io/badge/Cubit-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+
+### AI & Tools
+
+![Gemini AI](https://img.shields.io/badge/Gemini_API-8E75B2?style=for-the-badge&logo=google&logoColor=white)
+![PDF](https://img.shields.io/badge/PDF-FF0000?style=for-the-badge&logo=adobe&logoColor=white)
+![OCR](https://img.shields.io/badge/OCR-4285F4?style=for-the-badge&logo=google&logoColor=white)
+
+</div>
+
+---
+
+## 🚀 Quick Setup
+
+### 1️⃣ Requirements
+
+```bash
+✓ Flutter 3.38.9 (stable) or compatible
+✓ Dart 3.10.x
+✓ Firebase project configured
+```
+
+### 2️⃣ Install dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 2) Create environment file
+### 3️⃣ Environment file
 
-Copy `.env.example` to `.env` and fill values:
+Copy `.env.example` to `.env` and fill in the values:
 
 ```env
 GOOGLE_WEB_CLIENT_ID=
 FCM_PROJECT_ID=
-FCM_SERVICE_ACCOUNT_PATH=assets/service_account.json
+FCM_SERVICE_ACCOUNT_PATH=
 GEMINI_FALLBACK_API_KEY=
 ```
 
-### 3) Firebase configuration
+### 4️⃣ Firebase files
 
-- Ensure `lib/firebase_options.dart` matches your Firebase project.
-- Add service account JSON file at `assets/service_account.json` (or update the env path).
-- Ensure Google Sign-In is enabled in Firebase/Auth and Android SHA keys are configured.
+<table>
+<tr>
+<td width="50%">
 
-### 4) Run app
+**Android**
+
+```
+android/app/google-services.json
+```
+
+</td>
+<td width="50%">
+
+**iOS**
+
+```
+ios/Runner/GoogleService-Info.plist
+```
+
+</td>
+</tr>
+</table>
+
+**Generated options:**
+
+```
+lib/firebase_options.dart
+```
+
+### 5️⃣ Run
 
 ```bash
 flutter run
 ```
 
-### 5) Release build (Android)
+---
 
-```bash
-flutter build apk --release
-```
+## 📊 Project Status
 
-## Data Collections (Firestore)
+<div align="center">
 
-- `Users`
-- `Subjects`
-- `Subjects/{subjectId}/Exams`
-- `Notification`
+### ✅ Ready for Publish
 
-## Rebranding / resale quick-edit points
+![Progress](https://img.shields.io/badge/Progress-98%25-brightgreen?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Ready-success?style=for-the-badge)
 
-- App name: `lib/Config/app_config.dart` and `android/app/src/main/AndroidManifest.xml`
-- Theme/colors: `lib/Core/Resources/app_colors.dart`
-- Typography/icons: `lib/Core/Resources/app_fonts.dart`, `lib/Core/Resources/app_icons.dart`
-- Routes/navigation: `lib/Config/Routes/*`
-- Static app text: `lib/Core/Resources/strings.dart`
+</div>
 
-## Current Scope Notes
+#### ✔️ Completed
 
-- Supported roles now: Teacher and Student.
-- Google sign-in is the active login flow.
-- Firebase options for iOS/web/desktop are not configured in this repo.
+- ✅ All core features implemented
+- ✅ Firebase integration complete
+- ✅ AI engine integrated
+- ✅ Security system active
+- ✅ UI/UX finalized
+
+#### 🔄 Remaining Work
+
+- 🔧 Minor polishing
+- 📱 Store assets finalization
+
+---
+
+</div>
