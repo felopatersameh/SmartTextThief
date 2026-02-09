@@ -8,6 +8,7 @@ import '../../Config/Routes/app_router.dart';
 import '../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../Profile/Persentation/cubit/profile_cubit.dart';
 import '../../Core/Utils/Enums/enum_user.dart';
+import '../login/Persentation/Widgets/sections/background_container.dart';
 import 'loading_indicator.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -28,7 +29,9 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    _navigateToMainScreen();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToMainScreen();
+    });
   }
 
   Future<void> _navigateToMainScreen() async {
@@ -46,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
       _updateProgress(0.2);
 
       if (id.isEmpty || !isLoggedIn) {
-        if (mounted) AppRouter.pushToLogin(context);
+        _navigateSafely(AppRouter.pushToLogin);
         return;
       }
 
@@ -55,13 +58,11 @@ class _SplashScreenState extends State<SplashScreen>
       if (!mounted) return;
       final user = await context.read<ProfileCubit>().init();
       if (user.userId == "-#") {
-        if (!mounted) return;
-        AppRouter.pushToLogin(context);
+        _navigateSafely(AppRouter.pushToLogin);
         return;
       }
       if (user.userType == UserType.non) {
-        if (!mounted) return;
-        AppRouter.pushToChooseRole(context);
+        _navigateSafely(AppRouter.pushToChooseRole);
         return;
       }
       await _smoothProgressUpdate(0.4, .7, 5);
@@ -75,14 +76,18 @@ class _SplashScreenState extends State<SplashScreen>
 
       await _smoothProgressUpdate(0.7, 1.0, 2);
 
-      if (mounted) {
-        AppRouter.pushToMainScreen(context);
-      }
+      _navigateSafely(AppRouter.pushToMainScreen);
     } catch (e) {
-      if (mounted) {
-        AppRouter.pushToLogin(context);
-      }
+      _navigateSafely(AppRouter.pushToLogin);
     }
+  }
+
+  void _navigateSafely(void Function(BuildContext) action) {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      action(context);
+    });
   }
 
   void _updateProgress(double value) {
@@ -108,8 +113,13 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(child: LoadingIndicator(controller: _controller)),
+      body: Stack(
+        children: [
+           const Positioned.fill(child: BackgroundContainer()),
+          SafeArea(
+            child: Center(child: LoadingIndicator(controller: _controller)),
+          ),
+        ],
       ),
     );
   }

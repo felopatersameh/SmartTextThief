@@ -112,11 +112,4 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       ),
     );
   }
-
-  @override
-  Future<void> close() async {
-    await _subscription?.cancel();
-    emit(NotificationsState());
-    return super.close();
-  }
 }

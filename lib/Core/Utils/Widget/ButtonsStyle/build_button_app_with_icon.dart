@@ -12,17 +12,25 @@ class BuildButtonAppWithIcon extends StatelessWidget {
     this.textStyle,
     required this.textIcon,
     required this.iconErrorBuilder,
+    this.width,
+    this.height,
+    this.backgroundColor,
+    this.borderColor,
   });
   final String text;
   final String textIcon;
   final Icon iconErrorBuilder;
   final VoidCallback actions;
   final TextStyle? textStyle;
+  final double? width;
+  final double? height;
+  final Color? backgroundColor;
+  final Color? borderColor;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 320.w,
-      height: 50.h,
+      width: width ?? double.infinity,
+      height: height ?? 50.h,
       child: OutlinedButton.icon(
         onPressed: actions,
         icon: Image.asset(
@@ -38,10 +46,15 @@ class BuildButtonAppWithIcon extends StatelessWidget {
           textStyle: textStyle ?? AppTextStyles.bodyMediumSemiBold,
         ),
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: Colors.grey.shade700, width: 1),
+          backgroundColor: backgroundColor,
+          side: BorderSide(
+            color: borderColor ?? Colors.grey.shade700,
+            width: 1,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.r),
           ),
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
         ),
       ),
     );
