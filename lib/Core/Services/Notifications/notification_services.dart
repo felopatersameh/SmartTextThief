@@ -1,18 +1,20 @@
 import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:dio/dio.dart';
+
 import '../../../Config/env_config.dart';
-import '../Firebase/firebase_service.dart';
 import '../../LocalStorage/get_local_storage.dart';
-import '../../Utils/Enums/collection_key.dart';
 import '../../LocalStorage/local_storage_keys.dart';
 import '../../LocalStorage/local_storage_service.dart';
+import '../../Utils/Enums/collection_key.dart';
 import '../../Utils/Enums/data_key.dart';
-import 'notification_model.dart';
+import '../Firebase/firebase_service.dart';
 import 'flutter_local_notifications.dart';
+import 'notification_model.dart';
 
 class NotificationServices {
   static final FirebaseMessaging _firebaseMessaging =
@@ -23,44 +25,34 @@ class NotificationServices {
   static Function(RemoteMessage)? onMessageCallback;
 
   static Future<void> initFCM() async {
+    await LocalNotificationService.initialize();
     await _firebaseMessaging.requestPermission();
-    final tokenFCM = await _firebaseMessaging.getToken();
-    //debugPrint("✅ tokenFCM:: $tokenFCM");
 
+    final tokenFCM = await _firebaseMessaging.getToken();
     final tokenIn = await LocalStorageService.getValue(
       LocalStorageKeys.tokenFCM,
       defaultValue: null,
     );
 
-    if (tokenIn == null ||
-        tokenIn == '' && tokenFCM.toString() != tokenIn.toString()) {
+    if (tokenFCM != null &&
+        (tokenIn == null || tokenIn.toString() != tokenFCM)) {
       await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
     }
 
-    FirebaseMessaging.onMessageOpenedApp.listen((onData) async {
-      //debugPrint("📲 onMessageOpenedApp:: ${message.notification?.toMap()}");
-      //debugPrint("📲 data:: ${message.data}");
-      final NotificationModel message = NotificationModel.fromJson(onData.data);
-
-      if (message.topicId.isEmpty) {
-        onMessageOpenedAppCallback!(false);
-      } else {
-        onMessageOpenedAppCallback!(true);
-      }
+    FirebaseMessaging.onMessageOpenedApp.listen((onData) {
+      final message = NotificationModel.fromJson(onData.data);
+      onMessageOpenedAppCallback?.call(message.topicId.isNotEmpty);
     });
 
     FirebaseMessaging.onMessage.listen((onData) async {
-      //debugPrint("📥 onMessage:: ${message.notification?.toMap()}");
-      //debugPrint("📥 data:: ${message.data}");
-      final NotificationModel message = NotificationModel.fromJson(onData.data);
+      final message = NotificationModel.fromJson(onData.data);
 
       await LocalNotificationService.showNotification(
-        title: message.body,
-        body: "",
+        title: message.title,
+        body: message.body,
       );
-      if (onMessageCallback != null) {
-        onMessageCallback!(onData);
-      }
+
+      onMessageCallback?.call(onData);
     });
   }
 
@@ -73,21 +65,12 @@ class NotificationServices {
         DataKey.subscribedTopics.key: FieldValue.arrayUnion([topic]),
       },
     );
-    // log("response subscribeToTopic  ::${response.toJson()}");
+
     if (!response.status) return;
     await _firebaseMessaging.subscribeToTopic(topic);
   }
 
   static Future<void> unSubscribeToTopic(String topic) async {
-    // final id = GetLocalStorage.getIdUser();
-    // final response = await FirebaseServices.instance.updateData(
-    //   CollectionKey.notification.key,
-    //   id,
-    //   {
-    //     DataKey.subscribedTopics.key: FieldValue.arrayRemove([topic]),
-    //   },
-    // );
-    // if (!response.status) return;
     await _firebaseMessaging.unsubscribeFromTopic(topic);
   }
 
@@ -95,19 +78,16 @@ class NotificationServices {
     final jsonStr = await rootBundle.loadString(
       EnvConfig.fcmServiceAccountPath,
     );
-    // log("jsonStr:: $jsonStr");
     return ServiceAccountCredentials.fromJson(jsonStr);
   }
 
   static Future<String> _getAccessToken() async {
     final credentials = await _loadServiceAccount();
-    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+    const scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
     final authClient = await clientViaServiceAccount(credentials, scopes);
-    // log("authClient:: ${authClient.credentials.accessToken.data}");
     return authClient.credentials.accessToken.data;
   }
 
-  /// Send notification to specific tokens
   static Future<void> sendNotificationToTokens({
     required List<String> tokens,
     required Map<String, dynamic> payloadData,
@@ -118,23 +98,23 @@ class NotificationServices {
 
     for (final token in tokens) {
       final payload = {
-        "message": {
-          "token": token,
-          "notification": {
-            "title": payloadData['title'],
-            "body": payloadData['body'],
-            if (payloadData['image'] != null) "image": payloadData['image'],
+        'message': {
+          'token': token,
+          'notification': {
+            'title': payloadData['title'],
+            'body': payloadData['body'],
+            if (payloadData['image'] != null) 'image': payloadData['image'],
           },
-          "data": {
-            "click_action": "FLUTTER_NOTIFICATION_CLICK",
-            "status": "done",
-            ...payloadData['data'] ?? {},
+          'data': {
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'status': 'done',
+            ...?payloadData['data'],
           },
         },
       };
 
       try {
-        final response = await _dio.post(
+        await _dio.post(
           'https://fcm.googleapis.com/v1/projects/$projectId/messages:send',
           options: Options(
             headers: {
@@ -144,21 +124,10 @@ class NotificationServices {
           ),
           data: jsonEncode(payload),
         );
-
-        if (response.statusCode == 200) {
-          // debugPrint('✅ Notification sent to token');
-        } else {
-          // debugPrint(
-          // '❌ Error sending notification: ${response.statusCode} - ${response.data}',
-          // );
-        }
-      } catch (e) {
-        // debugPrint('❌ Dio error: $e');
-      }
+      } catch (_) {}
     }
   }
 
-  /// Send notification to a topic
   static Future<bool> sendNotificationToTopic({
     String? image,
     String? id,
@@ -169,18 +138,27 @@ class NotificationServices {
       final accessToken = await _getAccessToken();
       final projectId = EnvConfig.fcmProjectId;
       if (projectId.isEmpty) return false;
-      final String id0 = id ?? data?['id'];
+
+      final topic = data?[DataKey.topicId.key]?.toString() ?? '';
+      if (topic.isEmpty) return false;
+
+      final candidateId = (id ?? data?['id'])?.toString().trim();
+      final notificationId = (candidateId == null || candidateId.isEmpty)
+          ? DateTime.now().millisecondsSinceEpoch.toString()
+          : candidateId;
+
       final payload = {
-        "message": {
-          "topic": data?[DataKey.topicId.key],
-          "notification": {
-            "title": stringData?['titleTopic'] ?? "No Title",
-            "body": stringData?['body'] ?? "No Body",
-            if (image != null) "image": image,
+        'message': {
+          'topic': topic,
+          'notification': {
+            'title':
+                stringData?['title'] ?? stringData?['titleTopic'] ?? 'No Title',
+            'body': stringData?['body'] ?? 'No Body',
+            if (image != null) 'image': image,
           },
-          "data": {
-            "click_action": "FLUTTER_NOTIFICATION_CLICK",
-            "status": "done",
+          'data': {
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'status': 'done',
             ...?stringData,
           },
         },
@@ -197,22 +175,22 @@ class NotificationServices {
         data: jsonEncode(payload),
       );
 
-      if (response.statusCode == 200) {
-        //debugPrint('✅ Notification sent to topic: $topic');
-        FirebaseServices.instance.addData(
-          CollectionKey.notification.key,
-          id0,
-          data ?? {},
-        );
-        return true;
-      } else {
-        //debugPrint(
-        // '❌ Error sending to topic: ${response.statusCode} - ${response.data}',
-        // );
+      if (response.statusCode != 200) {
         return false;
       }
-    } catch (e) {
-      //debugPrint('❌ Error sending notification to topic: $e');
+
+      final notificationData = <String, dynamic>{
+        ...?data,
+        'id': notificationId,
+      };
+
+      await FirebaseServices.instance.addData(
+        CollectionKey.notification.key,
+        notificationId,
+        notificationData,
+      );
+      return true;
+    } catch (_) {
       return false;
     }
   }

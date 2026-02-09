@@ -1,39 +1,72 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import '../../../Config/env_config.dart';
 import '../../Utils/Enums/collection_key.dart';
+import 'Logic/firebase_service_error_handler.dart';
+import 'Logic/firebase_service_logic.dart';
 import 'response_model.dart';
-import 'failure_model.dart';
-
-// Comment out all log statements to disable logging
 
 class FirebaseServices {
   FirebaseServices._();
 
   static final FirebaseServices _instance = FirebaseServices._();
-  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   static FirebaseServices get instance => _instance;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   FirebaseAuth? _auth;
   FirebaseFirestore? firestore;
+  FirebaseServiceLogic? _logic;
   bool _isInitialized = false;
 
   Future<void> initialize() async {
-    if (!_isInitialized) {
-      await Firebase.initializeApp();
-      _auth = FirebaseAuth.instance;
-      firestore = FirebaseFirestore.instance;
-      _isInitialized = true;
-      // log('TestFIrebaseServices::: Firebase services initialized.');
+    if (_isInitialized) return;
+
+    await Firebase.initializeApp();
+    _auth = FirebaseAuth.instance;
+    firestore = FirebaseFirestore.instance;
+    _logic = FirebaseServiceLogic(firestore!);
+    await _configureLocalCache();
+
+    _isInitialized = true;
+  }
+
+  Future<void> _configureLocalCache() async {
+    final db = firestore;
+    if (db == null) return;
+
+    try {
+      db.settings = const Settings(
+        persistenceEnabled: true,
+        cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+        
+      );
+    } catch (_) {
+      // Ignore if settings are already applied.
     }
   }
 
-  //* Authentication
+  FirebaseServiceLogic get _db {
+    final logic = _logic;
+    if (logic != null) return logic;
+
+    final db = firestore;
+    if (db == null) {
+      throw StateError(
+        'FirebaseServices is not initialized. Call initialize() first.',
+      );
+    }
+
+    _logic = FirebaseServiceLogic(db);
+    return _logic!;
+  }
+
   Future<ResponseModel> loginAccount(String email, String password) async {
     try {
-      UserCredential userCredential = await _auth!.signInWithEmailAndPassword(
+      final userCredential = await _auth!.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -41,19 +74,16 @@ class FirebaseServices {
         message: 'Login successfully',
         data: userCredential.user?.uid,
       );
-    } on FirebaseAuthException catch (signInError) {
-      final failure = FailureModel(
-        message: 'Firebase Authentication Error during sign in',
-        error: signInError,
+    } on FirebaseAuthException catch (error) {
+      return FirebaseServiceErrorHandler.authError(
+        'Firebase Authentication Error during sign in',
+        error,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
-    } catch (e) {
-      // log(e.toString());
-      final failure = FailureModel(
-        message: 'An unexpected error occurred during login',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'An unexpected error occurred during login',
+        error,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 
@@ -62,26 +92,18 @@ class FirebaseServices {
     String id,
   ) async {
     try {
-      final userid = id;
-
-      final response = await addData(CollectionKey.users.key, userid, account);
+      final response = await addData(CollectionKey.users.key, id, account);
       return response.copyWith(message: 'Account created successfully');
-    } on FirebaseAuthException catch (createError) {
-      final failure = FailureModel(
-        message: 'Firebase Authentication Error during account creation',
-        error: createError,
+    } on FirebaseAuthException catch (error) {
+      return FirebaseServiceErrorHandler.authError(
+        'Firebase Authentication Error during account creation',
+        error,
       );
-      // log('TestFIrebaseServices::: Error creating user: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'An unexpected error occurred during account creation',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'An unexpected error occurred during account creation',
+        error,
       );
-      // log(
-      //   'TestFIrebaseServices::: An unexpected error occurred during account creation: ${failure.toString()}',
-      // );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 
@@ -90,14 +112,13 @@ class FirebaseServices {
     await _googleSignIn.initialize(
       clientId: webClientId.isEmpty ? null : webClientId,
     );
-    final GoogleSignInAccount googleAccount =
-        await _googleSignIn.authenticate();
 
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        googleAccount.authentication;
-    final OAuthCredential credential = GoogleAuthProvider.credential(
-      idToken: googleSignInAuthentication.idToken,
+    final googleAccount = await _googleSignIn.authenticate();
+    final googleAuth = googleAccount.authentication;
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
     );
+
     await FirebaseAuth.instance.signInWithCredential(credential);
     return googleAccount;
   }
@@ -106,27 +127,34 @@ class FirebaseServices {
     await _auth?.signOut();
     await _googleSignIn.signOut();
     _isInitialized = false;
+    _logic = null;
   }
-  //================================================================================================
-  //* Add / Get / Update / Delete Data
 
   Future<ResponseModel> checkIsExists(
     String field,
     String collectionName,
     String search,
   ) async {
-    final QuerySnapshot querySnapshot = await firestore!
-        .collection(collectionName)
-        .where(field, isEqualTo: search)
-        .get();
-    // log('checkUserExists::: ${querySnapshot.docs.length}');
-    if (querySnapshot.docs.isNotEmpty) {
+    try {
+      final querySnapshot = await firestore!
+          .collection(collectionName)
+          .where(field, isEqualTo: search)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        return ResponseModel.error(message: 'does not exist');
+      }
+
       return ResponseModel.success(
         message: 'exists',
         data: querySnapshot.docs.first.id,
       );
-    } else {
-      return ResponseModel.error(message: 'does not exist');
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error checking document existence',
+        error,
+      );
     }
   }
 
@@ -138,38 +166,24 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      // Start with the DocumentReference to the main collection and the provided documentId
-      DocumentReference docRef =
-          firestore!.collection(mainCollectionName).doc(mainDocumentId);
+      final docRef = _db.resolveDocumentReference(
+        mainCollectionName: mainCollectionName,
+        mainDocumentId: mainDocumentId,
+        subCollections: subCollections,
+        subIds: subIds,
+        allowAutoGeneratedSubIds: true,
+      );
 
-      // If subCollections are provided, traverse into them one by one
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final subCollection = subCollections[i];
-          final subId =
-              (subIds != null && subIds.length > i) ? subIds[i] : null;
-
-          // Get the CollectionReference under the current docRef
-          final CollectionReference colRef = docRef.collection(subCollection);
-
-          // If a subId is provided, use it; otherwise, generate a new doc
-          docRef = (subId != null && subId.isNotEmpty)
-              ? colRef.doc(subId)
-              : colRef.doc();
-        }
-      }
-
-      // Write the data to the final docRef (either the main document or within a subCollections)
       await docRef.set(data);
-
-      // Return the main documentId as requested
       return ResponseModel.success(
         message: 'Data added successfully',
         data: mainDocumentId,
       );
-    } catch (e) {
-      final failure = FailureModel(message: 'Error adding data', error: e);
-      return ResponseModel.error(message: failure.message, failure: failure);
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error adding data',
+        error,
+      );
     }
   }
 
@@ -180,28 +194,20 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      DocumentReference docRef =
-          firestore!.collection(mainCollectionName).doc(documentId);
-
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final subCollection = subCollections[i];
-          final subId =
-              (subIds != null && subIds.length > i) ? subIds[i] : null;
-          final CollectionReference colRef = docRef.collection(subCollection);
-          docRef = (subId != null && subId.isNotEmpty)
-              ? colRef.doc(subId)
-              : colRef.doc();
-        }
-      }
+      final docRef = _db.resolveDocumentReference(
+        mainCollectionName: mainCollectionName,
+        mainDocumentId: documentId,
+        subCollections: subCollections,
+        subIds: subIds,
+      );
 
       await docRef.delete();
-      // log('TestFirebaseServices:::Document $documentId removed from $mainCollectionName');
       return ResponseModel.success(message: 'Data removed successfully');
-    } catch (e) {
-      final failure = FailureModel(message: 'Error removing data', error: e);
-      // log('TestFirebaseServices:::Error removing data: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error removing data',
+        error,
+      );
     }
   }
 
@@ -213,31 +219,20 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      DocumentReference docRef =
-          firestore!.collection(mainCollectionName).doc(documentId);
+      final docRef = _db.resolveDocumentReference(
+        mainCollectionName: mainCollectionName,
+        mainDocumentId: documentId,
+        subCollections: subCollections,
+        subIds: subIds,
+      );
 
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final subCollection = subCollections[i];
-          final subId =
-              (subIds != null && subIds.length > i) ? subIds[i] : null;
-          final CollectionReference colRef = docRef.collection(subCollection);
-
-          docRef = (subId != null && subId.isNotEmpty)
-              ? colRef.doc(subId)
-              : colRef.doc();
-        }
-      }
-
-      // log('updateData:: Updating document at path: ${docRef.path} with data: $data');
       await docRef.update(data);
-      // log('updateData:: Document updated successfully');
-
       return ResponseModel.success(message: 'Updated successfully');
-    } catch (e) {
-      final failure = FailureModel(message: 'Error updating data', error: e);
-      // log('updateData:: Error updating data: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error updating data',
+        error,
+      );
     }
   }
 
@@ -248,35 +243,27 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      DocumentReference docRef =
-          firestore!.collection(mainCollectionName).doc(documentId);
+      final docRef = _db.resolveDocumentReference(
+        mainCollectionName: mainCollectionName,
+        mainDocumentId: documentId,
+        subCollections: subCollections,
+        subIds: subIds,
+      );
 
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final subCollection = subCollections[i];
-          final subId =
-              (subIds != null && subIds.length > i) ? subIds[i] : null;
-          final CollectionReference colRef = docRef.collection(subCollection);
-          docRef = (subId != null && subId.isNotEmpty)
-              ? colRef.doc(subId)
-              : colRef.doc();
-        }
-      }
-
-      final documentSnapshot = await docRef.get();
-
-      if (documentSnapshot.exists) {
-        return ResponseModel.success(
-          message: 'Data retrieved successfully',
-          data: documentSnapshot.data(),
-        );
-      } else {
+      final snapshot = await docRef.get();
+      if (!snapshot.exists) {
         return ResponseModel.error(message: 'No data found', data: null);
       }
-    } catch (e) {
-      final failure = FailureModel(message: 'Error getting data', error: e);
-      // log('TestFirebaseServices:::Error getting data: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
+
+      return ResponseModel.success(
+        message: 'Data retrieved successfully',
+        data: snapshot.data(),
+      );
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error getting data',
+        error,
+      );
     }
   }
 
@@ -287,56 +274,28 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      // Always start from the main document
-      DocumentReference<Map<String, dynamic>> docRef =
-          firestore!.collection(mainCollectionName).doc(documentId);
+      final collectionRef = _db.resolveCollectionForGetAllData(
+        mainCollectionName: mainCollectionName,
+        mainDocumentId: documentId,
+        subCollections: subCollections,
+        subIds: subIds,
+      );
 
-      // Initialize targetCollection with a default value (to satisfy null safety)
-      CollectionReference<Map<String, dynamic>> targetCollection =
-          docRef.collection(mainCollectionName);
-
-      // If there are subCollections, traverse until the last one
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final subCollection = subCollections[i];
-          final subId =
-              (subIds != null && subIds.length > i) ? subIds[i] : null;
-
-          final currentCollection = docRef.collection(subCollection);
-
-          if (i == subCollections.length - 1) {
-            // The last collection is the one we’ll get all docs from
-            targetCollection = currentCollection;
-          }
-
-          if (subId != null && subId.isNotEmpty) {
-            docRef = currentCollection.doc(subId);
-          }
-        }
-      } else {
-        // No subCollections, so get all documents directly under the main document
-        targetCollection = docRef.collection(mainCollectionName);
-      }
-
-      // Fetch all documents from the target collection
-      final querySnapshot = await targetCollection.get();
-
+      final querySnapshot = await collectionRef.get();
       final results = querySnapshot.docs.map((doc) => doc.data()).toList();
 
-      // log('TestFirebaseServices::: Successfully retrieved all data from $mainCollectionName/$documentId');
-      // log('results::: $results');
       return ResponseModel.success(
         message: 'Data retrieved successfully',
         data: results,
       );
-    } catch (e) {
-      final failure = FailureModel(message: 'Error getting data', error: e);
-      // log('TestFirebaseServices::: Error getting all data: ${failure.toString()}');
-      return ResponseModel.error(message: failure.message, failure: failure);
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error getting data',
+        error,
+      );
     }
   }
 
-  /// Generic query helpers by email field for any collection
   Future<ResponseModel> findDocsByField(
     String collectionName,
     String field, {
@@ -346,39 +305,33 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      CollectionReference<Map<String, dynamic>> ref = firestore!.collection(
-        collectionName,
+      final collectionRef = _db.resolveCollectionForQuery(
+        collectionName: collectionName,
+        subCollections: subCollections,
+        subIds: subIds,
       );
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
-          ref = id != null
-              ? ref.doc(id).collection(subCollections[i])
-              : ref.doc(subCollections[i]).collection(subCollections[i]);
-        }
-      }
-      Query<Map<String, dynamic>> query = ref.where(
-        nameField,
-        isEqualTo: field,
-      );
+
+      Query<Map<String, dynamic>> query =
+          collectionRef.where(nameField, isEqualTo: field);
+
       if (limit != null && limit > 0) {
         query = query.limit(limit);
       }
-      final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-      final List<Map<String, dynamic>> results =
-          snapshot.docs.map((d) => d.data()).toList();
+
+      final snapshot = await query.get();
+      final results = snapshot.docs.map(_withDocumentId).toList();
+
       return ResponseModel.success(
         message: results.isEmpty
             ? 'No documents found for $field in $collectionName'
             : 'Found ${results.length} documents',
         data: results,
       );
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error querying $collectionName by $nameField',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error querying $collectionName by $nameField',
+        error,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 
@@ -391,39 +344,33 @@ class FirebaseServices {
     List<String>? subIds,
   }) async {
     try {
-      CollectionReference<Map<String, dynamic>> ref = firestore!.collection(
-        collectionName,
+      final collectionRef = _db.resolveCollectionForQuery(
+        collectionName: collectionName,
+        subCollections: subCollections,
+        subIds: subIds,
       );
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
-          ref = id != null
-              ? ref.doc(id).collection(subCollections[i])
-              : ref.doc(subCollections[i]).collection(subCollections[i]);
-        }
-      }
-      Query<Map<String, dynamic>> query = ref.where(
-        nameField,
-        arrayContains: field,
-      );
+
+      Query<Map<String, dynamic>> query =
+          collectionRef.where(nameField, arrayContains: field);
+
       if (limit != null && limit > 0) {
         query = query.limit(limit);
       }
-      final QuerySnapshot<Map<String, dynamic>> snapshot = await query.get();
-      final List<Map<String, dynamic>> results =
-          snapshot.docs.map((d) => d.data()).toList();
+
+      final snapshot = await query.get();
+      final results = snapshot.docs.map(_withDocumentId).toList();
+
       return ResponseModel.success(
         message: results.isEmpty
             ? 'No documents found for $field in $collectionName'
             : 'Found ${results.length} documents',
         data: results,
       );
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error querying $collectionName by $nameField',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error querying $collectionName by $nameField',
+        error,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 
@@ -436,28 +383,21 @@ class FirebaseServices {
     List<String>? subIds,
   }) {
     try {
-      CollectionReference<Map<String, dynamic>> ref = firestore!.collection(
-        collectionName,
+      final collectionRef = _db.resolveCollectionForQuery(
+        collectionName: collectionName,
+        subCollections: subCollections,
+        subIds: subIds,
       );
-      if (subCollections != null && subCollections.isNotEmpty) {
-        for (int i = 0; i < subCollections.length; i++) {
-          final id = (subIds != null && subIds.length > i) ? subIds[i] : null;
-          ref = id != null
-              ? ref.doc(id).collection(subCollections[i])
-              : ref.doc(subCollections[i]).collection(subCollections[i]);
-        }
-      }
-      Query<Map<String, dynamic>> query = ref.where(
-        nameField,
-        isEqualTo: field,
-      );
+
+      Query<Map<String, dynamic>> query =
+          collectionRef.where(nameField, isEqualTo: field);
+
       if (limit != null && limit > 0) {
         query = query.limit(limit);
       }
 
       return query.snapshots().map((snapshot) {
-        final List<Map<String, dynamic>> results =
-            snapshot.docs.map((d) => d.data()).toList();
+        final results = snapshot.docs.map(_withDocumentId).toList();
         return ResponseModel.success(
           message: results.isEmpty
               ? 'No documents found for $field in $collectionName'
@@ -465,89 +405,77 @@ class FirebaseServices {
           data: results,
         );
       }).handleError((error) {
-        final failure = FailureModel(
-          message: 'Error streaming $collectionName by $nameField',
-          error: error,
-        );
-        return ResponseModel.error(
-          message: failure.message,
-          failure: failure,
+        return FirebaseServiceErrorHandler.operationError(
+          'Error streaming $collectionName by $nameField',
+          error,
         );
       });
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error setting up stream for $collectionName by $nameField',
-        error: e,
-      );
+    } catch (error) {
       return Stream.value(
-        ResponseModel.error(message: failure.message, failure: failure),
+        FirebaseServiceErrorHandler.operationError(
+          'Error setting up stream for $collectionName by $nameField',
+          error,
+        ),
       );
     }
   }
 
-  //================================================================================================
-  //* Verification
+  Map<String, dynamic> _withDocumentId(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = Map<String, dynamic>.from(doc.data());
+    data['id'] = doc.id;
+    return data;
+  }
 
   Future<ResponseModel> sendEmailVerification() async {
     try {
       final user = _auth!.currentUser;
-      if (user != null && !user.emailVerified) {
-        await user.sendEmailVerification();
-        return ResponseModel.success(message: 'Verification email sent.');
-      } else if (user != null && user.emailVerified) {
-        return ResponseModel.success(message: 'Email is already verified.');
-      } else {
+      if (user == null) {
         return ResponseModel.error(message: 'No user signed in.');
       }
-    } on FirebaseAuthException catch (e) {
-      final failure = FailureModel(
-        message: 'Error sending verification email',
-        error: e,
+
+      if (user.emailVerified) {
+        return ResponseModel.success(message: 'Email is already verified.');
+      }
+
+      await user.sendEmailVerification();
+      return ResponseModel.success(message: 'Verification email sent.');
+    } on FirebaseAuthException catch (error) {
+      return FirebaseServiceErrorHandler.authError(
+        'Error sending verification email',
+        error,
       );
-      // log(
-      //   'TestFIrebaseServices:::Error sending verification email: ${failure.toString()}',
-      // );
-      return ResponseModel.error(message: failure.message, failure: failure);
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Unexpected error sending verification email',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Unexpected error sending verification email',
+        error,
       );
-      // log(
-      //   'TestFIrebaseServices:::Unexpected error sending verification email: ${failure.toString()}',
-      // );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 
   Future<ResponseModel> isEmailVerified() async {
     final user = _auth!.currentUser;
-    if (user != null) {
-      await user.reload(); // Ensure we have the latest verification status
-      return ResponseModel.success(
-        message: 'Checked email verification status.',
-        data: user.emailVerified,
+    if (user == null) {
+      return ResponseModel.error(
+        message: 'No user signed in.',
+        data: false,
       );
-    } else {
-      return ResponseModel.error(message: 'No user signed in.', data: false);
     }
+
+    await user.reload();
+    return ResponseModel.success(
+      message: 'Checked email verification status.',
+      data: user.emailVerified,
+    );
   }
 
   Future<ResponseModel> sendPhoneVerification(String phoneNumber) async {
-    // log(
-    //   'TestFIrebaseServices:::Requesting phone verification for: $phoneNumber',
-    // );
     return ResponseModel.success(
       message: 'Phone verification initiated. Implement UI flow for OTP.',
     );
   }
 
-  //================================================================================================
-  // أضف هذه الدالة داخل class FirebaseServices
-
-  /// Add or update notification in user's notifications array
-  /// If notification with same ID exists, it will be updated
-  /// If not, it will be added
   Future<ResponseModel> addOrUpdateNotification(
     String userId,
     Map<String, dynamic> notificationData,
@@ -555,40 +483,29 @@ class FirebaseServices {
   ) async {
     try {
       final docRef = firestore!.collection(CollectionKey.users.key).doc(userId);
-
-      // Get current document
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {
         return ResponseModel.error(message: 'User document not found');
       }
 
-      // Get current notifications list
-      final data = docSnapshot.data();
-      List<dynamic> notifications = List.from(data?[notificationKey] ?? []);
-
-      // Get notification ID
       final notificationId = notificationData['id_notification'];
+      final data = docSnapshot.data();
+      final notifications = List<dynamic>.from(data?[notificationKey] ?? []);
 
-      // Remove old notification if exists
-      notifications.removeWhere((n) => n['id_notification'] == notificationId);
-
-      // Add new/updated notification
+      notifications.removeWhere((item) => item['id_notification'] == notificationId);
       notifications.add(notificationData);
 
-      // Update document
       await docRef.update({notificationKey: notifications});
-
       return ResponseModel.success(
         message: 'Notification updated successfully',
         data: notificationId,
       );
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error updating notification',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error updating notification',
+        error,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 
@@ -599,44 +516,31 @@ class FirebaseServices {
   ) async {
     try {
       final docRef = firestore!.collection(CollectionKey.users.key).doc(userId);
-
-      // Get current document
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {
         return ResponseModel.error(message: 'User document not found');
       }
 
-      // Get current notifications list
       final data = docSnapshot.data();
-      List<dynamic> notifications = List.from(data?[notificationKey] ?? []);
+      final notifications = List<dynamic>.from(data?[notificationKey] ?? []);
 
-      // Update each notification
       for (final notificationData in notificationsData) {
         final notificationId = notificationData['id_notification'];
-
-        // Remove old notification if exists
-        notifications.removeWhere(
-          (n) => n['id_notification'] == notificationId,
-        );
-
-        // Add new/updated notification
+        notifications.removeWhere((item) => item['id_notification'] == notificationId);
         notifications.add(notificationData);
       }
 
-      // Update document
       await docRef.update({notificationKey: notifications});
-
       return ResponseModel.success(
         message: 'Notifications updated successfully',
         data: notificationsData.length,
       );
-    } catch (e) {
-      final failure = FailureModel(
-        message: 'Error updating notifications',
-        error: e,
+    } catch (error) {
+      return FirebaseServiceErrorHandler.operationError(
+        'Error updating notifications',
+        error,
       );
-      return ResponseModel.error(message: failure.message, failure: failure);
     }
   }
 }

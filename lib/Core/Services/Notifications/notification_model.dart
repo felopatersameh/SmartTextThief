@@ -177,8 +177,12 @@ class NotificationModel extends Equatable {
       }
     }
 
+    final rawId = json['id']?.toString().trim();
+    final fallbackId =
+        '${json['topicId']}_${json['createdAt'] ?? json['updatedAt']}_${json['body']}';
+
     return NotificationModel._internal(
-      id: json['id']?.toString(),
+      id: (rawId == null || rawId.isEmpty) ? fallbackId : rawId,
       topicId: json['topicId']?.toString() ?? '',
       type: NotificationType.fromString(json['titleTopic']?.toString() ?? ''),
       body: json['body']?.toString() ?? '',
@@ -208,6 +212,7 @@ class NotificationModel extends Equatable {
     return {
       'id': _id,
       'topicId': _topicId,
+      'title': title,
       'titleTopic': _titleTopic.name,
       'body': _body,
       'createdAt': (_createdAt?.millisecondsSinceEpoch ??

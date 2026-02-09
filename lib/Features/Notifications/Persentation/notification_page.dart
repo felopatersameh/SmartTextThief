@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Config/app_config.dart';
@@ -14,10 +16,28 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
+  bool _isMarkingReadOut = false;
+
+  Future<void> _markAllAsReadOutIfNeeded(NotificationsState state) async {
+    if (_isMarkingReadOut || state.loading || state.notificationsList.isEmpty) {
+      return;
+    }
+
+    final hasUnread = state.notificationsList.any((item) => !item.readOut);
+    if (!hasUnread) return;
+
+    _isMarkingReadOut = true;
+    try {
+      await context.read<NotificationsCubit>().readout();
+    } finally {
+      _isMarkingReadOut = false;
+    }
+  }
+
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<NotificationsCubit>().readout();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_markAllAsReadOutIfNeeded(context.read<NotificationsCubit>().state));
     });
 
     super.initState();
@@ -27,7 +47,10 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(NameRoutes.notification.titleAppBar)),
-      body: BlocBuilder<NotificationsCubit, NotificationsState>(
+      body: BlocConsumer<NotificationsCubit, NotificationsState>(
+        listener: (context, state) {
+          unawaited(_markAllAsReadOutIfNeeded(state));
+        },
         builder: (context, state) {
           if (state.loading) {
             return const Center(child: CircularProgressIndicator());

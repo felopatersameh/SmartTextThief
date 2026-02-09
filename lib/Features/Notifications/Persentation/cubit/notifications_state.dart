@@ -1,6 +1,8 @@
 part of 'notifications_cubit.dart';
 
 class NotificationsState extends Equatable {
+  static const Object _noChange = Object();
+
   final bool loading;
   final List<NotificationModel> notificationsList;
   final int badgeCount;
@@ -23,7 +25,7 @@ class NotificationsState extends Equatable {
     int? badgeCount,
     List<String>? subscribedTopics,
     Map<String, StreamSubscription>? streamSubscriptions,
-    String? errorMessage,
+    Object? errorMessage = _noChange,
   }) {
     return NotificationsState(
       loading: loading ?? this.loading,
@@ -31,7 +33,9 @@ class NotificationsState extends Equatable {
       badgeCount: badgeCount ?? this.badgeCount,
       subscribedTopics: subscribedTopics ?? this.subscribedTopics,
       streamSubscriptions: streamSubscriptions ?? this.streamSubscriptions,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _noChange)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

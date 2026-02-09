@@ -3,21 +3,24 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  static bool _initialized = false;
 
   static Future<void> initialize() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
+    if (_initialized) return;
+
+    const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/launcher_icon');
 
-    const InitializationSettings initializationSettings =
+    const initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
     await _notificationsPlugin.initialize(
       settings: initializationSettings,
     );
 
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'high_importance_channel', // channel ID
-      'High Importance Notifications', // channel name
+    const channel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
       description: 'This channel is used for important notifications.',
       importance: Importance.high,
     );
@@ -26,15 +29,20 @@ class LocalNotificationService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
+
+    _initialized = true;
   }
 
   static Future<void> showNotification({
     required String title,
     required String body,
   }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'high_importance_channel', // must match channel ID
+    if (!_initialized) {
+      await initialize();
+    }
+
+    const androidDetails = AndroidNotificationDetails(
+      'high_importance_channel',
       'High Importance Notifications',
       channelDescription: 'This channel is used for important notifications.',
       importance: Importance.high,
@@ -44,7 +52,7 @@ class LocalNotificationService {
       icon: '@mipmap/launcher_icon',
     );
 
-    const NotificationDetails notificationDetails = NotificationDetails(
+    const notificationDetails = NotificationDetails(
       android: androidDetails,
     );
 
@@ -52,7 +60,7 @@ class LocalNotificationService {
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title: title,
       body: body,
-      notificationDetails: notificationDetails,
+     notificationDetails:  notificationDetails,
     );
   }
 }

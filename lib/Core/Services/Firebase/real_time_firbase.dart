@@ -1,176 +1,78 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'dart:async';
-// import 'dart:developer' as developer;
+
+import 'RealTimeLogic/real_time_firebase_logic.dart';
 
 class RealtimeFirebase {
-  static FirebaseDatabase? _database;
-  static final Map<String, StreamSubscription> _listeners = {};
-  static bool _initialized = false;
-  static bool _persistenceConfigured = false;
+  RealtimeFirebase._();
 
-  /// Initialize Firebase Realtime Database
-  /// Call this after Firebase.initializeApp() in main()
-  static Future<void> initialize({String? databaseURL}) async {
-    if (_initialized && _database != null) {
-      return;
-    }
-    _database = FirebaseDatabase.instanceFor(
-      app: Firebase.app(),
-      databaseURL: databaseURL,
-    );
-    await _configurePersistenceIfNeeded();
-    _initialized = true;
-    //developer\.log\('RealtimeFirebase initialized successfully');
+  static final RealtimeFirebaseLogic _logic = RealtimeFirebaseLogic();
+
+  static Future<void> initialize({String? databaseURL}) {
+    return _logic.initialize(databaseURL: databaseURL);
   }
 
-  /// Check if Firebase is initialized
-  static bool get isInitialized => _initialized && _database != null;
+  static bool get isInitialized => _logic.isInitialized;
 
-  /// Create a new record with auto-generated key
-  /// Returns the generated key
   static Future<String> create(
     String path,
     Map<String, dynamic> data, {
     String? id,
     Map<String, dynamic>? otherData,
-  }) async {
-    _checkInitialization();
-    DatabaseReference newRef;
-    try {
-      final ref = _database!.ref(path);
-      if (id != null && id.isNotEmpty) {
-        newRef = ref.child(id);
-      } else {
-        newRef = ref.push();
-      }
-
-      final dataWithTimestamps = {
-        ...data,
-        ...?otherData,
-        'id_live_exam': newRef.key,
-      };
-
-      await newRef.set(dataWithTimestamps);
-      return newRef.key!;
-    } catch (e) {
-      //developer\.log\('Create operation failed: $e');
-      throw Exception('Create operation failed: $e');
-    }
+  }) {
+    return _logic.create(
+      path,
+      data,
+      id: id,
+      otherData: otherData,
+    );
   }
 
-  /// Set data at specific path
-  static Future<void> setData(String path, Map<String, dynamic> data) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      final dataWithTimestamp = {...data};
-      await ref.set(dataWithTimestamp);
-    } catch (e) {
-      //developer\.log\('Set operation failed: $e');
-      throw Exception('Set operation failed: $e');
-    }
+  static Future<void> setData(String path, Map<String, dynamic> data) {
+    return _logic.setData(path, data);
   }
 
-  /// Get data from specific path
-  /// Returns null if data doesn't exist
-  static Future<dynamic> getData(String path) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      final snapshot = await ref.get();
-      return snapshot.exists ? snapshot.value : null;
-    } catch (e) {
-      //developer\.log\('Get operation failed: $e');
-      throw Exception('Get operation failed: $e');
-    }
+  static Future<dynamic> getData(String path) {
+    return _logic.getData(path);
   }
 
-  /// Update specific fields at path
   static Future<void> updateData(
     String path,
     Map<String, dynamic> updates, {
     Map<String, dynamic>? otherUpdates,
-  }) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      final updatesWithTimestamp = {
-        ...updates,
-        ...?otherUpdates,
-        'dispose_exam': 0,
-      };
-      await ref.update(updatesWithTimestamp);
-    } catch (e) {
-      //developer\.log\('Update operation failed: $e');
-      throw Exception('Update operation failed: $e');
-    }
+  }) {
+    return _logic.updateData(
+      path,
+      updates,
+      otherUpdates: otherUpdates,
+    );
   }
 
-  /// Delete data at specific path
-  static Future<void> deleteData(String path) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      await ref.remove();
-    } catch (e) {
-      //developer\.log\('Delete operation failed: $e');
-      throw Exception('Delete operation failed: $e');
-    }
+  static Future<void> deleteData(String path) {
+    return _logic.deleteData(path);
   }
 
-  /// Listen to real-time changes at path
-  /// Returns listener ID for managing the subscription
   static String listen(
     String path,
     Function(dynamic data, String? key) onData, {
     Function(Object error)? onError,
     String? listenerId,
   }) {
-    _checkInitialization();
-
-    final id = listenerId ?? '${path}_${DateTime.now().millisecondsSinceEpoch}';
-
-    try {
-      final ref = _database!.ref(path);
-      final subscription = ref.onValue.listen(
-        (event) {
-          final data = event.snapshot.exists ? event.snapshot.value : null;
-          onData(data, event.snapshot.key);
-        },
-        onError: (error) {
-          //developer\.log\('Listen operation failed: $error');
-          if (onError != null) {
-            onError(error);
-          }
-        },
-      );
-
-      _listeners[id] = subscription;
-      return id;
-    } catch (e) {
-      //developer\.log\('Listen setup failed: $e');
-      throw Exception('Listen setup failed: $e');
-    }
+    return _logic.listen(
+      path,
+      onData,
+      onError: onError,
+      listenerId: listenerId,
+    );
   }
 
-  /// Stop listening to specific path
-  static Future<void> unListen(String listenerId) async {
-    if (_listeners.containsKey(listenerId)) {
-      await _listeners[listenerId]!.cancel();
-      _listeners.remove(listenerId);
-    }
+  static Future<void> unListen(String listenerId) {
+    return _logic.unListen(listenerId);
   }
 
-  /// Stop all listeners
-  static Future<void> unlistenAll() async {
-    for (final subscription in _listeners.values) {
-      await subscription.cancel();
-    }
-    _listeners.clear();
+  static Future<void> unlistenAll() {
+    return _logic.unlistenAll();
   }
 
-  /// Query data with conditions
   static Future<dynamic> query(
     String path, {
     String? orderByChild,
@@ -181,49 +83,20 @@ class RealtimeFirebase {
     dynamic equalTo,
     int? limitToFirst,
     int? limitToLast,
-  }) async {
-    _checkInitialization();
-    try {
-      DatabaseReference ref = _database!.ref(path);
-      Query query = ref;
-
-      // Apply ordering
-      if (orderByChild != null) {
-        query = query.orderByChild(orderByChild);
-      } else if (orderByKey) {
-        query = query.orderByKey();
-      } else if (orderByValue) {
-        query = query.orderByValue();
-      }
-
-      // Apply filters
-      if (equalTo != null) {
-        query = query.equalTo(equalTo);
-      }
-      if (startAt != null) {
-        query = query.startAt(startAt);
-      }
-      if (endAt != null) {
-        query = query.endAt(endAt);
-      }
-
-      // Apply limits
-      if (limitToFirst != null) {
-        query = query.limitToFirst(limitToFirst);
-      }
-      if (limitToLast != null) {
-        query = query.limitToLast(limitToLast);
-      }
-
-      final snapshot = await query.get();
-      return snapshot.exists ? snapshot.value : null;
-    } catch (e) {
-      //developer\.log\('Query operation failed: $e');
-      throw Exception('Query operation failed: $e');
-    }
+  }) {
+    return _logic.query(
+      path,
+      orderByChild: orderByChild,
+      orderByKey: orderByKey,
+      orderByValue: orderByValue,
+      startAt: startAt,
+      endAt: endAt,
+      equalTo: equalTo,
+      limitToFirst: limitToFirst,
+      limitToLast: limitToLast,
+    );
   }
 
-  /// Listen to query results in real-time
   static String queryListen(
     String path,
     Function(dynamic data, String? key) onData, {
@@ -238,226 +111,73 @@ class RealtimeFirebase {
     Function(Object error)? onError,
     String? listenerId,
   }) {
-    _checkInitialization();
-
-    final id =
-        listenerId ?? 'query_${path}_${DateTime.now().millisecondsSinceEpoch}';
-
-    try {
-      DatabaseReference ref = _database!.ref(path);
-      Query query = ref;
-
-      // Apply same query logic as query method
-      if (orderByChild != null) {
-        query = query.orderByChild(orderByChild);
-      } else if (orderByKey) {
-        query = query.orderByKey();
-      } else if (orderByValue) {
-        query = query.orderByValue();
-      }
-
-      if (equalTo != null) {
-        query = query.equalTo(equalTo);
-      }
-      if (startAt != null) {
-        query = query.startAt(startAt);
-      }
-      if (endAt != null) {
-        query = query.endAt(endAt);
-      }
-      if (limitToFirst != null) {
-        query = query.limitToFirst(limitToFirst);
-      }
-      if (limitToLast != null) {
-        query = query.limitToLast(limitToLast);
-      }
-
-      final subscription = query.onValue.listen(
-        (event) {
-          final data = event.snapshot.exists ? event.snapshot.value : null;
-          onData(data, event.snapshot.key);
-        },
-        onError: (error) {
-          //developer\.log\('Query listen operation failed: $error');
-          if (onError != null) {
-            onError(error);
-          }
-        },
-      );
-
-      _listeners[id] = subscription;
-      return id;
-    } catch (e) {
-      //developer\.log\('Query listen setup failed: $e');
-      throw Exception('Query listen setup failed: $e');
-    }
+    return _logic.queryListen(
+      path,
+      onData,
+      orderByChild: orderByChild,
+      orderByKey: orderByKey,
+      orderByValue: orderByValue,
+      startAt: startAt,
+      endAt: endAt,
+      equalTo: equalTo,
+      limitToFirst: limitToFirst,
+      limitToLast: limitToLast,
+      onError: onError,
+      listenerId: listenerId,
+    );
   }
 
-  /// Batch update multiple paths atomically
-  static Future<void> batchUpdate(Map<String, dynamic> updates) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref();
-      final timestampedUpdates = <String, dynamic>{};
-
-      updates.forEach((path, value) {
-        if (value is Map<String, dynamic>) {
-          timestampedUpdates[path] = {
-            ...value,
-            'updatedAt': DateTime.now().millisecondsSinceEpoch,
-          };
-        } else {
-          timestampedUpdates[path] = value;
-        }
-      });
-
-      await ref.update(timestampedUpdates);
-    } catch (e) {
-      //developer\.log\('Batch update failed: $e');
-      throw Exception('Batch update failed: $e');
-    }
+  static Future<void> batchUpdate(Map<String, dynamic> updates) {
+    return _logic.batchUpdate(updates);
   }
 
-  /// Check if a path exists
-  static Future<bool> exists(String path) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      final snapshot = await ref.get();
-      return snapshot.exists;
-    } catch (e) {
-      //developer\.log\('Exists check failed: $e');
-      throw Exception('Exists check failed: $e');
-    }
+  static Future<bool> exists(String path) {
+    return _logic.exists(path);
   }
 
-  /// Get Firebase server timestamp placeholder
   static Map<String, String> get serverTimestamp => {'.sv': 'timestamp'};
 
-  /// Listen to connection state changes
   static String onConnectionState(
     Function(bool isConnected) callback, {
     String? listenerId,
   }) {
-    _checkInitialization();
-
-    final id =
-        listenerId ?? 'connection_${DateTime.now().millisecondsSinceEpoch}';
-
-    try {
-      final ref = _database!.ref('.info/connected');
-      final subscription = ref.onValue.listen(
-        (event) {
-          final isConnected = event.snapshot.value == true;
-          callback(isConnected);
-        },
-        onError: (error) {
-          //developer\.log\('Connection state listener error: $error');
-          callback(false);
-        },
-      );
-
-      _listeners[id] = subscription;
-      return id;
-    } catch (e) {
-      //developer\.log\('Connection state listener setup failed: $e');
-      throw Exception('Connection state listener setup failed: $e');
-    }
+    return _logic.onConnectionState(
+      callback,
+      listenerId: listenerId,
+    );
   }
 
-  /// Get count of active listeners
-  static int get activeListenersCount => _listeners.length;
+  static int get activeListenersCount => _logic.activeListenersCount;
 
-  /// Get list of active listener IDs
-  static List<String> get activeListenerIds => _listeners.keys.toList();
+  static List<String> get activeListenerIds => _logic.activeListenerIds;
 
-  /// Enable offline persistence (call before any database operations)
   static void enablePersistence() {
-    _configurePersistenceIfNeeded();
+    _logic.enablePersistence();
   }
 
-  /// Disable offline persistence
   static void disablePersistence() {
-    // Not supported safely after database use; keeping as no-op intentionally.
+    _logic.disablePersistence();
   }
 
-  /// Get database reference for advanced operations
   static DatabaseReference ref(String path) {
-    _checkInitialization();
-    return _database!.ref(path);
+    return _logic.ref(path);
   }
 
-  /// Private method to check initialization
-  static void _checkInitialization() {
-    if (!isInitialized) {
-      throw Exception(
-        'RealtimeFirebase not initialized. Call RealtimeFirebase.initialize() first.',
-      );
-    }
+  static Future<void> dispose() {
+    return _logic.dispose();
   }
 
-  /// Clean up all resources (call when app is disposed)
-  static Future<void> dispose() async {
-    await unlistenAll();
-    _initialized = false;
-    _persistenceConfigured = false;
-    _database = null;
-  }
-
-  /// Transaction operation for atomic updates
   static Future<T?> runTransaction<T>(
     String path,
     T? Function(T? currentValue) updateFunction,
-  ) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      final result = await ref.runTransaction((currentData) {
-        return Transaction.success(updateFunction(currentData as T?));
-      });
-      return result.snapshot.value as T?;
-    } catch (e) {
-      //developer\.log\('Transaction failed: $e');
-      throw Exception('Transaction failed: $e');
-    }
+  ) {
+    return _logic.runTransaction(path, updateFunction);
   }
 
-  /// Push multiple items at once
   static Future<List<String>> pushMultiple(
     String path,
     List<Map<String, dynamic>> items,
-  ) async {
-    _checkInitialization();
-    try {
-      final ref = _database!.ref(path);
-      final keys = <String>[];
-
-      for (final item in items) {
-        final newRef = ref.push();
-        final dataWithTimestamps = {
-          ...item,
-          'createdAt': DateTime.now().millisecondsSinceEpoch,
-          'updatedAt': DateTime.now().millisecondsSinceEpoch,
-        };
-        await newRef.set(dataWithTimestamps);
-        keys.add(newRef.key!);
-      }
-
-      return keys;
-    } catch (e) {
-      //developer\.log\('Push multiple failed: $e');
-      throw Exception('Push multiple failed: $e');
-    }
-  }
-
-  static Future<void> _configurePersistenceIfNeeded() async {
-    if (_database == null || _persistenceConfigured) return;
-    try {
-      _database!.setPersistenceEnabled(true);
-      _persistenceConfigured = true;
-    } catch (_) {
-      // Avoid crashing when persistence is already configured or called late.
-      _persistenceConfigured = true;
-    }
+  ) {
+    return _logic.pushMultiple(path, items);
   }
 }
