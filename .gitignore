@@ -51,10 +51,21 @@ app.*.map.json
 
 # Firebase / signing sensitive files
 android/app/google-services.json
+android/app/google-services-*.json
 ios/Runner/GoogleService-Info.plist
+ios/Runner/GoogleService-Info-*.plist
+ios/firebase_app_id_file.json
+lib/firebase_options.dart
+assets/service_account.json
+firebase-adminsdk*.json
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+*.p8
+*.pem
+
+# Android signing
 android/key.properties
 android/**/*.jks
 android/**/*.keystore
-
-assets/service_account.json
 PROJECT_UNDERSTANDING.txt
