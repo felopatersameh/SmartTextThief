@@ -344,6 +344,8 @@ class CreateExamStrings {
   static const String chooseFiles = 'Choose Files';
   static const String clearAll = 'Clear All';
   static const String uploadedFiles = 'Uploaded Files';
+  static const String filePermissionDenied =
+      'File permission denied. No files were accessed.';
   static const String enterTextManually = 'Enter Text Manually';
   static const String enterOrPasteExamContent =
       'Enter or paste exam content here...';

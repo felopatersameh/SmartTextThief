@@ -17,23 +17,51 @@ class ExamPdfUtil {
     return arabicRegex.hasMatch(text);
   }
 
+  static String _sanitizeFileName(String value) {
+    final sanitized = value
+        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
+        .trim();
+    return sanitized.isEmpty ? 'exam' : sanitized;
+  }
+
+  static Future<Directory> _resolveOutputDirectory(String subjectName) async {
+    final safeSubjectName =
+        _sanitizeFileName(subjectName.isEmpty ? 'General' : subjectName);
+
+    final directories = <Directory>[
+      if (Platform.isAndroid)
+        Directory('/storage/emulated/0/Download/SmartTextThief/pdf/$safeSubjectName'),
+      Directory(
+        '${Directory.systemTemp.path}/SmartTextThief/pdf/$safeSubjectName',
+      ),
+    ];
+
+    for (final directory in directories) {
+      try {
+        if (!await directory.exists()) {
+          await directory.create(recursive: true);
+        }
+        return directory;
+      } catch (_) {
+        // Try next candidate directory.
+      }
+    }
+
+    throw FileSystemException('Unable to create a writable PDF directory.');
+  }
+
   static Future<void> createExamPdf({
     required ExamModel examData,
     required SubjectModel examInfo,
   }) async {
     try {
-      String fileName = 'Exam_${examData.specialIdLiveExam}';
-      Directory downloadsDirectory = Directory(
-        '/storage/emulated/0/Download/Exams/${examInfo.subjectName}',
+      final fileName = _sanitizeFileName('Exam_${examData.specialIdLiveExam}');
+      final outputDirectory = await _resolveOutputDirectory(
+        examInfo.subjectName,
       );
 
-      // Create directory if it doesn't exist
-      if (!await downloadsDirectory.exists()) {
-        await downloadsDirectory.create(recursive: true);
-      }
-
       // Define the PDF file path
-      File pdfFile = File('${downloadsDirectory.path}/$fileName.pdf');
+      final pdfFile = File('${outputDirectory.path}/$fileName.pdf');
 
       // Load fonts
       final fontData = await rootBundle.load("assets/Fonts/Roboto-Regular.ttf");

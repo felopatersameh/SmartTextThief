@@ -18,6 +18,9 @@ import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/exam_car
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subject_action_dialog.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subject_info_card.dart';
 
+import '../../../../Core/Services/Permissions/file_access_permission_service.dart';
+import '../../../../Core/Utils/show_message_snack_bar.dart';
+
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({
     super.key,
@@ -87,6 +90,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         );
                       },
                       pdf: () async {
+                        final canAccessFiles = await FileAccessPermissionService
+                            .requestForExamFiles();
+                        if (!canAccessFiles) {
+                          if (!context.mounted) return;
+                          await showMessageSnackBar(
+                            context,
+                            title: CreateExamStrings.filePermissionDenied,
+                            type: MessageType.warning,
+                          );
+                          return;
+                        }
                         await ExamPdfUtil.createExamPdf(
                           examData: exam,
                           examInfo: selected,

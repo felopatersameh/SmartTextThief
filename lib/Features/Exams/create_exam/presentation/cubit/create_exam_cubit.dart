@@ -6,6 +6,7 @@ import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Config/Routes/route_data.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Services/Permissions/file_access_permission_service.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
@@ -80,6 +81,18 @@ class CreateExamCubit extends Cubit<CreateExamState> {
 
   Future<void> pickFiles(BuildContext context) async {
     if (state.loadingCreating) return;
+
+    final canAccessFiles =
+        await FileAccessPermissionService.requestForExamFiles();
+    if (!canAccessFiles) {
+      if (!context.mounted) return;
+      await showMessageSnackBar(
+        context,
+        title: CreateExamStrings.filePermissionDenied,
+        type: MessageType.warning,
+      );
+      return;
+    }
 
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(

@@ -22,6 +22,7 @@ dependencies:
   firebase_core: ^4.4.0
   firebase_database: ^12.1.2
   firebase_messaging: ^16.1.1
+  
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -61,6 +62,7 @@ flutter:
 
   assets:
     - .env
+    - assets/Fonts/
     - assets/Image/
     - assets/service_account.json
 
