@@ -230,15 +230,15 @@ All advanced features and full support
 <table>
 <tr>
 <td width="33%" align="center">
-<img src="assets/screens/Login1.jpg" alt="Login Screen 1" width="250"/>
+<img src="assets/screens/login1.jpg" alt="Login Screen 1" width="250"/>
 <br/><b>Login Screen 1</b>
 </td>
 <td width="33%" align="center">
-<img src="assets/screens/Login2.jpg" alt="Login Screen 2" width="250"/>
+<img src="assets/screens/login2.jpg" alt="Login Screen 2" width="250"/>
 <br/><b>Login Screen 2</b>
 </td>
 <td width="33%" align="center">
-<img src="assets/screens/Login3.jpg" alt="Login Screen 3" width="250"/>
+<img src="assets/screens/login3.jpg" alt="Login Screen 3" width="250"/>
 <br/><b>Login Screen 3</b>
 </td>
 </tr>
