@@ -878,11 +878,7 @@ class _DashboardAnalytics {
         ? 0.0
         : (resultPercents.where((p) => p >= 50).length / resultPercents.length) * 100;
 
-    final uniqueEmails = resultsWithExam
-        .map((item) => item.result.examResultEmailSt.trim())
-        .where((email) => email.isNotEmpty)
-        .toSet();
-    final studentsCount = math.max(subject.subjectEmailSts.length, uniqueEmails.length);
+    final studentsCount =5;
 
     final difficultyCount = {
       LevelExam.easy: 0,
@@ -980,9 +976,7 @@ class _DashboardAnalytics {
     required SubjectModel subject,
     required List<ExamModel> exams,
   }) {
-    final emails = <String>{
-      ...subject.subjectEmailSts.map((e) => e.trim()).where((e) => e.isNotEmpty),
-    };
+    final emails = <String>{};
 
     for (final exam in exams) {
       emails.addAll(

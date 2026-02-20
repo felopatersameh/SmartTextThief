@@ -12,6 +12,7 @@ import 'package:smart_text_thief/Core/Services/screenshot_protection_service.dar
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
+import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Exams/do_exam/data/repositories/do_exam_repository.dart';
 import 'package:smart_text_thief/Features/Exams/do_exam/presentation/cubit/do_exam_cubit.dart';
 
@@ -41,7 +42,6 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     ]);
     unawaited(ScreenshotProtectionService.enableProtection());
   }
-
 
   @override
   void dispose() {
@@ -90,19 +90,29 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
       },
       child: BlocConsumer<DoExamCubit, DoExamState>(
         listener: (context, state) {
-          if (state.isExamFinished) {
-            // Handle exam finish - show result or navigate back
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(
+          if (state.isBlockedBySubmission) {
+            Navigator.of(context).pop(false);
+            showMessageSnackBar(
               context,
-            ).showSnackBar(
-              const SnackBar(content: Text(DoExamStrings.examFinished)),
+              title: DoExamStrings.alreadySubmitted,
+              type: MessageType.warning,
+            );
+            return;
+          }
+
+          if (state.isExamFinished) {
+            Navigator.of(context).pop(true);
+            showMessageSnackBar(
+              context,
+              title: DoExamStrings.examFinished,
+              type: MessageType.success,
             );
           }
         },
         builder: (context, state) {
           final cubit = BlocProvider.of<DoExamCubit>(context);
           final questions = state.questions;
+          final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
           // Safety check: handle empty questions
           if (questions.isEmpty) {
@@ -142,6 +152,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
               }
             },
             child: Scaffold(
+              resizeToAvoidBottomInset: true,
               appBar: AppBar(
                 title: AppCustomText.generate(
                   text: NameRoutes.doExam.titleAppBar,
@@ -161,12 +172,27 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
               ),
               body: state.loading
                   ? const Center(child: CircularProgressIndicator())
-                  : Column(
-                      children: [
-                        _buildQuestionTimeline(questions, state, cubit),
-                        _buildQuestionCard(currentQuestion, state, cubit),
-                        _buildNavigationButtons(state, cubit),
-                      ],
+                  : SafeArea(
+                      child: GestureDetector(
+                        onTap: () => FocusScope.of(context).unfocus(),
+                        child: Column(
+                          children: [
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 180),
+                              child: isKeyboardVisible
+                                  ? const SizedBox.shrink()
+                                  : _buildQuestionTimeline(
+                                      questions, state, cubit),
+                            ),
+                            _buildQuestionCard(currentQuestion, state, cubit),
+                            _buildNavigationButtons(
+                              state,
+                              cubit,
+                              compact: isKeyboardVisible,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
             ),
           );
@@ -188,7 +214,8 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
             : AppColors.colorPrimary.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
+          color:
+              duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
           width: 2,
         ),
       ),
@@ -197,8 +224,9 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
         children: [
           Icon(
             AppIcons.timer,
-            color:
-                duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
+            color: duration.inSeconds < 60
+                ? AppColors.red
+                : AppColors.colorPrimary,
           ),
           const SizedBox(width: 8),
           AppCustomText.generate(
@@ -207,8 +235,9 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
               seconds.toString().padLeft(2, '0'),
             ),
             textStyle: AppTextStyles.h6Bold.copyWith(
-              color:
-                  duration.inSeconds < 60 ? AppColors.red : AppColors.colorPrimary,
+              color: duration.inSeconds < 60
+                  ? AppColors.red
+                  : AppColors.colorPrimary,
             ),
           ),
         ],
@@ -347,7 +376,8 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.colorPrimary.withValues(alpha: 0.2)
+                                  ? AppColors.colorPrimary
+                                      .withValues(alpha: 0.2)
                                   : AppColors.colorBackgroundCardProjects,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
@@ -412,38 +442,67 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     String? currentAnswer,
     DoExamCubit cubit,
   ) {
-    return ListView(
-      children: [
-        TextFormField(
-          key: ValueKey('${AppConstants.shortAnswerType}_${question.questionId}'),
-          initialValue: currentAnswer ?? '',
-          minLines: 5,
-          maxLines: 8,
-          keyboardType: TextInputType.multiline,
-          onChanged: (value) => cubit.selectAnswer(question.questionId, value),
-          style: AppTextStyles.bodyLargeMedium.copyWith(
-            color: AppColors.textWhite,
-          ),
-          decoration: InputDecoration(
-            hintText: DoExamStrings.writeAnswerHere,
-            hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
-              color: AppColors.textCoolGray,
-            ),
-            filled: true,
-            fillColor: AppColors.colorBackgroundCardProjects,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-      ],
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.only(bottom: keyboardInset > 0 ? 12 : 0),
+          child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: TextFormField(
+                key: ValueKey(
+                    '${AppConstants.shortAnswerType}_${question.questionId}'),
+                initialValue: currentAnswer ?? '',
+                minLines: 6,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                scrollPadding: EdgeInsets.only(bottom: keyboardInset + 140),
+                onChanged: (value) =>
+                    cubit.selectAnswer(question.questionId, value),
+
+                // 👇 Disable every interaction
+                enableInteractiveSelection: false,
+                contextMenuBuilder: (context, editableTextState) {
+                  return const SizedBox.shrink();
+                },
+                enableSuggestions: false,
+                autocorrect: false,
+                showCursor: true,
+                cursorColor: const Color.fromARGB(255, 48, 44, 44),
+
+                style: AppTextStyles.bodyLargeMedium.copyWith(
+                  color: AppColors.textWhite,
+                ),
+                decoration: InputDecoration(
+                  hintText: DoExamStrings.writeAnswerHere,
+                  hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                    color: AppColors.textCoolGray,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.colorBackgroundCardProjects,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              )),
+        );
+      },
     );
   }
 
-  Widget _buildNavigationButtons(DoExamState state, DoExamCubit cubit) {
+  Widget _buildNavigationButtons(
+    DoExamState state,
+    DoExamCubit cubit, {
+    bool compact = false,
+  }) {
+    final buttonVerticalPadding = compact ? 12.0 : 16.0;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(compact ? 12 : 16),
       decoration: BoxDecoration(
         color: AppColors.colorsBackGround2,
         boxShadow: [
@@ -466,14 +525,14 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.colorBackgroundCardProjects,
                 foregroundColor: AppColors.textWhite,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: buttonVerticalPadding),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: compact ? 12 : 16),
           if (state.currentQuestionIndex == state.totalQuestions - 1)
             Expanded(
               child: ElevatedButton.icon(
@@ -488,7 +547,8 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.green,
                   foregroundColor: AppColors.textWhite,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding:
+                      EdgeInsets.symmetric(vertical: buttonVerticalPadding),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -504,7 +564,8 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.colorPrimary,
                   foregroundColor: AppColors.textWhite,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding:
+                      EdgeInsets.symmetric(vertical: buttonVerticalPadding),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -538,7 +599,3 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
     );
   }
 }
-
-
-
-

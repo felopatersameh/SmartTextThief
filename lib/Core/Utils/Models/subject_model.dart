@@ -11,7 +11,6 @@ class SubjectModel extends Equatable {
     required this.subjectCode,
     required this.subjectName,
     required this.subjectTeacher,
-    required this.subjectEmailSts,
     required this.subjectIsOpen,
     required this.subjectCreatedAt,
   });
@@ -20,7 +19,6 @@ class SubjectModel extends Equatable {
   final String subjectCode;
   final String subjectName;
   final SubjectTeacher subjectTeacher;
-  final List<String> subjectEmailSts;
   final bool subjectIsOpen;
   final DateTime subjectCreatedAt;
 
@@ -38,37 +36,31 @@ class SubjectModel extends Equatable {
       subjectCode: subjectCode ?? this.subjectCode,
       subjectName: subjectName ?? this.subjectName,
       subjectTeacher: subjectTeacher ?? this.subjectTeacher,
-      subjectEmailSts: subjectEmailSts ?? this.subjectEmailSts,
       subjectIsOpen: subjectIsOpen ?? this.subjectIsOpen,
       subjectCreatedAt: subjectCreatedAt ?? this.subjectCreatedAt,
     );
   }
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
+    DateTime parseDate(dynamic value) {
+      if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+      if (value is String) {
+        return DateTime.tryParse(value) ?? DateTime.now();
+      }
+      return DateTime.now();
+    }
+
+    final status = (json[DataKey.status.key]) == 'active' ? true : false;
+
     return SubjectModel(
-      subjectId: json[DataKey.subjectIdSubject.key] ?? "",
-      subjectCode: json[DataKey.subjectCodeSub.key] ?? "",
-      subjectName: json[DataKey.subjectNameSubject.key] ?? "",
-      subjectTeacher: SubjectTeacher.fromJson(json[DataKey.subjectTeacher.key]),
-      subjectEmailSts: json[DataKey.subjectEmailSts.key] == null
-          ? []
-          : List<String>.from(json[DataKey.subjectEmailSts.key]!.map((x) => x)),
-      subjectIsOpen: json[DataKey.subjectIsOpen.key] ?? true,
-      subjectCreatedAt: DateTime.fromMillisecondsSinceEpoch(
-        json[DataKey.subjectCreatedAt.key] ?? 0,
-      ),
+      subjectId: (json[DataKey.id_.key] ?? '').toString(),
+      subjectCode: (json[DataKey.code.key]).toString(),
+      subjectName: (json[DataKey.name.key]).toString(),
+      subjectTeacher: SubjectTeacher.fromJson(json[DataKey.instructorInfo.key]),
+      subjectIsOpen: status,
+      subjectCreatedAt: parseDate(json[DataKey.createdAt.key]),
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        DataKey.subjectIdSubject.key: subjectId,
-        DataKey.subjectCodeSub.key: subjectCode,
-        DataKey.subjectNameSubject.key: subjectName,
-        DataKey.subjectTeacher.key: subjectTeacher.toJson(),
-        DataKey.subjectEmailSts.key: subjectEmailSts.map((x) => x).toList(),
-        DataKey.subjectIsOpen.key: subjectIsOpen,
-        DataKey.subjectCreatedAt.key: subjectCreatedAt.millisecondsSinceEpoch,
-      };
 
   @override
   List<Object?> get props => [
@@ -76,12 +68,12 @@ class SubjectModel extends Equatable {
         subjectCode,
         subjectName,
         subjectTeacher,
-        subjectEmailSts,
         subjectIsOpen,
         subjectCreatedAt,
       ];
 
   String get createdAt => subjectCreatedAt.shortMonthYear;
+
   bool get isME =>
       (subjectTeacher.teacherEmail) == (GetLocalStorage.getEmailUser());
 
@@ -89,5 +81,5 @@ class SubjectModel extends Equatable {
   String get subscribeToTopicForMembers => subjectId;
 
   /// Returns the topic ID for subject admin (teacher).
-  String get subscribeToTopicForAdmin => '${subjectId}_admin';
+  // String get subscribeToTopicForAdmin => '${subjectId}_admin';
 }

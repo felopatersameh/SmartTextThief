@@ -1,3 +1,4 @@
+import 'package:smart_text_thief/Core/Utils/Models/create-exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
@@ -33,7 +34,7 @@ class ViewExamRouteData {
     required this.nameSubject,
   });
 
-  final ExamModel exam;
+  final CreateExam exam;
   final bool isEditMode;
   final String nameSubject;
 }

@@ -74,45 +74,46 @@ ${contentContext != null ? '''**Content Context:** $contentContext
 **Required JSON Structure:**
 [
   {
-    "questionId": "Q1",
-    "questionType": "multiple_choice",
-    "questionText": "Question text from provided content only",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "id": "Q1",
+    "type": "multiple_choice",
+    "text": "Question text from provided content only",
+    "options":
+    [
+        { "id": "o1", "choice": "3" },
+        { "id": "o2", "choice": "4" },
+        { "id": "o3", "choice": "5" }
+    ],
     "correctAnswer": "Option A",
     "studentAnswer": "",
-    "score": null
   },
   {
-    "questionId": "Q2",
-    "questionType": "true_false",
-    "questionText": "Statement from provided content only",
+    "id": "Q2",
+    "type": "true_false",
+    "text": "Statement from provided content only",
     "options": ["True", "False"],
     "correctAnswer": "True",
     "studentAnswer": "",
-    "score": null
   },
   {
-    "questionId": "Q3",
-    "questionType": "short_answer",
-    "questionText": "Question from provided content only",
+    "id": "Q3",
+    "type": "short_answer",
+    "text": "Question from provided content only",
     "options": [],
     "correctAnswer": "Expected answer based on provided content",
     "studentAnswer": "",
-    "score": null
   }
 ]
 
 **Field Requirements:**
-- questionId: Sequential (Q1, Q2, Q3, ..., Q$totalQuestions)
-- questionType: MUST be exactly "multiple_choice", "true_false", or "short_answer"
-- questionText: Derived ONLY from the educational content above
+- id: Sequential (Q1, Q2, Q3, ..., Q$totalQuestions)
+- type: MUST be exactly "multiple_choice", "true_false", or "short_answer"
+- text: Derived ONLY from the educational content above
 - options:
   * multiple_choice: Exactly 4 options (plausible distractors from content)
   * true_false: Exactly ["True", "False"] OR ["صح", "خطأ"] based on content language
   * short_answer: Empty array []
 - correctAnswer: The correct answer from the provided content
 - studentAnswer: Always empty string ""
-- score: Always null
 
 **STRICT REMINDER:**
 - Question Count: EXACTLY $multipleChoiceCount multiple choice + $trueFalseCount true/false + $shortAnswerCount short answer

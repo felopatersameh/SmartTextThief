@@ -137,14 +137,15 @@ class AppRouter {
 
   static void pushToViewExam(
     BuildContext context, {
+    required String idSubject,
     required ViewExamRouteData data,
   }) {
     nextScreenNoPath(
       context,
       NameRoutes.view,
       pathParameters: {
-        AppConstants.routeKeyId: data.exam.examIdSubject,
-        AppConstants.routeKeyExam: data.exam.examId,
+        AppConstants.routeKeyId: idSubject,
+        AppConstants.routeKeyExam: data.exam.id,
       },
       extra: data,
     );
@@ -154,29 +155,30 @@ class AppRouter {
     BuildContext context, {
     required ViewExamRouteData data,
     required String email,
+    required String idSubject,
   }) {
     nextScreenNoPath(
       context,
       NameRoutes.result,
       pathParameters: {
-        AppConstants.routeKeyId: data.exam.examIdSubject,
-        AppConstants.routeKeyExam: data.exam.examId,
+        AppConstants.routeKeyId: idSubject,
+        AppConstants.routeKeyExam: data.exam.id,
         AppConstants.routeKeyEmail: _emailPathValue(email),
       },
       extra: data,
     );
   }
 
-  static void pushToDoExam(
+  static Future<T?> pushToDoExam<T>(
     BuildContext context, {
     required DoExamRouteData data,
+    required String idSubject,
   }) {
-    nextScreenNoPath(
-      context,
+    return context.pushNamed<T>(
       NameRoutes.doExam,
       pathParameters: {
-        AppConstants.routeKeyId: data.exam.examIdSubject,
-        AppConstants.routeKeyExam: data.exam.examId,
+        AppConstants.routeKeyId: idSubject,
+        AppConstants.routeKeyExam: data.exam.id,
       },
       extra: data,
     );

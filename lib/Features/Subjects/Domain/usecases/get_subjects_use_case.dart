@@ -9,11 +9,9 @@ class GetSubjectsUseCase {
 
   final SubjectRepository _repository;
 
-  Future<Either<FailureModel, List<SubjectModel>>> call(
-    String email,
-    bool isStudent,
-  ) {
-    return _repository.getSubjects(email, isStudent);
+  Future<Either<FailureModel, List<SubjectModel>>> call()
+  {
+    return _repository.getSubjects();
   }
 }
 

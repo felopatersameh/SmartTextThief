@@ -1,6 +1,6 @@
 enum UserType {
   st(value: "student"),
-  te(value: "teacher"),
+  te(value: "instructor"),
   ad(value: "admin"),
   non(value: "non");
 
@@ -8,6 +8,9 @@ enum UserType {
   const UserType({required this.value});
 
   static UserType fromString(String value) {
+    // if (normalized == 'instructor') {
+    //   return UserType.te;
+    // }
     return UserType.values.firstWhere(
       (e) => e.value == value,
       orElse: () => UserType.non,

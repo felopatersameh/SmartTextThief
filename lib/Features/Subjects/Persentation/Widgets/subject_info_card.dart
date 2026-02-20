@@ -83,7 +83,7 @@ class SubjectInfoCard extends StatelessWidget {
                         child: _buildStatCard(
                           icon: AppIcons.students,
                           label: SubjectStrings.students,
-                          value: '${subjectModel.subjectEmailSts.length}',
+                          value: '${0}',
                         ),
                       ),
                       SizedBox(width: 8.w),

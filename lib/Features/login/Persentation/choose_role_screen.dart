@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Features/Notifications/Persentation/cubit/notifications_cubit.dart';
 
 import '../../../Config/Routes/app_router.dart';
 import '../../../Core/Resources/resources.dart';
@@ -8,7 +9,6 @@ import '../../../Core/Utils/Enums/enum_user.dart';
 import '../../../Core/Utils/Widget/ButtonsStyle/build_button_app.dart';
 import '../../../Core/Utils/Widget/custom_text_app.dart';
 import '../../../Core/Utils/show_message_snack_bar.dart';
-import '../../Notifications/Persentation/cubit/notifications_cubit.dart';
 import '../../Profile/Persentation/cubit/profile_cubit.dart';
 import '../../Subjects/Persentation/cubit/subjects_cubit.dart';
 
@@ -39,12 +39,12 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
       return;
     }
 
-    final user = await context.read<ProfileCubit>().init();
+    await context.read<ProfileCubit>().init();
     if (!mounted) return;
 
     await Future.wait([
-      context.read<SubjectCubit>().init(user.userEmail, user.isStu),
-      context.read<NotificationsCubit>().init(user.subscribedTopics),
+      context.read<SubjectCubit>().init(),
+      context.read<NotificationsCubit>().init([]),
     ]);
     if (!mounted) return;
 
@@ -71,7 +71,8 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
               child: Padding(
                 padding: EdgeInsets.all(20.w),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
                   decoration: BoxDecoration(
                     color: AppColors.colorsBackGround2,
                     borderRadius: BorderRadius.circular(16.r),

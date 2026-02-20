@@ -6,7 +6,6 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../Utils/Models/exam_model.dart';
-import '../../Utils/Models/exam_result_q_a.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
@@ -55,7 +54,8 @@ class ExamPdfUtil {
     required SubjectModel examInfo,
   }) async {
     try {
-      final fileName = _sanitizeFileName('Exam_${examData.specialIdLiveExam}');
+      // final fileName = _sanitizeFileName('Exam_${examData.specialIdLiveExam}');
+      final fileName = examData.name;
       final outputDirectory = await _resolveOutputDirectory(
         examInfo.subjectName,
       );
@@ -67,7 +67,6 @@ class ExamPdfUtil {
       final fontData = await rootBundle.load("assets/Fonts/Roboto-Regular.ttf");
       final fontBold = await rootBundle.load("assets/Fonts/Roboto-Bold.ttf");
 
-      // تحميل الخطوط العربية - تأكد من إضافتها في assets
       final fontArabicData =
           await rootBundle.load("assets/Fonts/Cairo-Regular.ttf");
       final fontArabicBoldLoaded =
@@ -82,7 +81,7 @@ class ExamPdfUtil {
       final logoImage = pw.MemoryImage(imageData.buffer.asUint8List());
 
       // Get exam questions
-      List<ExamResultQA> questions = examData.examStatic.examResultQA;
+      List<QuestionsExam> questions = examData.questions;
 
       // Create PDF document
       final pdf = pw.Document();
@@ -262,8 +261,8 @@ class ExamPdfUtil {
               ),
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
-                'Exam Type:',
-                examInfo.examStatic.typeExam,
+                'Exam Name:',
+                examInfo.name,
                 font,
                 fontBold,
                 fontArabic,
@@ -272,7 +271,7 @@ class ExamPdfUtil {
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
                 'Level:',
-                examInfo.examStatic.levelExam.name,
+                examInfo.levelExam,
                 font,
                 fontBold,
                 fontArabic,
@@ -281,7 +280,7 @@ class ExamPdfUtil {
               pw.SizedBox(height: 8),
               _buildCenteredInfoRow(
                 'Number of Questions:',
-                examInfo.examStatic.numberOfQuestions.toString(),
+                examInfo.questionCount.toString(),
                 font,
                 fontBold,
                 fontArabic,
@@ -409,15 +408,15 @@ class ExamPdfUtil {
 
   // Build question widget
   static pw.Widget _buildQuestion(
-    ExamResultQA question,
+    QuestionsExam question,
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
     pw.Font fontArabic,
     pw.Font fontArabicBold,
   ) {
-    String questionText = question.questionText;
-    String questionType = question.questionType;
+    String questionText = question.text.toString();
+    String questionType = question.type.toString();
     List<dynamic> options = question.options;
     bool isQuestionArabic = _isArabic(questionText);
 
@@ -540,14 +539,14 @@ class ExamPdfUtil {
 
   // Build answer key
   static pw.Widget _buildAnswerKey(
-    ExamResultQA question,
+    QuestionsExam question,
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
     pw.Font fontArabic,
     pw.Font fontArabicBold,
   ) {
-    String correctAnswer = question.correctAnswer;
+    String correctAnswer = question.correctAnswer.toString();
     bool isAnswerArabic = _isArabic(correctAnswer);
 
     return pw.Container(

@@ -2,12 +2,11 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../Notifications/Persentation/cubit/notifications_cubit.dart';
 import '../../../Profile/Persentation/cubit/profile_cubit.dart';
 import '../../../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../../../../Core/Utils/Enums/enum_user.dart';
 import '../../Data/authentication_source.dart';
-
+ 
 part 'authentication_state.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
@@ -80,21 +79,14 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future<bool> getDataWhenLogin(BuildContext context) async {
     final user = await context.read<ProfileCubit>().init();
-    if (!context.mounted) return false;
-    await context.read<NotificationsCubit>().init(user.subscribedTopics);
+    // if (!context.mounted) return false;
+    // await context.read<NotificationsCubit>().init(user.subscribedTopics);
 
     if (user.userType == UserType.non) {
       return true;
     }
     if (!context.mounted) return false;
-
-    await context.read<SubjectCubit>().init(user.userEmail, user.isStu);
+    await context.read<SubjectCubit>().init();
     return false;
-  }
-
-  @override
-  Future<void> close() {
-    emit(AuthenticationState());
-    return super.close();
   }
 }

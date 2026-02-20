@@ -12,8 +12,7 @@ class SearchSubjectsUseCase {
       return subject.subjectName.toLowerCase().contains(search) ||
           subject.subjectCode.toLowerCase().contains(search) ||
           subject.subjectTeacher.teacherEmail.toLowerCase().contains(search) ||
-          subject.subjectTeacher.teacherName.toLowerCase().contains(search) ||
-          subject.subjectEmailSts.any((email) => email.toLowerCase().contains(search));
+          subject.subjectTeacher.teacherName.toLowerCase().contains(search) ;
     }).toList();
   }
 }

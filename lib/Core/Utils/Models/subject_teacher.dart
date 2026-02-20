@@ -22,14 +22,16 @@ class SubjectTeacher extends Equatable {
 
   factory SubjectTeacher.fromJson(Map<String, dynamic> json) {
     return SubjectTeacher(
-      teacherEmail: json[DataKey.teacherEmail.key] ?? "",
-      teacherName: json[DataKey.teacherName.key] ?? "",
+      teacherEmail:
+          (json[DataKey.email.key] ).toString(),
+      teacherName:
+          (json[DataKey.name.key]).toString(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        DataKey.teacherEmail.key: teacherEmail,
-        DataKey.teacherName.key: teacherName,
+        DataKey.email.key: teacherEmail,
+        DataKey.name.key: teacherName,
       };
 
   @override

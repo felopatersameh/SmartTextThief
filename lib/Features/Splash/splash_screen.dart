@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../Notifications/Persentation/cubit/notifications_cubit.dart';
+import 'package:smart_text_thief/Core/Utils/Models/user_model.dart';
 import '../../Core/LocalStorage/local_storage_keys.dart';
 import '../../Core/LocalStorage/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
@@ -36,42 +36,48 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _navigateToMainScreen() async {
     try {
-      _updateProgress(0.1);
+      await _updateProgress(0.1);
 
-      final bool isLoggedIn = LocalStorageService.getValue(
+      final bool isLoggedIn = await LocalStorageService.getValue(
         LocalStorageKeys.isLoggedIn,
         defaultValue: false,
       );
-      final String id = LocalStorageService.getValue(
-        LocalStorageKeys.id,
+      final String token = await LocalStorageService.getValue(
+        LocalStorageKeys.token,
         defaultValue: "",
       );
-      _updateProgress(0.2);
 
-      if (id.isEmpty || !isLoggedIn) {
+      final String role = await LocalStorageService.getValue(
+        LocalStorageKeys.role,
+        defaultValue: UserType.non.value,
+      );
+      await _updateProgress(0.2);
+
+      if (token.isEmpty || !isLoggedIn) {
         _navigateSafely(AppRouter.pushToLogin);
         return;
       }
-
+      if (role == UserType.non.value) {
+        _navigateSafely(AppRouter.pushToChooseRole);
+        return;
+      }
       _updateProgress(0.3);
 
       if (!mounted) return;
       final user = await context.read<ProfileCubit>().init();
-      if (user.userId == "-#") {
+
+      if (user == UserModel.empty()) {
         _navigateSafely(AppRouter.pushToLogin);
         return;
       }
-      if (user.userType == UserType.non) {
-        _navigateSafely(AppRouter.pushToChooseRole);
-        return;
-      }
+
       await _smoothProgressUpdate(0.4, .7, 5);
 
       if (!mounted) return;
 
       await Future.wait([
-        context.read<SubjectCubit>().init(user.userEmail, user.isStu),
-        context.read<NotificationsCubit>().init(user.subscribedTopics),
+        context.read<SubjectCubit>().init(),
+        // context.read<NotificationsCubit>().init(user.subscribedTopics),
       ]);
 
       await _smoothProgressUpdate(0.7, 1.0, 2);
@@ -90,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  void _updateProgress(double value) {
+  Future<void> _updateProgress(double value) async {
     if (mounted) _controller.value = value;
   }
 
@@ -100,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     for (int i = 1; i <= steps; i++) {
       await Future.delayed(const Duration(milliseconds: 150));
-      _updateProgress(start + (stepSize * i));
+      await _updateProgress(start + (stepSize * i));
     }
   }
 
@@ -115,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-           const Positioned.fill(child: BackgroundContainer()),
+          const Positioned.fill(child: BackgroundContainer()),
           SafeArea(
             child: Center(child: LoadingIndicator(controller: _controller)),
           ),

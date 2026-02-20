@@ -1,9 +1,9 @@
 import 'dart:convert';
-import '../../Utils/Models/exam_result_q_a.dart';
+import '../../Utils/Models/create_exam_model.dart';
 
 /// Parser for AI responses
 class ExamResponseParser {
-  static List<ExamResultQA> parseQuestions(String jsonResponse) {
+  static List<QuestionsGeneratedModel> parseQuestions(String jsonResponse) {
     try {
       String cleanedJson = _cleanJsonResponse(jsonResponse);
       final dynamic parsed = jsonDecode(cleanedJson);
@@ -25,7 +25,8 @@ class ExamResponseParser {
       }
 
       return questionsList
-          .map((json) => ExamResultQA.fromJson(json as Map<String, dynamic>))
+          .map((json) =>
+              QuestionsGeneratedModel.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
       // log('Error parsing questions: $e');
@@ -63,26 +64,25 @@ class ExamResponseParser {
     return cleaned.trim();
   }
 
-  static bool validateQuestions(List<ExamResultQA> questions) {
+  static bool validateQuestions(List<QuestionsGeneratedModel> questions) {
     if (questions.isEmpty) return false;
 
     for (var q in questions) {
-      if (q.questionId.isEmpty ||
-          q.questionType.isEmpty ||
-          q.questionText.isEmpty ||
+      if (q.id.isEmpty ||
+          q.type.isEmpty ||
+          q.text.isEmpty ||
           q.correctAnswer.isEmpty) {
         return false;
       }
 
-      if (!['multiple_choice', 'true_false', 'short_answer']
-          .contains(q.questionType)) {
+      if (!['multiple_choice', 'true_false', 'short_answer'].contains(q.type)) {
         return false;
       }
 
-      if (q.questionType == 'multiple_choice' && q.options.length != 4) {
+      if (q.type == 'multiple_choice' && q.options?.length != 4) {
         return false;
       }
-      if (q.questionType == 'true_false' && q.options.length != 2) {
+      if (q.type == 'true_false' && q.options?.length != 2) {
         return false;
       }
     }

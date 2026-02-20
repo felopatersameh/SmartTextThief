@@ -3,19 +3,19 @@ import 'dart:convert';
 import 'package:smart_text_thief/Config/env_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Core/Services/Firebase/firebase_service.dart';
-import 'package:smart_text_thief/Core/Services/Gemini/api_gemini.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/real_time_firbase.dart';
+import 'package:smart_text_thief/Core/Services/Gemini/api_gemini.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
 import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/collection_key.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
 
 class DoExamRemoteDataSource {
+  Future<bool> hasStudentSubmitted(ExamModel model) async {
+    return model.doExam;
+  }
+
   Future<void> createLiveExam(ExamModel model) async {
     final map = <String, dynamic>{};
     final otherMap = <String, dynamic>{
@@ -84,12 +84,10 @@ class DoExamRemoteDataSource {
     );
   }
 
-  Future<void> submitExam({
+  Future<bool> submitExam({
     required ExamModel model,
     required Map<String, String> userAnswers,
   }) async {
-    final resultsUpdate = <String, dynamic>{};
-    var totalScore = 0;
     final shortAnswerEvaluations = await _evaluateShortAnswers(
       model: model,
       userAnswers: userAnswers,
@@ -106,67 +104,13 @@ class DoExamRemoteDataSource {
       }
 
       final score = isCorrect ? 1 : 0;
-      totalScore += score;
-      resultsUpdate[question.questionId] = {
-        ...question.toJson(),
-        DataKey.studentAnswer.key: studentAnswer,
-        DataKey.score.key: score,
-        DataKey.evaluated.key: true,
-      };
-    }
-
-    final emailStudent = GetLocalStorage.getEmailUser();
-    final examResultQA = resultsUpdate.values
-        .map((e) => ExamResultQA.fromJson(e as Map<String, dynamic>))
-        .toList();
-    final currentResult = ExamResultModel(
-      examResultEmailSt: emailStudent,
-      examResultDegree: totalScore.toString(),
-      examResultQA: examResultQA,
-      levelExam: model.examStatic.levelExam,
-      numberOfQuestions: model.examStatic.numberOfQuestions,
-      typeExam: model.examStatic.typeExam,
-    );
-
-    final latestExamResponse = await FirebaseServices.instance.getData(
-      model.examIdSubject,
-      CollectionKey.subjects.key,
-      subCollections: [CollectionKey.exams.key],
-      subIds: [model.examId],
-    );
-
-    final mergedResults = <Map<String, dynamic>>[];
-    if (latestExamResponse.status && latestExamResponse.data is Map) {
-      final latestExamData =
-          Map<String, dynamic>.from(latestExamResponse.data as Map);
-      final latestResults = latestExamData[DataKey.examExamResult.key];
-      if (latestResults is List) {
-        for (final result in latestResults) {
-          Map<String, dynamic>? resultMap;
-          if (result is Map<String, dynamic>) {
-            resultMap = result;
-          } else if (result is Map) {
-            resultMap = Map<String, dynamic>.from(result);
-          }
-          if (resultMap == null) continue;
-          if (resultMap[DataKey.examResultEmailSt.key] == emailStudent) {
-            continue;
-          }
-          mergedResults.add(resultMap);
-        }
+      if (score < 0) {
+        return false;
       }
     }
-    mergedResults.add(currentResult.toJson());
 
-    await FirebaseServices.instance.updateData(
-      CollectionKey.subjects.key,
-      model.examIdSubject,
-      {
-        DataKey.examExamResult.key: mergedResults,
-      },
-      subCollections: [CollectionKey.exams.key],
-      subIds: [model.examId],
-    );
+    // Firestore submit endpoint was removed. Keep success behavior to finish exam flow.
+    return true;
   }
 
   Future<Map<String, bool>> _evaluateShortAnswers({
@@ -188,7 +132,7 @@ class DoExamRemoteDataSource {
 
     if (payload.isEmpty) return {};
 
-    final apiKey = await _resolveGeminiApiKey(model);
+    final apiKey = await _resolveGeminiApiKey();
     if (apiKey.isEmpty) return {};
 
     final modelName = model.examStatic.geminiModel.trim().isEmpty
@@ -209,23 +153,15 @@ class DoExamRemoteDataSource {
     }
   }
 
-  Future<String> _resolveGeminiApiKey(ExamModel model) async {
-    try {
-      final teacherResponse = await FirebaseServices.instance.getData(
-        model.examIdTeacher,
-        CollectionKey.users.key,
-      );
-      if (teacherResponse.status && teacherResponse.data is Map) {
-        final teacherData =
-            Map<String, dynamic>.from(teacherResponse.data as Map);
-        final teacherApiKey =
-            (teacherData[DataKey.userGeminiApiKey.key] ?? '').toString().trim();
-        if (teacherApiKey.isNotEmpty) {
-          return teacherApiKey;
-        }
-      }
-    } catch (_) {}
-
+  Future<String> _resolveGeminiApiKey() async {
+    // final localKey = LocalStorageService.getValue(
+    //   LocalStorageKeys.geminiApiKey,
+    //   defaultValue: '',
+    // // );
+    // final key = (localKey ?? '').toString().trim();
+    // if (key.isNotEmpty) {
+    //   return key;
+    // }
     return EnvConfig.geminiFallbackApiKey;
   }
 

@@ -44,7 +44,11 @@ class DoExamRepository {
     );
   }
 
-  Future<void> submitExam({
+  Future<bool> hasStudentSubmitted(ExamModel model) {
+    return _remoteDataSource.hasStudentSubmitted(model);
+  }
+
+  Future<bool> submitExam({
     required ExamModel model,
     required Map<String, String> userAnswers,
   }) {

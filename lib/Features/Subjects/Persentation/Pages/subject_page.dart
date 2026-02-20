@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/subject_teacher.dart';
-import 'package:smart_text_thief/Core/Utils/generate_secure_code.dart';
+import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Profile/Persentation/cubit/profile_cubit.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
@@ -62,7 +60,8 @@ class SubjectPage extends StatelessWidget {
                     ),
                   )
                 : BodySubjectPage(state: state),
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: FloatingActionButton.extended(
+              tooltip: isStudent ? "Join Subject" : "Add Subject",
               onPressed: () async {
                 if (isStudent) {
                   await _showJoinSubjectDialog(
@@ -70,17 +69,20 @@ class SubjectPage extends StatelessWidget {
                     email: email,
                     name: name,
                   );
-                  return;
+                } else {
+                  await _showAddSubjectDialog(
+                    context,
+                    email: email,
+                    name: name,
+                  );
                 }
-
-                await _showAddSubjectDialog(
-                  context,
-                  email: email,
-                  name: name,
-                );
               },
               backgroundColor: AppColors.colorPrimary,
-              child: AppIcons.add,
+              icon:  Icon(isStudent ? AppIcons.join :AppIcons.groupsOutlined,color: AppColors.white70,),
+              label: AppCustomText.generate(
+                text: isStudent ? "Join Subject" : "create Subject",
+                textStyle: AppTextStyles.bodyMediumMedium.copyWith(color: AppColors.white70,),
+              ),
             ),
           );
         },
@@ -109,25 +111,12 @@ Future<void> _showAddSubjectDialog(
     return;
   }
 
-  final model = SubjectModel(
-    subjectId: generateSubjectId(),
-    subjectCode: generateSubjectJoinCode(),
-    subjectName: subjectName,
-    subjectTeacher: SubjectTeacher(
-      teacherEmail: email,
-      teacherName: name,
-    ),
-    subjectEmailSts: const [],
-    subjectCreatedAt: DateTime.now(),
-    subjectIsOpen: true,
-  );
-
   await showMessageSnackBar(
     context,
     title: SubjectStrings.creatingSubject,
     type: MessageType.loading,
     onLoading: () async {
-      await context.read<SubjectCubit>().addSubject(model);
+      await context.read<SubjectCubit>().addSubject(subjectName);
     },
   );
 }

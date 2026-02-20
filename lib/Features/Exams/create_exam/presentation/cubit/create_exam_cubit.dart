@@ -4,19 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Config/Routes/route_data.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Permissions/file_access_permission_service.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_result_static_model.dart';
+import 'package:smart_text_thief/Core/Utils/Models/create-exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
-import 'package:smart_text_thief/Core/Utils/generate_secure_code.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/data/models/information_file_model.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/data/repositories/create_exam_repository.dart';
-import 'package:smart_text_thief/Features/Profile/Persentation/cubit/profile_cubit.dart';
 
 part 'create_exam_state.dart';
 
@@ -271,8 +267,8 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     final sum = (int.tryParse(numChose) ?? 0) +
         (int.tryParse(numTF) ?? 0) +
         (int.tryParse(numQA) ?? 0);
-    final profileApiKey =
-        context.read<ProfileCubit>().state.model?.userGeminiApiKey.trim() ?? "";
+    final profileApiKey = '';
+    // context.read<ProfileCubit>().state.model?.userGeminiApiKey.trim() ?? "";
     final userApiKey = profileApiKey.isNotEmpty
         ? profileApiKey
         : EnvConfig.geminiFallbackApiKey;
@@ -313,26 +309,15 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       return;
     }
 
-    final userId = GetLocalStorage.getIdUser();
-    final exam = ExamModel(
-      examId: generateExamId(),
-      examIdSubject: state.subject.subjectId,
-      examIdTeacher: userId,
-      startedAt: state.startDate!,
-      examFinishAt: state.endDate!,
-      examCreatedAt: DateTime.now(),
-      examResult: [],
-      examStatic: ExamStaticModel(
-        examResultQA: questions,
-        levelExam: state.selectedLevel!,
-        numberOfQuestions: sum,
-        time: state.time.toString(),
-        typeExam: state.name,
-        geminiModel: state.geminiModel.trim().isEmpty
-            ? AppConstants.defaultGeminiModel
-            : state.geminiModel.trim(),
-        randomQuestions: state.canOpenQuestions,
-      ),
+    final exam = CreateExam(
+      endAt: state.endDate!,
+      isRandom: state.canOpenQuestions,
+      levelExam: state.selectedLevel!.name,
+      name: state.name,
+      questions: ,
+      questionCount:sum ,
+      startAt: state.startDate!,
+       timeMinutes: state.time.toInt(),
     );
 
     await showMessageSnackBar(
@@ -343,9 +328,11 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     if (!context.mounted) return;
     AppRouter.pushToViewExam(
       context,
+      idSubject: state.subject.subjectId ,
       data: ViewExamRouteData(
         exam: exam,
         isEditMode: true,
+
         nameSubject: state.subject.subjectName,
       ),
     );

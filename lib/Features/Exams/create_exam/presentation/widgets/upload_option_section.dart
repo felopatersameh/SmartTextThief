@@ -121,7 +121,8 @@ class UploadOptionSection extends StatelessWidget {
                 initialValue: state.uploadText,
                 onChanged: cubit.changeTextUpload,
                 minLines: 3,
-                maxLines: 6,
+                maxLines: 10,
+                maxLength: 2000,
                 style: AppTextStyles.bodyMediumMedium,
                 decoration: InputDecoration(
                   hintText: CreateExamStrings.enterOrPasteExamContent,

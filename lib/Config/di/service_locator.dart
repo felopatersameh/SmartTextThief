@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 
-import '../../Core/Services/Firebase/firebase_service.dart';
 import '../../Features/Exams/create_exam/data/datasources/create_exam_remote_data_source.dart';
 import '../../Features/Exams/create_exam/data/repositories/create_exam_repository.dart';
 import '../../Features/Exams/do_exam/data/datasources/do_exam_remote_data_source.dart';
@@ -21,8 +20,6 @@ import '../Setting/settings_cubit.dart';
 final GetIt getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
-  _registerLazySingleton<FirebaseServices>(() => FirebaseServices.instance);
-
   _registerLazySingleton<SubjectsRemoteDataSource>(
     SubjectsRemoteDataSource.new,
   );

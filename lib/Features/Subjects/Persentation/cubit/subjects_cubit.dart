@@ -52,7 +52,7 @@ class SubjectCubit extends Cubit<SubjectState> {
   late final ToggleSubjectOpenUseCase _toggleSubjectOpenUseCase;
   late final LeaveSubjectUseCase _leaveSubjectUseCase;
 
-  Future<void> init(String email, bool isStudent) async {
+  Future<void> init() async {
     emit(
       state.copyWith(
         loadingSubjects: true,
@@ -61,7 +61,7 @@ class SubjectCubit extends Cubit<SubjectState> {
       ),
     );
 
-    final response = await _getSubjectsUseCase(email, isStudent);
+    final response = await _getSubjectsUseCase();
     response.fold(
       (failure) => _emitFailure(
         failure.message,
@@ -86,6 +86,7 @@ class SubjectCubit extends Cubit<SubjectState> {
       state.copyWith(
         loadingExams: true,
         error: null,
+        exams: []
       ),
     );
 
@@ -128,14 +129,14 @@ class SubjectCubit extends Cubit<SubjectState> {
     );
   }
 
-  Future<bool> addSubject(SubjectModel model) async {
-    final response = await _addSubjectUseCase(model);
+  Future<bool> addSubject(String name) async {
+    final response = await _addSubjectUseCase(name);
     return response.fold(
       (failure) {
         _emitFailure(failure.message);
         return false;
       },
-      (_) {
+      (model) {
         _emitSubjects(
           subjects: [model, ...state.subjects],
           action: SubjectAction.added,

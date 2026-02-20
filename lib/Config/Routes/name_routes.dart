@@ -1,5 +1,3 @@
-import '../../Core/LocalStorage/local_storage_keys.dart';
-import '../../Core/LocalStorage/local_storage_service.dart';
 
 class NameRoutes {
   static const String splash = '/';
@@ -35,14 +33,14 @@ class NameRoutes {
 
 extension PathStringExtension on String {
   String ensureWithSlash() => startsWith('/') ? this : '/$this';
-  Future<String> ensureWithId() async {
-    final id = (await LocalStorageService.getValue(
-      LocalStorageKeys.id,
-    ))
-        .toString()
-        .substring(0, 5);
-    return id;
-  }
+  // Future<String> ensureWithId() async {
+  //   final id = (await LocalStorageService.getValue(
+  //     LocalStorageKeys.id,
+  //   ))
+  //       .toString()
+  //       .substring(0, 5);
+  //   return id;
+  // }
 
   String removeSlash() => endsWith('/') ? substring(0, length - 1) : this;
 

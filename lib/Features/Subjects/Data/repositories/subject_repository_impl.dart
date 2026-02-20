@@ -14,8 +14,8 @@ class SubjectRepositoryImpl implements SubjectRepository {
   final SubjectsRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Either<FailureModel, String>> addSubject(SubjectModel model) {
-    return _remoteDataSource.addSubject(model);
+  Future<Either<FailureModel, SubjectModel>> addSubject(String name) {
+    return _remoteDataSource.addSubject(name);
   }
 
   @override
@@ -29,11 +29,8 @@ class SubjectRepositoryImpl implements SubjectRepository {
   }
 
   @override
-  Future<Either<FailureModel, List<SubjectModel>>> getSubjects(
-    String email,
-    bool isStudent,
-  ) {
-    return _remoteDataSource.getSubjects(email, isStudent);
+  Future<Either<FailureModel, List<SubjectModel>>> getSubjects() {
+    return _remoteDataSource.getSubjects();
   }
 
   @override

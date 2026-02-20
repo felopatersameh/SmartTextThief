@@ -9,8 +9,8 @@ class AddSubjectUseCase {
 
   final SubjectRepository _repository;
 
-  Future<Either<FailureModel, String>> call(SubjectModel model) {
-    return _repository.addSubject(model);
+  Future<Either<FailureModel, SubjectModel>> call(String name) {
+    return _repository.addSubject(name);
   }
 }
 

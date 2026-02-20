@@ -19,6 +19,7 @@ import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subject_
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subject_info_card.dart';
 
 import '../../../../Core/Services/Permissions/file_access_permission_service.dart';
+import '../../../../Core/Utils/Widget/custom_text_app.dart';
 import '../../../../Core/Utils/show_message_snack_bar.dart';
 
 class DetailsScreen extends StatefulWidget {
@@ -83,11 +84,23 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     final exam = exams[index];
                     return ExamCard(
                       exam: exam,
-                      againTest: () {
-                        AppRouter.pushToDoExam(
+                      againTest: () async {
+                        if (exam.doExam) {
+                          await showMessageSnackBar(
+                            context,
+                            title: DoExamStrings.alreadySubmitted,
+                            type: MessageType.warning,
+                          );
+                          return;
+                        }
+                        await AppRouter.pushToDoExam<bool>(
                           context,
                           data: DoExamRouteData(exam: exam),
                         );
+                        if (!context.mounted) return;
+                        await context.read<SubjectCubit>().getExams(
+                              selected.subjectId,
+                            );
                       },
                       pdf: () async {
                         final canAccessFiles = await FileAccessPermissionService
@@ -154,7 +167,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
               ],
             ),
             floatingActionButton: selected.isME
-                ? FloatingActionButton(
+                ? FloatingActionButton.extended(
                     onPressed: () {
                       AppRouter.pushToCreateExam(
                         context,
@@ -162,7 +175,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       );
                     },
                     backgroundColor: AppColors.colorPrimary,
-                    child: AppIcons.add,
+                    icon: AppIcons.add,
+                    label: AppCustomText.generate(
+                      text: "New Exam",
+                      textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                        color: AppColors.white70,
+                      ),
+                    ),
                   )
                 : null,
           );
@@ -180,25 +199,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return selected;
   }
 
-  Future<void> _toggleSubjectOpen(BuildContext context, SubjectModel subject) async {
+  Future<void> _toggleSubjectOpen(
+      BuildContext context, SubjectModel subject) async {
     final nextStatus = !subject.subjectIsOpen;
     final confirmed = await showSubjectActionDialog(
       context,
-      title: nextStatus
-          ? SubjectStrings.openSubject
-          : SubjectStrings.closeSubject,
+      title:
+          nextStatus ? SubjectStrings.openSubject : SubjectStrings.closeSubject,
       message: nextStatus
           ? SubjectStrings.openSubjectMessage
           : SubjectStrings.closeSubjectMessage,
-      confirmText: nextStatus
-          ? SubjectStrings.openSubject
-          : SubjectStrings.closeSubject,
+      confirmText:
+          nextStatus ? SubjectStrings.openSubject : SubjectStrings.closeSubject,
     );
     if (confirmed != true || !context.mounted) return;
     await context.read<SubjectCubit>().toggleSubjectOpen(subject, nextStatus);
   }
 
-  Future<void> _deleteSubject(BuildContext context, SubjectModel subject) async {
+  Future<void> _deleteSubject(
+      BuildContext context, SubjectModel subject) async {
     final confirmed = await showSubjectActionDialog(
       context,
       title: SubjectStrings.deleteSubject,

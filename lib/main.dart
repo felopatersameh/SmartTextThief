@@ -8,7 +8,7 @@ import 'Core/Services/Notifications/notification_model.dart';
 
 import 'Config/di/service_locator.dart';
 import 'Config/setting.dart';
-import 'Core/Services/Firebase/firebase_service.dart';
+import 'Core/Services/Api/api_service.dart';
 import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
@@ -28,9 +28,9 @@ void main() async {
     LocalStorageService.init(),
   ]);
   await Future.wait([
-    getIt<FirebaseServices>().initialize(),
     RealtimeFirebase.initialize(),
     NotificationServices.initFCM(),
+    DioHelper.init()
   ]);
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
   runApp(const MyApp());
@@ -44,8 +44,8 @@ Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
   }
   final NotificationModel message = NotificationModel.fromJson(onData.data);
   await LocalNotificationService.showNotification(
-    title:NotificationType.fromString(message.title).title ,
-    body:  message.body,
+    title: NotificationType.fromString(message.title).title,
+    body: message.body,
   );
 }
 

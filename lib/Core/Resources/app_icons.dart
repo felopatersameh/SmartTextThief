@@ -130,9 +130,10 @@ class AppIcons {
   static const IconData arrowForwardMaterial = Icons.arrow_forward;
   static const IconData eventNoteRounded = Icons.event_note_rounded;
   static const IconData arrowForwardRounded = Icons.arrow_forward_rounded;
+  static const IconData join = Icons.arrow_forward_rounded;
   static const IconData playCircleOutlineRounded =
       Icons.play_circle_outline_rounded;
-  static const IconData accessTimeRounded = Icons.access_time_rounded;
+  static const IconData accessTimeRounded = Icons.access_time_rounded;  
   static const IconData edit = Icons.edit;
   static const IconData uploadFile = Icons.upload_file;
   static const IconData deleteOutline = Icons.delete_outline;

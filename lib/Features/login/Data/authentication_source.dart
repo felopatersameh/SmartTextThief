@@ -1,75 +1,84 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dartz/dartz.dart';
+import 'dart:io';
 
-import '../../../Core/Services/Firebase/failure_model.dart';
-import '../../../Core/Services/Firebase/firebase_service.dart';
-import '../../../Core/Resources/resources.dart';
+import 'package:dartz/dartz.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
+
+import '../../../Config/env_config.dart';
 import '../../../Core/LocalStorage/local_storage_keys.dart';
 import '../../../Core/LocalStorage/local_storage_service.dart';
-import '../../../Core/Utils/Enums/collection_key.dart';
-import '../../../Core/Utils/Enums/data_key.dart';
-import '../../../Core/Utils/Enums/enum_user.dart';
-import '../../../Core/Utils/Models/user_model.dart';
+import '../../../Core/Services/Api/api_endpoints.dart';
+import '../../../Core/Services/Api/api_service.dart';
+import '../../../Core/Services/Firebase/failure_model.dart';
 
 class AuthenticationSource {
-  static Future<bool> checkIsHave(String email) async {
-    final checkIs = await FirebaseServices.instance.checkIsExists(
-      DataKey.userEmail.key,
-      CollectionKey.users.key,
-      email,
-    );
-    return checkIs.status;
-  }
+  static final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   static Future<Either<FailureModel, bool>> loginWithGoogle() async {
     try {
-      final account = await FirebaseServices.instance.google();
-      final isExist = await checkIsHave(account.email);
-      final fcm = await LocalStorageService.getValue(
-        LocalStorageKeys.tokenFCM,
-        defaultValue: "",
+      final webClientId = EnvConfig.googleWebClientId;
+      await _googleSignIn.initialize(
+        clientId: webClientId.isEmpty ? null : webClientId,
       );
-      if (isExist == false) {
-        final UserModel model = UserModel(
-            userId: account.id,
-            userTokensFcm: [fcm],
-            userName: account.displayName.toString(),
-            userEmail: account.email,
-            photo: account.photoUrl ?? "",
-            userPassword: '',
-            userGeminiApiKey: '',
-            userPhone: '',
-            userType: UserType.non,
-            userCreatedAt: DateTime.now(),
-            subscribedTopics: [AppConstants.allUsersTopic]);
+      final account = await _googleSignIn.authenticate();
 
-        final response = await FirebaseServices.instance.createAccount(
-          model.toJson(),
-          model.userId,
+      final response = await DioHelper.postData(
+        path: ApiEndpoints.authGoogle,
+        data: _buildGooglePayload(account),
+      );
+      final body = response.data as Map<String, dynamic>;
+      final token = body[DataKey.token.key];
+      if (token.isEmpty) {
+        return Left(
+          FailureModel(
+            error: body,
+            message: response.message,
+          ),
         );
-        if (response.data == null) return Left(response.failure!);
       }
-      await FirebaseServices.instance.updateData(
-        CollectionKey.users.key,
-        account.id,
-        {
-          DataKey.userTokensFCM.key: FieldValue.arrayUnion([fcm]),
-        },
-      );
-      await LocalStorageService.setValue(LocalStorageKeys.id, account.id);
+      //* then here auth success
+      await LocalStorageService.setValue(LocalStorageKeys.token, token);
       await LocalStorageService.setValue(LocalStorageKeys.isLoggedIn, true);
-      await LocalStorageService.setValue(LocalStorageKeys.email, account.email);
-      await LocalStorageService.setValue(
-        LocalStorageKeys.name,
-        account.displayName,
-      );
-      return Right(true);
+
+      return const Right(true);
     } catch (error) {
-      final FailureModel model = FailureModel(
-        error: error.toString(),
-        message: "",
+      return Left(
+        FailureModel(
+          error: error.toString(),
+          message: "",
+        ),
       );
-      return Left(model);
     }
+  }
+
+  static Future<void> logout() async {
+    try {
+      await DioHelper.postData(path: ApiEndpoints.userLogout);
+    } catch (_) {}
+
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {}
+
+    LocalStorageService.clear();
+  }
+
+  static Map<String, dynamic> _buildGooglePayload(GoogleSignInAccount account) {
+    return {
+      'deviceId': "account.id",
+      'deviceInfo': {
+        'platform': Platform.operatingSystem,
+        'manufacturer': Platform.numberOfProcessors,
+        'model': Platform.pathSeparator,
+        'osVersion': Platform.operatingSystemVersion,
+        'brand': Platform.localHostname,
+      },
+      'clientProfile': {
+        'googleId': account.id,
+        'email': account.email,
+        'name': account.displayName ?? '',
+        'photoUrl': account.photoUrl ?? '',
+      },
+    };
   }
 }

@@ -7,12 +7,9 @@ import '../../../../Core/Utils/Models/subject_model.dart';
 abstract class SubjectRepository {
   Future<Either<String, List<ExamModel>>> getExams(String subjectId);
 
-  Future<Either<FailureModel, List<SubjectModel>>> getSubjects(
-    String email,
-    bool isStudent,
-  );
+  Future<Either<FailureModel, List<SubjectModel>>> getSubjects();
 
-  Future<Either<FailureModel, String>> addSubject(SubjectModel model);
+  Future<Either<FailureModel, SubjectModel>> addSubject(String model);
 
   Future<Either<FailureModel, SubjectModel>> joinSubject(
     String code,

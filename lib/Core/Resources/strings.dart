@@ -68,7 +68,7 @@ class RoleStrings {
   static const String selectYourRole = 'Select your role';
   static const String chooseHowToUse =
       'Choose how you want to use the app first.';
-  static const String iAmTeacher = 'I am a Teacher';
+  static const String iAmTeacher = 'I am a Instructor';
   static const String iAmStudent = 'I am a Student';
   static const String failedToSaveRole = 'Failed to save role, please try again';
 }
@@ -263,6 +263,7 @@ class ProfileStrings {
   static const String geminiApiKey = 'Gemini API Key';
   static const String about = 'About';
   static const String help = 'Help';
+  static const String appVersionPatch = 'Version: 1.0.1';
   static const String logout = 'logOut';
   static const String deleteAccount = 'Delete Account';
   static const String waiting = 'Waiting...';
@@ -330,7 +331,7 @@ class CreateExamStrings {
   static const String examNameHint = 'Enter exam Name';
   static const String examNameTitle = 'Name of Exam';
   static const String contentContextHint =
-      'e.g., Religious, Scientific, Training, etc.';
+      'Write the main focus of the exam';
   static const String contentContextTitle = 'Content Context';
   static const String geminiModelTitle = 'Gemini Model (Optional)';
   static const String geminiModelHint =
@@ -410,6 +411,8 @@ class ViewExamStrings {
 
 class DoExamStrings {
   static const String examFinished = 'Exam finished!';
+  static const String alreadySubmitted =
+      'You already submitted this exam. Retake is not allowed.';
   static const String error = 'Error';
   static const String noQuestionsAvailable = 'No questions available in this exam';
   static const String question = 'Question';

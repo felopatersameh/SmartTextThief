@@ -1,9 +1,9 @@
-import '../../Utils/Models/exam_result_q_a.dart';
+import '../../Utils/Models/create_exam_model.dart';
 
 /// Result wrapper for exam generation
 class ExamGenerationResultModel {
   final bool isSuccess;
-  final List<ExamResultQA>? questions;
+  final List<QuestionsGeneratedModel>? questions;
   final String? errorMessage;
 
   ExamGenerationResultModel._({
@@ -12,7 +12,8 @@ class ExamGenerationResultModel {
     this.errorMessage,
   });
 
-  factory ExamGenerationResultModel.success(List<ExamResultQA> questions) {
+  factory ExamGenerationResultModel.success(
+      List<QuestionsGeneratedModel> questions) {
     return ExamGenerationResultModel._(
       isSuccess: true,
       questions: questions,

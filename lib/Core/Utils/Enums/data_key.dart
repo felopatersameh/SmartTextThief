@@ -5,21 +5,17 @@ enum DataKey {
   updatedAt('updatedAt'),
   createdAt('createdAt'),
   body('body'),
+  token('token'),
   titleTopic('titleTopic'),
   topicId('topicId'),
+  id('id'),
+  id_('_id'),
 
   // 🔹 User fields
-  userId('user_id'),
   photo('photo'),
-  userTokensFCM('user_tokensFCM'),
-  userName('user_name'),
-  userEmail('user_email'),
-  userPassword('user_password'),
-  userGeminiApiKey('user_geminiApiKey'),
-  userPhone('user_phone'),
-  userType('user_type'),
-  userCreatedAt('user_createdAt'),
-  subscribedTopics('subscribedTopics'),
+  name('name'),
+  email('email'),
+  role('role'),
 
   // 🔹 Exam fields
   examId('exam_id'),
@@ -32,35 +28,36 @@ enum DataKey {
   examStatic('exam_static'),
 
   // 🔹 ExamResult subfields
-  examResultEmailSt('examResult_emailSt'),
-  examResultDegree('examResult_degree'),
-  examResultQandA('examResult_Q&A'),
-  typeExam('typeExam'),
-  randomQuestions('randomQuestions'),
-  numberOfQuestions('numberOfQuestions'),
+  examResultEmailSt('examResult_emailSt'), //!
+
+  examResultDegree('examResult_degree'), //!
+
+  examResultQandA('examResult_Q&A'), //!
+
+  type('type'),
+  isRandom('isRandom'),
+  questionCount('questionCount'),
   levelExam('levelExam'),
-  time('time'),
-  geminiModel('geminiModel'),
+  timeMinutes('timeMinutes'),
+  startAt('startAt'),
+  endAt('endAt'),
+  questions('questions'),
+  text('text'),
+  correctAnswer('correctAnswer'),
+  options('options'),
+  choice('choice'),
+
+  geminiModel('geminiModel'), //!
 
   // 🔹 Subject fields
-  subjectIdSubject('subject_idSubject'),
-  subjectCodeSub('subject_codeSub'),
-  subjectNameSubject('subject_nameSubject'),
-  subjectTeacher('subject_teacher'),
-  subjectEmailSts('subject_emailSts'),
-  subjectIsOpen('subject_isOpen'),
-  subjectCreatedAt('subject_createdAt'),
-
-  // 🔹 Teacher object (inside Subject)
-  teacherEmail('teacher_email'),
-  teacherName('teacher_name'),
+  code('code'),
+  instructorInfo('instructorInfo'),
+  status('status'),
 
   // 🔹 ExamResultQA fields (added)
   questionId('questionId'),
   questionType('questionType'),
   questionText('questionText'),
-  options('options'),
-  correctAnswer('correctAnswer'),
   studentAnswer('studentAnswer'),
   score('score'),
   evaluated('evaluated');

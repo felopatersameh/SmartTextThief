@@ -1,18 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:googleapis_auth/auth_io.dart';
 
 import '../../../Config/env_config.dart';
-import '../../LocalStorage/get_local_storage.dart';
-import '../../LocalStorage/local_storage_keys.dart';
-import '../../LocalStorage/local_storage_service.dart';
-import '../../Utils/Enums/collection_key.dart';
 import '../../Utils/Enums/data_key.dart';
-import '../Firebase/firebase_service.dart';
 import 'flutter_local_notifications.dart';
 import 'notification_model.dart';
 
@@ -20,32 +15,39 @@ class NotificationServices {
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
   static final Dio _dio = Dio();
+  static final StreamController<NotificationModel> _notificationsController =
+      StreamController<NotificationModel>.broadcast();
 
   static Function(bool)? onMessageOpenedAppCallback;
   static Function(RemoteMessage)? onMessageCallback;
+
+  static Stream<NotificationModel> get notificationsStream =>
+      _notificationsController.stream;
 
   static Future<void> initFCM() async {
     await LocalNotificationService.initialize();
     await _firebaseMessaging.requestPermission();
 
-    final tokenFCM = await _firebaseMessaging.getToken();
-    final tokenIn = await LocalStorageService.getValue(
-      LocalStorageKeys.tokenFCM,
-      defaultValue: null,
-    );
+    // final tokenFCM = await _firebaseMessaging.getToken();
+    // final tokenIn = await LocalStorageService.getValue(
+    //   LocalStorageKeys.tokenFCM,
+    //   defaultValue: null,
+    // );
 
-    if (tokenFCM != null &&
-        (tokenIn == null || tokenIn.toString() != tokenFCM)) {
-      await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
-    }
+    // if (tokenFCM != null &&
+    //     (tokenIn == null || tokenIn.toString() != tokenFCM)) {
+    //   await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
+    // }
 
     FirebaseMessaging.onMessageOpenedApp.listen((onData) {
       final message = NotificationModel.fromJson(onData.data);
+      _emitNotification(message);
       onMessageOpenedAppCallback?.call(message.topicId.isNotEmpty);
     });
 
     FirebaseMessaging.onMessage.listen((onData) async {
       final message = NotificationModel.fromJson(onData.data);
+      _emitNotification(message);
 
       await LocalNotificationService.showNotification(
         title: message.title,
@@ -57,21 +59,15 @@ class NotificationServices {
   }
 
   static Future<void> subscribeToTopic(String topic) async {
-    final id = GetLocalStorage.getIdUser();
-    final response = await FirebaseServices.instance.updateData(
-      CollectionKey.users.key,
-      id,
-      {
-        DataKey.subscribedTopics.key: FieldValue.arrayUnion([topic]),
-      },
-    );
-
-    if (!response.status) return;
-    await _firebaseMessaging.subscribeToTopic(topic);
+    final normalized = topic.trim();
+    if (normalized.isEmpty) return;
+    await _firebaseMessaging.subscribeToTopic(normalized);
   }
 
   static Future<void> unSubscribeToTopic(String topic) async {
-    await _firebaseMessaging.unsubscribeFromTopic(topic);
+    final normalized = topic.trim();
+    if (normalized.isEmpty) return;
+    await _firebaseMessaging.unsubscribeFromTopic(normalized);
   }
 
   static Future<ServiceAccountCredentials> _loadServiceAccount() async {
@@ -179,19 +175,23 @@ class NotificationServices {
         return false;
       }
 
-      final notificationData = <String, dynamic>{
+      final local = {
         ...?data,
         'id': notificationId,
+        if (data?['createdAt'] == null)
+          'createdAt': DateTime.now().millisecondsSinceEpoch,
+        if (data?['updatedAt'] == null)
+          'updatedAt': DateTime.now().millisecondsSinceEpoch,
       };
-
-      await FirebaseServices.instance.addData(
-        CollectionKey.notification.key,
-        notificationId,
-        notificationData,
-      );
+      _emitNotification(NotificationModel.fromJson(local));
       return true;
     } catch (_) {
       return false;
     }
+  }
+
+  static void _emitNotification(NotificationModel model) {
+    if (_notificationsController.isClosed) return;
+    _notificationsController.add(model);
   }
 }

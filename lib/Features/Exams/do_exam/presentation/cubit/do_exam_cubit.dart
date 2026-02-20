@@ -68,6 +68,24 @@ class DoExamCubit extends Cubit<DoExamState> {
       model.examStatic.randomQuestions,
     );
 
+    final alreadySubmitted = await _repository.hasStudentSubmitted(model);
+    if (alreadySubmitted) {
+      emit(
+        state.copyWith(
+          totalQuestions: totalQuestions,
+          remainingTime: examDuration,
+          loading: false,
+          questions: questions,
+          timerExam: 0,
+          currentQuestionIndex: 0,
+          userAnswers: const {},
+          isExamFinished: false,
+          isBlockedBySubmission: true,
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         totalQuestions: totalQuestions,
@@ -78,6 +96,7 @@ class DoExamCubit extends Cubit<DoExamState> {
         currentQuestionIndex: 0,
         userAnswers: const {},
         isExamFinished: false,
+        isBlockedBySubmission: false,
       ),
     );
 
@@ -154,18 +173,34 @@ class DoExamCubit extends Cubit<DoExamState> {
   }
 
   Future<void> finishExam(ExamModel model) async {
-    if (state.isExamFinished) return;
+    if (state.isExamFinished || state.isBlockedBySubmission) return;
 
-    emit(state.copyWith(isExamFinished: true));
     _examTimer?.cancel();
     _examTimer = null;
 
+    var isNewSubmission = false;
     try {
-      await _repository.submitExam(
+      isNewSubmission = await _repository.submitExam(
         model: model,
         userAnswers: state.userAnswers,
       );
     } catch (_) {}
+
+    if (!isNewSubmission) {
+      emit(
+        state.copyWith(
+          isExamFinished: false,
+          isBlockedBySubmission: true,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          isExamFinished: true,
+          isBlockedBySubmission: false,
+        ),
+      );
+    }
 
     if (listenerId != null) {
       await _repository.unListenLiveExam(listenerId!);
@@ -176,9 +211,11 @@ class DoExamCubit extends Cubit<DoExamState> {
       await _repository.deleteLiveExam(model);
     } catch (_) {}
 
-    try {
-      await _repository.notifySubmitted(model);
-    } catch (_) {}
+    if (isNewSubmission) {
+      try {
+        await _repository.notifySubmitted(model);
+      } catch (_) {}
+    }
   }
 
   bool validateAllQuestionsAnswered() {
@@ -209,10 +246,11 @@ class DoExamCubit extends Cubit<DoExamState> {
   Future<bool> submitExam() async {
     final exam = _currentExam;
     if (exam == null) return false;
+    if (state.isBlockedBySubmission) return false;
     if (!validateAllQuestionsAnswered()) return false;
 
     await finishExam(exam);
-    return true;
+    return !state.isBlockedBySubmission;
   }
 
   Future<void> forceFinishExam() async {

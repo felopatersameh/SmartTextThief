@@ -38,27 +38,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     return result;
   }
 
-  Future<bool> updateGeminiApiKey(String geminiApiKey) async {
-    bool result = false;
-    final response = await ProfileSource.updateGeminiApiKey(geminiApiKey);
-    response.fold(
-      (ifLeft) {
-        result = false;
-      },
-      (ifRight) {
-        result = ifRight;
-      },
-    );
 
-    if (result && state.model != null) {
-      emit(
-        state.copyWith(
-          model: state.model!.copyWith(userGeminiApiKey: geminiApiKey),
-        ),
-      );
-    }
-    return result;
-  }
 
   Future<bool> deleteCurrentUserData() async {
     bool result = false;

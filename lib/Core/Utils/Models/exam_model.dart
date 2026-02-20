@@ -1,162 +1,194 @@
 import 'package:equatable/equatable.dart';
 
-import '../../LocalStorage/get_local_storage.dart';
-import '../Enums/data_key.dart';
 import '../Extensions/date_time_extension.dart';
-import 'exam_exam_result.dart';
-import 'exam_result_static_model.dart';
 
 class ExamModel extends Equatable {
   const ExamModel({
-    required this.examId,
-    required this.examIdSubject,
-    required this.examIdTeacher,
-    required this.examResult,
-    required this.examStatic,
-    required this.examCreatedAt,
-    required this.examFinishAt,
-    required this.startedAt,
+    required this.id,
+    required this.name,
+    required this.levelExam,
+    required this.isRandom,
+    required this.questionCount,
+    required this.timeMinutes,
+    required this.startAt,
+    required this.endAt,
+    required this.createdAt,
+    required this.questions,
   });
 
-  final String examId;
-  final String examIdSubject;
-  final String examIdTeacher;
-  final List<ExamResultModel> examResult;
-  final ExamStaticModel examStatic;
-  final DateTime examCreatedAt;
-  final DateTime examFinishAt;
-  final DateTime startedAt;
-
-  ExamModel copyWith({
-    String? examId,
-    String? examIdSubject,
-    String? examIdTeacher,
-    List<ExamResultModel>? examResult,
-    ExamStaticModel? examStatic,
-    DateTime? examCreatedAt,
-    DateTime? examFinishAt,
-    DateTime? startedAt,
-  }) {
-    return ExamModel(
-      examId: examId ?? this.examId,
-      examIdSubject: examIdSubject ?? this.examIdSubject,
-      examIdTeacher: examIdTeacher ?? this.examIdTeacher,
-      examResult: examResult ?? this.examResult,
-      examStatic: examStatic ?? this.examStatic,
-      examCreatedAt: examCreatedAt ?? this.examCreatedAt,
-      examFinishAt: examFinishAt ?? this.examFinishAt,
-      startedAt: startedAt ?? this.startedAt,
-    );
-  }
+  final String id;
+  final String name;
+  final String levelExam;
+  final bool isRandom;
+  final int questionCount;
+  final int timeMinutes;
+  final DateTime startAt;
+  final DateTime endAt;
+  final DateTime createdAt;
+  final List<QuestionsExam> questions;
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
     return ExamModel(
-      examId: json[DataKey.examId.key] ?? "",
-      examIdSubject: json[DataKey.examIdSubject.key] ?? "",
-      examIdTeacher: json[DataKey.examIdTeacher.key] ?? "",
-      examResult: json[DataKey.examExamResult.key] == null
+      id: json["_id"],
+      name: json["name"],
+      levelExam: json["levelExam"],
+      isRandom: json["isRandom"],
+      questionCount: json["questionCount"],
+      timeMinutes: json["timeMinutes"],
+      startAt: DateTime.tryParse(json["startAt"]) ?? DateTime(2000, 1, 1),
+      endAt: DateTime.tryParse(json["endAt"] ?? "") ?? DateTime(2000, 1, 1),
+      createdAt:
+          DateTime.tryParse(json["createdAt"] ?? "") ?? DateTime(2000, 1, 1),
+      questions: json["questions"] == null
           ? []
-          : List<ExamResultModel>.from(
-              (json[DataKey.examExamResult.key] as List<dynamic>).map(
-                (x) => ExamResultModel.fromJson(x),
-              ),
-            ),
-      examStatic: json[DataKey.examStatic.key] == null
-          ? ExamStaticModel(
-              examResultQA: [],
-              levelExam: json[DataKey.levelExam.key] ?? "",
-              numberOfQuestions: 0,
-              time: "0",
-              typeExam: "",
-            )
-          : ExamStaticModel.fromJson(
-              json[DataKey.examStatic.key] as Map<String, dynamic>,
-            ),
-      examCreatedAt: DateTime.fromMillisecondsSinceEpoch(
-        json[DataKey.examCreatedAt.key],
-      ),
-      examFinishAt: DateTime.fromMillisecondsSinceEpoch(
-        json[DataKey.examFinishAt.key],
-      ),
-      startedAt: DateTime.fromMillisecondsSinceEpoch(
-        json[DataKey.examStartedAt.key],
-      ),
+          : List<QuestionsExam>.from(
+              json["questions"]!.map((x) => QuestionsExam.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        DataKey.examId.key: examId,
-        DataKey.examIdSubject.key: examIdSubject,
-        DataKey.examIdTeacher.key: examIdTeacher,
-        DataKey.examExamResult.key: examResult.map((x) => x.toJson()).toList(),
-        DataKey.examStatic.key: examStatic.toJson(),
-        DataKey.examCreatedAt.key: examCreatedAt.millisecondsSinceEpoch,
-        DataKey.examFinishAt.key: examFinishAt.millisecondsSinceEpoch,
-        DataKey.examStartedAt.key: startedAt.millisecondsSinceEpoch,
+        "_id": id,
+        "name": name,
+        "levelExam": levelExam,
+        "isRandom": isRandom,
+        "questionCount": questionCount,
+        "timeMinutes": timeMinutes,
+        "startAt": startAt.toIso8601String(),
+        "endAt": endAt.toIso8601String(),
+        "createdAt": createdAt.toIso8601String(),
+        "questions": questions.map((x) => x.toJson()).toList(),
       };
 
   @override
   List<Object?> get props => [
-        examId,
-        examIdSubject,
-        examIdTeacher,
-        examResult,
-        examStatic,
-        examCreatedAt,
-        examFinishAt,
-        startedAt,
+        id,
+        name,
+        levelExam,
+        isRandom,
+        questionCount,
+        timeMinutes,
+        startAt,
+        endAt,
+        createdAt,
+        questions,
       ];
+// -------------------- Dates --------------------
 
-  String get created => examCreatedAt.shortMonthYear;
-  String get started => startedAt.fullDateTime;
-  bool get isStart => startedAt.isBefore(DateTime.now());
-  bool get isEnded => examFinishAt.isBefore(DateTime.now());
-  String get ended => examFinishAt.fullDateTime;
-  String get specialIdLiveExam =>
-      "${examId.substring(0, 5)}--${GetLocalStorage.getIdUser().substring(0, 5)}";
-  bool get isTeacher => (examIdTeacher) == (GetLocalStorage.getIdUser());
+  String get created => createdAt.shortMonthYear;
 
-  ExamResultModel? get myTest {
-    final idSt = GetLocalStorage.getEmailUser();
-    final response = examResult.firstWhere(
-      (p0) => idSt == p0.examResultEmailSt,
-      orElse: () => ExamResultModel.noLabel,
-    );
-    if (response == ExamResultModel.noLabel) return null;
-    return response;
-  }
+  String get started => startAt.fullDateTime;
 
-  bool get doExam => (myTest != null);
+  String get ended => endAt.fullDateTime;
 
-  bool get showResult =>
-      ((myTest != null) || (examFinishAt.isBefore(DateTime.now())))
-          ? true
-          : false;
+// -------------------- Status --------------------
+
+  bool get isStart => startAt.isBefore(DateTime.now());
+
+  bool get isEnded => endAt.isBefore(DateTime.now());
+
+// -------------------- Duration --------------------
 
   String get durationBeforeStarted {
     final text = "Started in ";
     final now = DateTime.now();
-    if (now.isAfter(startedAt) && now.isBefore(examFinishAt)) {
+
+    if (now.isAfter(startAt) && now.isBefore(endAt)) {
       return "$text today";
     }
-    final hours = examFinishAt.difference(startedAt).inHours;
-    final day = examFinishAt.difference(startedAt).inDays;
+
+    final hours = endAt.difference(startAt).inHours;
+    final day = endAt.difference(startAt).inDays;
+
     if (hours >= 24) return "$text $day Days";
     return "$text $hours H";
   }
 
   String get durationAfterStarted {
-    final text = "Ended in";
+    final text = "Ended in ";
     final now = DateTime.now();
-    final hours = examFinishAt.difference(now).inHours;
-    final day = examFinishAt.difference(now).inDays;
+
+    final hours = endAt.difference(now).inHours;
+    final day = endAt.difference(now).inDays;
+
     if (hours >= 24) return "$text $day Days";
     return "$text $hours H";
   }
 
-  int get attempts {
-    int attempt = examResult.length;
-    if (!doExam && isEnded) attempt += 1;
-    return attempt;
+
+  bool get doExam => true;
+  bool get showResult => false;
+  int get attempts => 1;
+}
+
+class QuestionsExam extends Equatable {
+  const QuestionsExam({
+    required this.id,
+    required this.text,
+    required this.type,
+    required this.correctAnswer,
+    required this.options,
+  });
+
+  final String? id;
+  final String? text;
+  final String? type;
+  final String? correctAnswer;
+  final List<Option> options;
+
+  factory QuestionsExam.fromJson(Map<String, dynamic> json) {
+    return QuestionsExam(
+      id: json["id"],
+      text: json["text"],
+      type: json["type"],
+      correctAnswer: json["correctAnswer"],
+      options: json["options"] == null
+          ? []
+          : List<Option>.from(json["options"]!.map((x) => Option.fromJson(x))),
+    );
   }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "text": text,
+        "type": type,
+        "correctAnswer": correctAnswer,
+        "options": options.map((x) => x.toJson()).toList(),
+      };
+
+  @override
+  List<Object?> get props => [
+        id,
+        text,
+        type,
+        correctAnswer,
+        options,
+      ];
+}
+
+class Option extends Equatable {
+  const Option({
+    required this.id,
+    required this.choice,
+  });
+
+  final String? id;
+  final String? choice;
+
+  factory Option.fromJson(Map<String, dynamic> json) {
+    return Option(
+      id: json["id"],
+      choice: json["choice"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "choice": choice,
+      };
+
+  @override
+  List<Object?> get props => [
+        id,
+        choice,
+      ];
 }
