@@ -1,4 +1,5 @@
-import '../../Utils/Models/create_exam_model.dart';
+import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dart';
+
 
 /// Result wrapper for exam generation
 class ExamGenerationResultModel {

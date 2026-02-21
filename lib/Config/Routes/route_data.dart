@@ -1,18 +1,12 @@
-import 'package:smart_text_thief/Core/Utils/Models/create-exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 
 class DashboardRouteData {
   const DashboardRouteData({
-    this.subject,
-    this.exams = const [],
-    this.results = const [],
+    this.subjectId,
   });
 
-  final SubjectModel? subject;
-  final List<ExamModel> exams;
-  final List<ExamResultModel> results;
+  final String? subjectId;
 }
 
 class SubjectDetailsRouteData {
@@ -34,7 +28,7 @@ class ViewExamRouteData {
     required this.nameSubject,
   });
 
-  final CreateExam exam;
+  final ExamModel exam;
   final bool isEditMode;
   final String nameSubject;
 }

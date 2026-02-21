@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Core/Resources/resources.dart';
+import '../../../../Core/Resources/resources.dart';
 
 import '../../../../Core/Services/Api/api_endpoints.dart';
 import '../../../../Core/Services/Api/api_service.dart';
@@ -11,19 +11,20 @@ import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 
 class SubjectsRemoteDataSource {
+
   Future<Either<String, List<ExamModel>>> getExams(String subjectId) async {
     try {
       final response = await DioHelper.getData(
         path: ApiEndpoints.subjectGetExams(subjectId),
       );
-      final body = _toMap(response.data);
-      final list = body['data'];
-      if (list is! List) {
+      final body = response.data;
+      print(body);
+      if (body is! List) {
         return const Right(<ExamModel>[]);
       }
 
       final exams = <ExamModel>[
-        for (final item in list)
+        for (final item in body)
           ExamModel.fromJson({
             ..._toMap(item),
           }),
@@ -35,8 +36,7 @@ class SubjectsRemoteDataSource {
     }
   }
 
-  Future<Either<FailureModel, List<SubjectModel>>> getSubjects(
-  ) async {
+  Future<Either<FailureModel, List<SubjectModel>>> getSubjects() async {
     try {
       final response = await DioHelper.getData(path: ApiEndpoints.subjects);
       final data = response.data as List;
@@ -238,4 +238,5 @@ class SubjectsRemoteDataSource {
     if (raw is Map) return Map<String, dynamic>.from(raw);
     return <String, dynamic>{};
   }
+
 }

@@ -14,7 +14,7 @@ import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/LocalStorage/local_storage_service.dart';
 import 'Core/Utils/Enums/notification_type.dart';
-import 'Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import 'Features/Notifications/Presentation/cubit/notifications_cubit.dart';
 import 'Features/Profile/Persentation/cubit/profile_cubit.dart';
 import 'Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'firebase_options.dart';

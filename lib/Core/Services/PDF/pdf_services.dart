@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../Utils/Models/exam_model.dart';
+import '../../Utils/Models/questions_generated_model.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
@@ -17,9 +18,8 @@ class ExamPdfUtil {
   }
 
   static String _sanitizeFileName(String value) {
-    final sanitized = value
-        .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_')
-        .trim();
+    final sanitized =
+        value.replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1F]'), '_').trim();
     return sanitized.isEmpty ? 'exam' : sanitized;
   }
 
@@ -29,7 +29,8 @@ class ExamPdfUtil {
 
     final directories = <Directory>[
       if (Platform.isAndroid)
-        Directory('/storage/emulated/0/Download/SmartTextThief/pdf/$safeSubjectName'),
+        Directory(
+            '/storage/emulated/0/Download/SmartTextThief/pdf/$safeSubjectName'),
       Directory(
         '${Directory.systemTemp.path}/SmartTextThief/pdf/$safeSubjectName',
       ),
@@ -81,7 +82,7 @@ class ExamPdfUtil {
       final logoImage = pw.MemoryImage(imageData.buffer.asUint8List());
 
       // Get exam questions
-      List<QuestionsExam> questions = examData.questions;
+      final List<QuestionsGeneratedModel> questions = examData.questions;
 
       // Create PDF document
       final pdf = pw.Document();
@@ -408,16 +409,17 @@ class ExamPdfUtil {
 
   // Build question widget
   static pw.Widget _buildQuestion(
-    QuestionsExam question,
+    QuestionsGeneratedModel question,
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
     pw.Font fontArabic,
     pw.Font fontArabicBold,
   ) {
-    String questionText = question.text.toString();
-    String questionType = question.type.toString();
-    List<dynamic> options = question.options;
+    final String questionText = question.text;
+    final String questionType = question.type;
+    final List<String> options =
+        question.options.map((option) => option.choice).toList(growable: false);
     bool isQuestionArabic = _isArabic(questionText);
 
     return pw.Container(
@@ -469,7 +471,7 @@ class ExamPdfUtil {
             pw.SizedBox(height: 10),
             ...options.asMap().entries.map((entry) {
               int index = entry.key;
-              String option = entry.value.toString();
+              String option = entry.value;
               String optionLabel = String.fromCharCode(65 + index);
               bool isOptionArabic = _isArabic(option);
 
@@ -539,14 +541,14 @@ class ExamPdfUtil {
 
   // Build answer key
   static pw.Widget _buildAnswerKey(
-    QuestionsExam question,
+    QuestionsGeneratedModel question,
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
     pw.Font fontArabic,
     pw.Font fontArabicBold,
   ) {
-    String correctAnswer = question.correctAnswer.toString();
+    String correctAnswer = question.correctAnswer;
     bool isAnswerArabic = _isArabic(correctAnswer);
 
     return pw.Container(

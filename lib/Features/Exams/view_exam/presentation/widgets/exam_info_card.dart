@@ -34,13 +34,13 @@ class ExamInfoCard extends StatelessWidget {
           _InfoRow(
             icon: AppIcons.signalCellularAlt,
             label: ViewExamStrings.level,
-            value: exam.examStatic.levelExam.name,
+            value: exam.levelExam,
           ),
           SizedBox(height: 8.h),
           _InfoRow(
             icon: AppIcons.numbers,
             label: ViewExamStrings.questions,
-            value: exam.examStatic.numberOfQuestions.toString(),
+            value: exam.questions.length.toString(),
           ),
           SizedBox(height: 8.h),
         ],

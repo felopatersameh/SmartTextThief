@@ -11,7 +11,7 @@ import '../../Core/Utils/Models/subject_model.dart';
 import '../../Features/Exams/do_exam/presentation/pages/do_exam.dart';
 import '../../Features/Exams/view_exam/presentation/pages/view_exam.dart';
 import '../../Features/Main/main_screen.dart';
-import '../../Features/Notifications/Persentation/notification_page.dart';
+import '../../Features/Notifications/Presentation/notification_page.dart';
 import '../../Features/Profile/Persentation/Pages/profile_screen.dart';
 import '../../Features/Splash/splash_screen.dart';
 import '../../Features/Subjects/Persentation/Pages/subject_page.dart';
@@ -249,16 +249,8 @@ class AppRouter {
                 name: NameRoutes.dashboard,
                 path: NameRoutes.dashboard,
                 pageBuilder: (context, state) {
-                  final data = state.extra;
-                  final dashboardData = data is DashboardRouteData
-                      ? data
-                      : const DashboardRouteData();
                   return NoTransitionPage(
-                    child: DashboardScreen(
-                      subject: dashboardData.subject,
-                      exams: dashboardData.exams,
-                      results: dashboardData.results,
-                    ),
+                    child: const DashboardScreen(),
                   );
                 },
               ),
@@ -296,8 +288,8 @@ class AppRouter {
                           final routeData = data is ViewExamRouteData
                               ? data
                               : ViewExamRouteData(
-                                  exam: (data as Map)[
-                                      AppConstants.routeKeyExam] as ExamModel,
+                                  exam: (data as Map)[AppConstants.routeKeyExam]
+                                      as ExamModel,
                                   isEditMode:
                                       data[AppConstants.routeKeyIsEditMode]
                                           as bool,
@@ -335,11 +327,10 @@ class AppRouter {
                       final routeData = data is ViewExamRouteData
                           ? data
                           : ViewExamRouteData(
-                              exam: (data as Map)[
-                                  AppConstants.routeKeyExam] as ExamModel,
+                              exam: (data as Map)[AppConstants.routeKeyExam]
+                                  as ExamModel,
                               isEditMode:
-                                  data[AppConstants.routeKeyIsEditMode]
-                                      as bool,
+                                  data[AppConstants.routeKeyIsEditMode] as bool,
                               nameSubject:
                                   data[AppConstants.routeKeyNameSubject]
                                       as String,

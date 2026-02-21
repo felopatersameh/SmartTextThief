@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import 'package:smart_text_thief/Features/Notifications/Presentation/cubit/notifications_cubit.dart';
 
 import '../../../Config/Routes/app_router.dart';
 import '../../../Core/Resources/resources.dart';

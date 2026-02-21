@@ -89,12 +89,14 @@ class _ViewExamContent extends StatelessWidget {
                             context.read<ViewExamCubit>().changeEndDate(date),
                       ),
                     SizedBox(height: 20.h),
-                    if (!state.isEditMode && state.exam.examResult.isNotEmpty) ...[
+                    if (!state.isEditMode &&
+                        state.exam.examResult.isNotEmpty) ...[
                       StudentSelector(
                         examResults: state.exam.examResult,
                         selectedEmail: state.selectedStudentEmail,
-                        onSelect: (email) =>
-                            context.read<ViewExamCubit>().selectStudentResult(email),
+                        onSelect: (email) => context
+                            .read<ViewExamCubit>()
+                            .selectStudentResult(email),
                       ),
                       SizedBox(height: 20.h),
                     ],
@@ -114,7 +116,7 @@ class _ViewExamContent extends StatelessWidget {
                     ),
                     SizedBox(height: 12.h),
                     QuestionsList(
-                      questions: state.exam.examStatic.examResultQA,
+                      questions: state.exam.questions,
                       isEditMode: state.isEditMode,
                       studentAnswers: state.selectedStudentEmail != null &&
                               state.selectedStudentEmail != ''
@@ -127,8 +129,9 @@ class _ViewExamContent extends StatelessWidget {
                               )
                               .examResultQA
                           : null,
-                      onUpdate: (index, question) =>
-                          context.read<ViewExamCubit>().updateQuestion(index, question),
+                      onUpdate: (index, question) => context
+                          .read<ViewExamCubit>()
+                          .updateQuestion(index, question),
                       onDelete: (index) =>
                           context.read<ViewExamCubit>().deleteQuestion(index),
                     ),
@@ -142,7 +145,8 @@ class _ViewExamContent extends StatelessWidget {
                   CreateButton(
                     onPress: state.loadingSave
                         ? null
-                        : () => context.read<ViewExamCubit>().saveSubmit(context),
+                        : () =>
+                            context.read<ViewExamCubit>().saveSubmit(context),
                     text: state.loadingSave
                         ? ViewExamStrings.saving
                         : ViewExamStrings.saveAndSubmit,

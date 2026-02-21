@@ -8,7 +8,6 @@ import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/PDF/pdf_services.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
@@ -96,6 +95,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         await AppRouter.pushToDoExam<bool>(
                           context,
                           data: DoExamRouteData(exam: exam),
+                          idSubject: selected.subjectId,
                         );
                         if (!context.mounted) return;
                         await context.read<SubjectCubit>().getExams(
@@ -127,7 +127,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             isEditMode: false,
                             nameSubject: selected.subjectName,
                           ),
-                          email: GetLocalStorage.getEmailUser(),
+                          email: GetLocalStorage.getEmailUser(), idSubject: selected.subjectId,
                         );
                       },
                     );
@@ -248,15 +248,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
     SubjectModel subject,
     List<ExamModel> exams,
   ) {
-    final results = <ExamResultModel>[
-      for (final exam in exams) ...exam.examResult,
-    ];
     AppRouter.pushToDashboard(
       context,
       data: DashboardRouteData(
-        subject: subject,
-        exams: exams,
-        results: results,
+        subjectId: subject.subjectId
       ),
     );
   }

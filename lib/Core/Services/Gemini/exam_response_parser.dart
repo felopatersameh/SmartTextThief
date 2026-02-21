@@ -1,5 +1,6 @@
 import 'dart:convert';
-import '../../Utils/Models/create_exam_model.dart';
+import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dart';
+
 
 /// Parser for AI responses
 class ExamResponseParser {
@@ -79,10 +80,10 @@ class ExamResponseParser {
         return false;
       }
 
-      if (q.type == 'multiple_choice' && q.options?.length != 4) {
+      if (q.type == 'multiple_choice' && q.options.length != 4) {
         return false;
       }
-      if (q.type == 'true_false' && q.options?.length != 2) {
+      if (q.type == 'true_false' && q.options.length != 2) {
         return false;
       }
     }

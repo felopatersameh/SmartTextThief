@@ -6,7 +6,7 @@ import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
+import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Exams/view_exam/data/repositories/view_exam_repository.dart';
 
@@ -68,32 +68,29 @@ class ViewExamCubit extends Cubit<ViewExamState> {
     emit(state.copyWith(isEditMode: !state.isEditMode));
   }
 
-  void updateQuestion(int index, ExamResultQA updatedQuestion) {
-    final updatedQuestions = List<ExamResultQA>.from(
-      state.exam.examStatic.examResultQA,
+  void updateQuestion(int index, QuestionsGeneratedModel updatedQuestion) {
+    final updatedQuestions = List<QuestionsGeneratedModel>.from(
+      state.exam.questions,
     );
     updatedQuestions[index] = updatedQuestion;
 
-    final updatedExamStatic = state.exam.examStatic.copyWith(
-      examResultQA: updatedQuestions,
+    final updatedExam = state.exam.copyWith(
+      questions: updatedQuestions,
+      questionCount: updatedQuestions.length,
     );
-
-    final updatedExam = state.exam.copyWith(examStatic: updatedExamStatic);
     emit(state.copyWith(exam: updatedExam));
   }
 
   void deleteQuestion(int index) {
-    final updatedQuestions = List<ExamResultQA>.from(
-      state.exam.examStatic.examResultQA,
+    final updatedQuestions = List<QuestionsGeneratedModel>.from(
+      state.exam.questions,
     );
     updatedQuestions.removeAt(index);
 
-    final updatedExamStatic = state.exam.examStatic.copyWith(
-      examResultQA: updatedQuestions,
-      numberOfQuestions: updatedQuestions.length,
+    final updatedExam = state.exam.copyWith(
+      questions: updatedQuestions,
+      questionCount: updatedQuestions.length,
     );
-
-    final updatedExam = state.exam.copyWith(examStatic: updatedExamStatic);
     emit(state.copyWith(exam: updatedExam));
   }
 

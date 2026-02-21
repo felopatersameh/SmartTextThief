@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../Config/app_config.dart';
-import '../../../Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../../../Notifications/Presentation/cubit/notifications_cubit.dart';
 import '../../../login/Data/authentication_source.dart';
 import '../../../../Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';

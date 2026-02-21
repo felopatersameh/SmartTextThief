@@ -7,7 +7,7 @@ import '../../Features/Exams/do_exam/data/repositories/do_exam_repository.dart';
 import '../../Features/Exams/view_exam/data/datasources/view_exam_remote_data_source.dart';
 import '../../Features/Exams/view_exam/data/repositories/view_exam_repository.dart';
 import '../../Features/Main/cubit/main_cubit.dart';
-import '../../Features/Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../../Features/Notifications/Presentation/cubit/notifications_cubit.dart';
 import '../../Features/Profile/Persentation/cubit/profile_cubit.dart';
 import '../../Features/Subjects/Data/datasources/subjects_remote_data_source.dart';
 import '../../Features/Subjects/Data/repositories/subject_repository_impl.dart';

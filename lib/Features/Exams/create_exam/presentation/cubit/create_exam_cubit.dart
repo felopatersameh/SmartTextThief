@@ -8,7 +8,8 @@ import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Permissions/file_access_permission_service.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/upload_option.dart';
-import 'package:smart_text_thief/Core/Utils/Models/create-exam_model.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/exam_lifecycle_status.dart';
+import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Exams/create_exam/data/models/information_file_model.dart';
@@ -264,9 +265,6 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     final numChose = state.numMultipleChoice;
     final numTF = state.numTrueFalse;
     final numQA = state.numQA;
-    final sum = (int.tryParse(numChose) ?? 0) +
-        (int.tryParse(numTF) ?? 0) +
-        (int.tryParse(numQA) ?? 0);
     final profileApiKey = '';
     // context.read<ProfileCubit>().state.model?.userGeminiApiKey.trim() ?? "";
     final userApiKey = profileApiKey.isNotEmpty
@@ -309,15 +307,22 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       return;
     }
 
-    final exam = CreateExam(
-      endAt: state.endDate!,
-      isRandom: state.canOpenQuestions,
-      levelExam: state.selectedLevel!.name,
+    final draftIdSeed = state.name.trim().isEmpty
+        ? 'draft'
+        : state.name.trim().replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '-');
+    final exam = ExamModel(
+      id: draftIdSeed.isEmpty ? 'draft' : draftIdSeed,
       name: state.name,
-      questions: ,
-      questionCount:sum ,
+      levelExam: state.selectedLevel!.name,
+      isRandom: state.canOpenQuestions,
+      questionCount: questions.length,
+      timeMinutes: state.time.toInt(),
       startAt: state.startDate!,
-       timeMinutes: state.time.toInt(),
+      endAt: state.endDate!,
+      createdAt: DateTime.now(),
+      questions: questions,
+      statusExam: ExamStatus.pendingTime,
+      subjectId: state.subject.subjectId,
     );
 
     await showMessageSnackBar(
@@ -328,11 +333,10 @@ class CreateExamCubit extends Cubit<CreateExamState> {
     if (!context.mounted) return;
     AppRouter.pushToViewExam(
       context,
-      idSubject: state.subject.subjectId ,
+      idSubject: state.subject.subjectId,
       data: ViewExamRouteData(
         exam: exam,
         isEditMode: true,
-
         nameSubject: state.subject.subjectName,
       ),
     );

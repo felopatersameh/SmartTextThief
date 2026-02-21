@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
+import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class QuestionsList extends StatelessWidget {
-  final List<ExamResultQA> questions;
+  final List<QuestionsGeneratedModel> questions;
   final bool isEditMode;
   final List<ExamResultQA>? studentAnswers;
-  final Function(int, ExamResultQA) onUpdate;
+  final Function(int, QuestionsGeneratedModel) onUpdate;
   final Function(int) onDelete;
 
   const QuestionsList({
@@ -49,11 +50,11 @@ class QuestionsList extends StatelessWidget {
 
 // ==================== Question Card ====================
 class _QuestionCard extends StatefulWidget {
-  final ExamResultQA question;
+  final QuestionsGeneratedModel question;
   final int index;
   final bool isEditMode;
   final ExamResultQA? studentAnswer;
-  final Function(ExamResultQA) onUpdate;
+  final Function(QuestionsGeneratedModel) onUpdate;
   final VoidCallback onDelete;
 
   const _QuestionCard({
@@ -77,7 +78,7 @@ class _QuestionCardState extends State<_QuestionCard> {
   void initState() {
     super.initState();
     _questionController = TextEditingController(
-      text: widget.question.questionText,
+      text: widget.question.text,
     );
     _selectedAnswer = widget.question.correctAnswer;
   }
@@ -85,12 +86,12 @@ class _QuestionCardState extends State<_QuestionCard> {
   @override
   void didUpdateWidget(covariant _QuestionCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.question.questionText != widget.question.questionText &&
-        _questionController.text != widget.question.questionText) {
+    if (oldWidget.question.text != widget.question.text &&
+        _questionController.text != widget.question.text) {
       _questionController.value = _questionController.value.copyWith(
-        text: widget.question.questionText,
+        text: widget.question.text,
         selection: TextSelection.collapsed(
-          offset: widget.question.questionText.length,
+          offset: widget.question.text.length,
         ),
         composing: TextRange.empty,
       );
@@ -189,7 +190,8 @@ class _QuestionCardState extends State<_QuestionCard> {
               if (widget.isEditMode) ...[
                 IconButton(
                   onPressed: widget.onDelete,
-                  icon: Icon(AppIcons.delete, color: AppColors.red, size: 20.sp),
+                  icon:
+                      Icon(AppIcons.delete, color: AppColors.red, size: 20.sp),
                 ),
               ],
             ],
@@ -222,13 +224,13 @@ class _QuestionCardState extends State<_QuestionCard> {
                   ),
                   onChanged: (value) {
                     final updatedQuestion = widget.question.copyWith(
-                      questionText: value,
+                      text: value,
                     );
                     widget.onUpdate(updatedQuestion);
                   },
                 )
               : AppCustomText.generate(
-                  text: widget.question.questionText,
+                  text: widget.question.text,
                   textStyle: AppTextStyles.bodyMediumMedium.copyWith(
                     color: AppColors.textWhite,
                   ),
@@ -249,7 +251,7 @@ class _QuestionCardState extends State<_QuestionCard> {
             SizedBox(height: 8.h),
             ...options.asMap().entries.map((entry) {
               final index = entry.key;
-              final option = entry.value;
+              final option = entry.value.choice;
               final isCorrectAnswer = option == _selectedAnswer;
               final isStudentAnswer =
                   widget.studentAnswer?.studentAnswer == option;
@@ -314,7 +316,9 @@ class _QuestionCardState extends State<_QuestionCard> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: isCorrectAnswer || isStudentAnswer
-                                ? (isCorrectAnswer ? AppColors.green : AppColors.red)
+                                ? (isCorrectAnswer
+                                    ? AppColors.green
+                                    : AppColors.red)
                                 : AppColors.transparent,
                             border: Border.all(
                               color: isCorrectAnswer || isStudentAnswer
@@ -362,7 +366,8 @@ class _QuestionCardState extends State<_QuestionCard> {
                         if (!isCorrectAnswer &&
                             isStudentAnswer &&
                             !widget.isEditMode) ...[
-                          Icon(AppIcons.cancel, color: AppColors.red, size: 20.sp),
+                          Icon(AppIcons.cancel,
+                              color: AppColors.red, size: 20.sp),
                         ],
                       ],
                     ),
@@ -434,4 +439,3 @@ class _QuestionCardState extends State<_QuestionCard> {
     );
   }
 }
-

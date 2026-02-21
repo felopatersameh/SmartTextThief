@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../Core/Resources/resources.dart';
 import '../../Config/Routes/name_routes.dart';
 import '../../Config/di/service_locator.dart';
-import '../Notifications/Persentation/cubit/notifications_cubit.dart';
+import '../Notifications/Presentation/cubit/notifications_cubit.dart';
 import 'cubit/main_cubit.dart';
 
 class MainScreen extends StatelessWidget {

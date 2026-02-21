@@ -54,7 +54,7 @@ class ExamCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppCustomText.generate(
-                        text: exam.examStatic.typeExam.toUpperCase(),
+                        text: exam.levelExam.toUpperCase(),
                         textStyle: AppTextStyles.bodyLargeBold.copyWith(
                           color: AppColors.textWhite,
                           fontSize: 15.sp,
@@ -62,7 +62,7 @@ class ExamCard extends StatelessWidget {
                       ),
                       SizedBox(height: 2.h),
                       AppCustomText.generate(
-                        text: '#${exam.examId.substring(5, 10)}',
+                        text: '#${exam.id.substring(5, 10)}',
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
                           color: AppColors.grey400,
                           fontSize: 11.sp,
@@ -182,7 +182,7 @@ class ExamCard extends StatelessWidget {
               child: _buildInfoItem(
                 icon: AppIcons.repeat,
                 label: ExamCardStrings.attempts,
-                value: '${exam.examResult.length}',
+                value: '${0}',
                 color: AppColors.purple,
               ),
             ),
@@ -191,7 +191,7 @@ class ExamCard extends StatelessWidget {
               child: _buildInfoItem(
                 icon: AppIcons.quizOutlined,
                 label: ExamCardStrings.questions,
-                value: '${exam.examStatic.numberOfQuestions}',
+                value: '${exam.questionCount}',
                 color: AppColors.orange,
               ),
             ),
@@ -258,7 +258,7 @@ class ExamCard extends StatelessWidget {
   Widget _buildActionSection() {
     // final Color primary = AppColors.colorPrimary;
 
-    if (exam.isTeacher) {
+    if (exam.doExam) {
       return Row(
         children: [
           Expanded(
