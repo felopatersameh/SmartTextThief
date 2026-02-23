@@ -6,31 +6,11 @@ import '../../../Profile/Persentation/cubit/profile_cubit.dart';
 import '../../../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../../../../Core/Utils/Enums/enum_user.dart';
 import '../../Data/authentication_source.dart';
- 
+
 part 'authentication_state.dart';
 
 class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit() : super(AuthenticationState());
-
-  Future<void> loginByEmail() async {
-    emit(
-      state.copyWith(
-        loading: true,
-        message: "",
-        success: null,
-        requireRoleSelection: false,
-      ),
-    );
-    await Future.delayed(Duration(seconds: 2));
-    emit(
-      state.copyWith(
-        message: "success Login ",
-        success: true,
-        loading: false,
-        requireRoleSelection: false,
-      ),
-    );
-  }
 
   Future<void> loginByGoogle(BuildContext context) async {
     emit(
@@ -63,18 +43,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         );
       },
     );
-  }
-
-  Future<void> loginByFacebook() async {
-    // emit(state.copyWith(loading: true, message: "", success: null));
-    // await Future.delayed(Duration(seconds: 2));
-    // emit(
-    //   state.copyWith(
-    //     message: "success Login By Facebook",
-    //     success: true,
-    //     loading: false,
-    //   ),
-    // );
   }
 
   Future<bool> getDataWhenLogin(BuildContext context) async {

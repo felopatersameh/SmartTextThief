@@ -16,7 +16,6 @@ import 'package:smart_text_thief/Features/Subjects/Domain/usecases/join_subject_
 import 'package:smart_text_thief/Features/Subjects/Domain/usecases/leave_subject_use_case.dart';
 import 'package:smart_text_thief/Features/Subjects/Domain/usecases/search_subjects_use_case.dart';
 import 'package:smart_text_thief/Features/Subjects/Domain/usecases/toggle_subject_open_use_case.dart';
-import 'package:smart_text_thief/Features/Subjects/Domain/usecases/update_subject_use_case.dart';
 
 part 'subjects_state.dart';
 
@@ -34,7 +33,6 @@ class SubjectCubit extends Cubit<SubjectState> {
     _getSubjectExamsUseCase = GetSubjectExamsUseCase(_repository);
     _addSubjectUseCase = AddSubjectUseCase(_repository);
     _joinSubjectUseCase = JoinSubjectUseCase(_repository);
-    _updateSubjectUseCase = UpdateSubjectUseCase(_repository);
     _deleteSubjectUseCase = DeleteSubjectUseCase(_repository);
     _toggleSubjectOpenUseCase = ToggleSubjectOpenUseCase(_repository);
     _leaveSubjectUseCase = LeaveSubjectUseCase(_repository);
@@ -47,7 +45,6 @@ class SubjectCubit extends Cubit<SubjectState> {
   late final GetSubjectExamsUseCase _getSubjectExamsUseCase;
   late final AddSubjectUseCase _addSubjectUseCase;
   late final JoinSubjectUseCase _joinSubjectUseCase;
-  late final UpdateSubjectUseCase _updateSubjectUseCase;
   late final DeleteSubjectUseCase _deleteSubjectUseCase;
   late final ToggleSubjectOpenUseCase _toggleSubjectOpenUseCase;
   late final LeaveSubjectUseCase _leaveSubjectUseCase;
@@ -218,21 +215,7 @@ class SubjectCubit extends Cubit<SubjectState> {
     );
   }
 
-  Future<void> updateSubject(SubjectModel model) async {
-    await _runBoolOperation(
-      operation: () => _updateSubjectUseCase(model),
-      onSuccess: () {
-        _emitSubjects(
-          subjects: _replaceSubject(model),
-          selectedSubject: state.selectedSubject?.subjectId == model.subjectId
-              ? model
-              : state.selectedSubject,
-          action: SubjectAction.updated,
-          error: null,
-        );
-      },
-    );
-  }
+
 
   void searchSubject(String query) {
     emit(

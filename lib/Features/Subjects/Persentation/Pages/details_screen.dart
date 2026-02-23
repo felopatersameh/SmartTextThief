@@ -83,6 +83,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     final exam = exams[index];
                     return ExamCard(
                       exam: exam,
+                      inst:selected.isME ,
                       againTest: () async {
                         if (exam.doExam) {
                           await showMessageSnackBar(
@@ -103,6 +104,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             );
                       },
                       pdf: () async {
+                        if (!selected.isME) return;
                         final canAccessFiles = await FileAccessPermissionService
                             .requestForExamFiles();
                         if (!canAccessFiles) {
@@ -114,10 +116,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           );
                           return;
                         }
-                        await ExamPdfUtil.createExamPdf(
-                          examData: exam,
-                          examInfo: selected,
-                        );
+                          if (!context.mounted) return;
+                        await showMessageSnackBar(context,
+                            title: CreateExamStrings.creating,
+                            type: MessageType.loading,
+                            onLoading: () async =>
+                                await ExamPdfUtil.createExamPdf(
+                                  examData: exam,
+                                  examInfo: selected,
+                                ));
                       },
                       showQA: () {
                         AppRouter.pushToResult(
@@ -127,7 +134,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             isEditMode: false,
                             nameSubject: selected.subjectName,
                           ),
-                          email: GetLocalStorage.getEmailUser(), idSubject: selected.subjectId,
+                          email: GetLocalStorage.getEmailUser(),
+                          idSubject: selected.subjectId,
                         );
                       },
                     );
@@ -153,14 +161,26 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ? () => _openSubjectDashboard(context, selected, exams)
                         : null,
                     onToggleOpen: selected.isME
-                        ? () => _toggleSubjectOpen(context, selected)
+                        ? () => showMessageSnackBar(
+                              context,
+                              title: 'Changing',
+                              type: MessageType.loading,
+                              onLoading: () =>
+                                  _toggleSubjectOpen(context, selected),
+                            )
                         : null,
                     onDeleteSubject: selected.isME
-                        ? () => _deleteSubject(context, selected)
+                        ? () => showMessageSnackBar(context,
+                            title: 'Deleting',
+                            type: MessageType.loading,
+                            onLoading: () => _deleteSubject(context, selected))
                         : null,
                     onLeaveSubject: selected.isME
                         ? null
-                        : () => _leaveSubject(context, selected),
+                        : () => showMessageSnackBar(context,
+                            title: 'Leaving',
+                            type: MessageType.loading,
+                            onLoading: () => _leaveSubject(context, selected)),
                   ),
                 ),
                 body,
@@ -250,9 +270,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   ) {
     AppRouter.pushToDashboard(
       context,
-      data: DashboardRouteData(
-        subjectId: subject.subjectId
-      ),
+      data: DashboardRouteData(subjectId: subject.subjectId),
     );
   }
 }

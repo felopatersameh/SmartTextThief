@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
-import '../../../Features/Exams/create_exam/data/models/information_file_model.dart';
+import '../../../Features/CreateExam/data/models/information_file_model.dart';
 import '../../Utils/Enums/upload_option.dart';
 
 class FileTextExtractor {

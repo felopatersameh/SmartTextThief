@@ -1,35 +1,28 @@
 import 'package:dartz/dartz.dart';
 import '../../../../Core/Resources/resources.dart';
-
 import '../../../../Core/Services/Api/api_endpoints.dart';
 import '../../../../Core/Services/Api/api_service.dart';
 import '../../../../Core/Services/Firebase/failure_model.dart';
 import '../../../../Core/Services/Notifications/notification_model.dart';
 import '../../../../Core/Services/Notifications/notification_services.dart';
+import '../../../../Core/Utils/Enums/data_key.dart';
 import '../../../../Core/Utils/Enums/notification_type.dart';
 import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 
 class SubjectsRemoteDataSource {
-
   Future<Either<String, List<ExamModel>>> getExams(String subjectId) async {
     try {
       final response = await DioHelper.getData(
         path: ApiEndpoints.subjectGetExams(subjectId),
       );
       final body = response.data;
-      print(body);
       if (body is! List) {
         return const Right(<ExamModel>[]);
       }
-
       final exams = <ExamModel>[
-        for (final item in body)
-          ExamModel.fromJson({
-            ..._toMap(item),
-          }),
+        for (final item in body) ExamModel.fromJson(item as Map<String, dynamic>),
       ];
-
       return Right(exams);
     } catch (error) {
       return Left(error.toString());
@@ -40,22 +33,11 @@ class SubjectsRemoteDataSource {
     try {
       final response = await DioHelper.getData(path: ApiEndpoints.subjects);
       final data = response.data as List;
-      final list = <SubjectModel>[];
-      if (data.isEmpty) {
-        return const Right(<SubjectModel>[]);
-      }
-      for (var element in data) {
-        list.add(SubjectModel.fromJson(element));
-      }
-
+      if (data.isEmpty) return const Right(<SubjectModel>[]);
+      final list = data.map((e) => SubjectModel.fromJson(e)).toList();
       return Right(list);
     } catch (error) {
-      return Left(
-        FailureModel(
-          error: error.toString(),
-          message: '',
-        ),
-      );
+      return Left(FailureModel(error: error.toString(), message: ''));
     }
   }
 
@@ -63,56 +45,18 @@ class SubjectsRemoteDataSource {
     try {
       final response = await DioHelper.postData(
         path: ApiEndpoints.subjectCreate,
-        data: {'name': name},
+        data: {DataKey.name.key: name},
       );
-
-      final ok = response.status;
-      if (!ok) {
-        return Left(
-          FailureModel(
-            error: '',
-            message: response.message,
-          ),
-        );
+      if (!response.status) {
+        return Left(FailureModel(error: '', message: response.message));
       }
-      final body = response.data as Map<String, dynamic>;
-      final created = SubjectModel.fromJson(body);
-
-      // await NotificationServices.subscribeToTopic(
-      //     created.subscribeToTopicForAdmin);
-
+      final created = SubjectModel.fromJson(response.data as Map<String, dynamic>);
       return Right(created);
     } catch (error) {
-      return Left(
-        FailureModel(
-          error: error.toString(),
-          message: DataSourceStrings.subjectCreationError,
-        ),
-      );
-    }
-  }
-
-  Future<Either<FailureModel, bool>> updateSubject(SubjectModel model) async {
-    try {
-      final response = await DioHelper.putData(
-        path: ApiEndpoints.subjectUpdateStatus(model.subjectId),
-        data: {
-          'status': model.subjectIsOpen ? 'active' : 'closed',
-        },
-      );
-      final ok =
-          (response.statusCode ?? 0) >= 200 && (response.statusCode ?? 0) < 300;
-      if (!ok) {
-        return Left(_toFailure(_toMap(response.data)));
-      }
-      return const Right(true);
-    } catch (error) {
-      return Left(
-        FailureModel(
-          error: error.toString(),
-          message: '',
-        ),
-      );
+      return Left(FailureModel(
+        error: error.toString(),
+        message: DataSourceStrings.subjectCreationError,
+      ));
     }
   }
 
@@ -123,24 +67,14 @@ class SubjectsRemoteDataSource {
       final response = await DioHelper.deleteData(
         path: ApiEndpoints.subjectRemove(model.subjectId),
       );
-      final ok =
-          (response.statusCode ?? 0) >= 200 && (response.statusCode ?? 0) < 300;
-      if (!ok) {
-        return Left(_toFailure(_toMap(response.data)));
+      if (!response.status) {
+        return Left(FailureModel(error: '', message: response.message));
       }
-      // await NotificationServices.unSubscribeToTopic(
-      //     model.subscribeToTopicForAdmin);
-
       await NotificationServices.unSubscribeToTopic(
           model.subscribeToTopicForMembers);
       return const Right(true);
     } catch (error) {
-      return Left(
-        FailureModel(
-          error: error.toString(),
-          message: '',
-        ),
-      );
+      return Left(FailureModel(error: error.toString(), message: ''));
     }
   }
 
@@ -151,21 +85,14 @@ class SubjectsRemoteDataSource {
     try {
       final response = await DioHelper.putData(
         path: ApiEndpoints.subjectUpdateStatus(model.subjectId),
-        data: {'status': isOpen ? 'active' : 'closed'},
+        data: {DataKey.status.key: isOpen ? 'active' : 'closed'},
       );
-      final ok =
-          (response.statusCode ?? 0) >= 200 && (response.statusCode ?? 0) < 300;
-      if (!ok) {
-        return Left(_toFailure(_toMap(response.data)));
+      if (!response.status) {
+        return Left(FailureModel(error: '', message: response.message));
       }
       return const Right(true);
     } catch (error) {
-      return Left(
-        FailureModel(
-          error: error.toString(),
-          message: '',
-        ),
-      );
+      return Left(FailureModel(error: error.toString(), message: ''));
     }
   }
 
@@ -173,12 +100,10 @@ class SubjectsRemoteDataSource {
     SubjectModel model,
     String studentEmail,
   ) async {
-    return Left(
-      FailureModel(
-        error: 'not_supported',
-        message: 'Leave subject is not supported by current API yet',
-      ),
-    );
+    return Left(FailureModel(
+      error: 'not_supported',
+      message: 'Leave subject is not supported by current API yet',
+    ));
   }
 
   Future<Either<FailureModel, SubjectModel>> joinSubject(
@@ -189,26 +114,17 @@ class SubjectsRemoteDataSource {
     try {
       final response = await DioHelper.postData(
         path: ApiEndpoints.subjectJoin,
-        data: {'code': code},
+        data: {DataKey.code.key: code},
       );
-      final body = _toMap(response.data);
-      final ok = response.status;
-      if (!ok) {
-        return Left(_toFailure(body));
+      if (!response.status) {
+        return Left(FailureModel(error: '', message: response.message));
       }
-
-      final data = SubjectModel.fromJson(_toMap(body['data']));
-      await NotificationServices.subscribeToTopic(
-          data.subscribeToTopicForMembers);
-
+      final data = SubjectModel.fromJson(response.data as Map<String, dynamic>);
+      await NotificationServices.subscribeToTopic(data.subscribeToTopicForMembers);
       final notification = NotificationModel(
         topicId: '',
         type: NotificationType.joinedSubject,
-        body: DataSourceStrings.subjectJoinedBody(
-          name,
-          data.subjectName,
-          4,
-        ),
+        body: DataSourceStrings.subjectJoinedBody(name, data.subjectName, 4),
       );
       await NotificationServices.sendNotificationToTopic(
         id: '${AppConstants.joinedSubjectNotificationPrefix}${data.subjectId}',
@@ -217,26 +133,7 @@ class SubjectsRemoteDataSource {
       );
       return Right(data);
     } catch (error) {
-      return Left(
-        FailureModel(
-          error: error.toString(),
-          message: '',
-        ),
-      );
+      return Left(FailureModel(error: error.toString(), message: ''));
     }
   }
-
-  FailureModel _toFailure(Map<String, dynamic> body) {
-    return FailureModel(
-      error: body,
-      message: body['message']?.toString() ?? 'Request failed',
-    );
-  }
-
-  Map<String, dynamic> _toMap(dynamic raw) {
-    if (raw is Map<String, dynamic>) return raw;
-    if (raw is Map) return Map<String, dynamic>.from(raw);
-    return <String, dynamic>{};
-  }
-
 }

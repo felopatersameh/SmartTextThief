@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import '../../Features/Exams/create_exam/presentation/pages/create_exam_screen.dart';
+import '../../Features/CreateExam/presentation/pages/create_exam_screen.dart';
 import '../../Features/Profile/Persentation/Pages/about_screen.dart';
 import '../../Features/Profile/Persentation/Pages/help_screen.dart';
 
 import '../../Core/Utils/Models/exam_model.dart';
 import '../../Core/Utils/Models/subject_model.dart';
-import '../../Features/Exams/do_exam/presentation/pages/do_exam.dart';
-import '../../Features/Exams/view_exam/presentation/pages/view_exam.dart';
+import '../../Features/DoExam/presentation/pages/do_exam.dart';
+import '../../Features/ViewExam/presentation/pages/view_exam.dart';
 import '../../Features/Main/main_screen.dart';
 import '../../Features/Notifications/Presentation/notification_page.dart';
 import '../../Features/Profile/Persentation/Pages/profile_screen.dart';

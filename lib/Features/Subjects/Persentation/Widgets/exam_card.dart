@@ -6,6 +6,7 @@ import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class ExamCard extends StatelessWidget {
   final ExamModel exam;
+  final bool inst;
   final VoidCallback? againTest;
   final VoidCallback? pdf;
   final VoidCallback? showQA;
@@ -15,7 +16,7 @@ class ExamCard extends StatelessWidget {
     required this.exam,
     this.againTest,
     this.pdf,
-    this.showQA,
+    this.showQA, required this.inst,
   });
 
   @override
@@ -88,7 +89,7 @@ class ExamCard extends StatelessWidget {
                 SizedBox(height: 14.h),
 
                 // Action Section
-                _buildActionSection(),
+                _buildActionSection(inst),
               ],
             ),
           ),
@@ -255,32 +256,16 @@ class ExamCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionSection() {
+  Widget _buildActionSection(bool inst) {
     // final Color primary = AppColors.colorPrimary;
 
     if (exam.doExam) {
-      return Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: _buildActionButton(
-              onPressed: showQA,
-              icon: AppIcons.showQuestions,
-              label: ExamCardStrings.viewResults,
-              isPrimary: true,
-            ),
-          ),
-          SizedBox(width: 8.w),
-          Expanded(
-            flex: 2,
-            child: _buildActionButton(
-              onPressed: pdf,
-              icon: AppIcons.download,
-              label: ExamCardStrings.pdf,
-              isPrimary: false,
-            ),
-          ),
-        ],
+      return _buildActionButton(
+        onPressed: showQA,
+        icon: AppIcons.showQuestions,
+        label: ExamCardStrings.viewResults,
+        isPrimary: true,
+        fullWidth: true
       );
     }
 
@@ -290,7 +275,7 @@ class ExamCard extends StatelessWidget {
         icon: AppIcons.schedule,
         color: AppColors.amber,
       );
-    } else if (exam.isStart && !exam.isEnded) {
+    } else if (exam.isStart && !exam.isEnded && !inst ) {
       if (exam.doExam) {
         return _buildInfoMessage(
           message: ExamCardStrings.waitingForResults,
@@ -319,12 +304,28 @@ class ExamCard extends StatelessWidget {
         );
       }
     } else {
-      return _buildActionButton(
-        onPressed: showQA,
-        icon: AppIcons.showQuestions,
-        label: ExamCardStrings.showMyResults,
-        isPrimary: true,
-        fullWidth: true,
+      return Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: _buildActionButton(
+              onPressed: showQA,
+              icon: AppIcons.showQuestions,
+              label: ExamCardStrings.showMyResults,
+              isPrimary: true,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Expanded(
+            flex: 2,
+            child: _buildActionButton(
+              onPressed: pdf,
+              icon: AppIcons.download,
+              label: ExamCardStrings.pdf,
+              isPrimary: false,
+            ),
+          ),
+        ],
       );
     }
   }

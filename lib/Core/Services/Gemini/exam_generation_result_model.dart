@@ -2,7 +2,7 @@ import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dar
 
 
 /// Result wrapper for exam generation
-class ExamGenerationResultModel {
+class   ExamGenerationResultModel {
   final bool isSuccess;
   final List<QuestionsGeneratedModel>? questions;
   final String? errorMessage;

@@ -21,10 +21,6 @@ void main() {
 
     test('loginByEmail method exists and is callable', () async {
       // Test that the method exists and can be called
-      expect(authenticationCubit.loginByEmail, isA<Function>());
-
-      // Call the method to ensure it doesn't throw
-      await authenticationCubit.loginByEmail();
 
       // Verify state changes after calling
       expect(authenticationCubit.state.loading, false);

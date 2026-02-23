@@ -17,7 +17,6 @@ abstract class SubjectRepository {
     String name,
   );
 
-  Future<Either<FailureModel, bool>> updateSubject(SubjectModel model);
 
   Future<Either<FailureModel, bool>> deleteSubject(SubjectModel model);
 

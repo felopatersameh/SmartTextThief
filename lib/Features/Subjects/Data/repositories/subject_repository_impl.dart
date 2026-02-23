@@ -57,9 +57,4 @@ class SubjectRepositoryImpl implements SubjectRepository {
   ) {
     return _remoteDataSource.toggleSubjectOpen(model, isOpen);
   }
-
-  @override
-  Future<Either<FailureModel, bool>> updateSubject(SubjectModel model) {
-    return _remoteDataSource.updateSubject(model);
-  }
 }

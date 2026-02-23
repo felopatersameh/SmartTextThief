@@ -4,10 +4,10 @@ import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import '../Enums/exam_lifecycle_status.dart';
 import '../Enums/level_exam.dart';
 import '../Extensions/date_time_extension.dart';
-import 'exam_exam_result.dart';
+import 'exam_result.dart';
 import 'exam_result_q_a.dart';
 import 'questions_generated_model.dart';
-import 'result_exam_model.dart';
+import 'result_exam_model.dart';  
 
 class ExamModel extends Equatable {
   const ExamModel({

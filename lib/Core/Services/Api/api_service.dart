@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_response_model.dart';
 
@@ -10,7 +8,7 @@ class DioHelper {
   static late Dio dio;
   static bool _initialized = false;
 
-  static Future<void> init() async{
+  static Future<void> init() async {
     if (_initialized) {
       return;
     }
@@ -36,7 +34,7 @@ class DioHelper {
     Map<String, dynamic>? queryParameters,
   }) async {
     final response = await dio.get(
-      path,   
+      path,
       queryParameters: queryParameters,
     );
     return ApiResponseModel<dynamic>.fromJson(
@@ -50,7 +48,6 @@ class DioHelper {
     dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
-    log("post data");
     final response = await dio.post(
       path,
       data: data,
@@ -62,27 +59,36 @@ class DioHelper {
     );
   }
 
-  static Future<Response<dynamic>> putData({
+  static Future<ApiResponseModel<dynamic>> putData({
     required String path,
     required dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
-    return dio.put(
+    final response = await dio.put(
       path,
       data: data,
       queryParameters: queryParameters,
     );
+    return ApiResponseModel<dynamic>.fromJson(
+      response.data,
+      (p) => p,
+    );
   }
 
-  static Future<Response<dynamic>> deleteData({
+  static Future<ApiResponseModel<dynamic>> deleteData({
     required String path,
     dynamic data,
     Map<String, dynamic>? queryParameters,
   }) async {
-    return dio.delete(
+    final response = await dio.delete(
       path,
       data: data,
       queryParameters: queryParameters,
+    );
+
+    return ApiResponseModel<dynamic>.fromJson(
+      response.data,
+      (p) => p,
     );
   }
 }
