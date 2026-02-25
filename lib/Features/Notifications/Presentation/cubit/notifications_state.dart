@@ -6,7 +6,6 @@ class NotificationsState extends Equatable {
   final bool loading;
   final List<NotificationModel> notificationsList;
   final int badgeCount;
-  final List<String> subscribedTopics;
   final Map<String, StreamSubscription> streamSubscriptions;
   final String? errorMessage;
 
@@ -14,7 +13,6 @@ class NotificationsState extends Equatable {
     this.loading = false,
     this.notificationsList = const [],
     this.badgeCount = 0,
-    this.subscribedTopics = const [],
     this.streamSubscriptions = const {},
     this.errorMessage,
   });
@@ -23,7 +21,6 @@ class NotificationsState extends Equatable {
     bool? loading,
     List<NotificationModel>? notificationsList,
     int? badgeCount,
-    List<String>? subscribedTopics,
     Map<String, StreamSubscription>? streamSubscriptions,
     Object? errorMessage = _noChange,
   }) {
@@ -31,7 +28,6 @@ class NotificationsState extends Equatable {
       loading: loading ?? this.loading,
       notificationsList: notificationsList ?? this.notificationsList,
       badgeCount: badgeCount ?? this.badgeCount,
-      subscribedTopics: subscribedTopics ?? this.subscribedTopics,
       streamSubscriptions: streamSubscriptions ?? this.streamSubscriptions,
       errorMessage: identical(errorMessage, _noChange)
           ? this.errorMessage
@@ -44,7 +40,6 @@ class NotificationsState extends Equatable {
         loading,
         notificationsList,
         badgeCount,
-        subscribedTopics,
         streamSubscriptions,
         errorMessage
       ];

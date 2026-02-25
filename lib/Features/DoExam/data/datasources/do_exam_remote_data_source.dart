@@ -1,14 +1,10 @@
 import 'dart:convert';
 
 import 'package:smart_text_thief/Config/env_config.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Firebase/real_time_firbase.dart';
 import 'package:smart_text_thief/Core/Services/Gemini/api_gemini.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 
 class DoExamRemoteDataSource {
@@ -247,27 +243,4 @@ $payloadJson
     );
   }
 
-  Future<void> notifySubmitted(ExamModel model) async {
-    final nameParts = GetLocalStorage.getNameUser().split(' ');
-    final name = nameParts.length >= 2
-        ? '${nameParts[0]} ${nameParts[1]}'
-        : GetLocalStorage.getNameUser();
-    final membersCount = model.examResult.length;
-    final notification = NotificationModel(
-      id: '${AppConstants.submittedExamNotificationPrefix}${model.examId}',
-      topicId: '${model.examIdSubject}${AppConstants.adminTopicSuffix}',
-      type: NotificationType.submit,
-      body: DataSourceStrings.examSubmittedBody(
-        name,
-        model.examStatic.typeExam,
-        model.specialIdLiveExam,
-        membersCount,
-      ),
-    );
-    await NotificationServices.sendNotificationToTopic(
-      id: notification.id,
-      data: notification.toJson(),
-      stringData: notification.toJsonString(),
-    );
-  }
 }

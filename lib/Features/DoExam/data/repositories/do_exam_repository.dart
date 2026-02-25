@@ -59,7 +59,4 @@ class DoExamRepository {
     return _remoteDataSource.deleteLiveExam(model);
   }
 
-  Future<void> notifySubmitted(ExamModel model) {
-    return _remoteDataSource.notifySubmitted(model);
-  }
 }

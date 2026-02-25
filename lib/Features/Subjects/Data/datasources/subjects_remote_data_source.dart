@@ -1,12 +1,11 @@
+
 import 'package:dartz/dartz.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Services/Api/api_endpoints.dart';
 import '../../../../Core/Services/Api/api_service.dart';
 import '../../../../Core/Services/Firebase/failure_model.dart';
-import '../../../../Core/Services/Notifications/notification_model.dart';
 import '../../../../Core/Services/Notifications/notification_services.dart';
 import '../../../../Core/Utils/Enums/data_key.dart';
-import '../../../../Core/Utils/Enums/notification_type.dart';
 import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 
@@ -21,7 +20,8 @@ class SubjectsRemoteDataSource {
         return const Right(<ExamModel>[]);
       }
       final exams = <ExamModel>[
-        for (final item in body) ExamModel.fromJson(item as Map<String, dynamic>),
+        for (final item in body)
+          ExamModel.fromJson(item as Map<String, dynamic>),
       ];
       return Right(exams);
     } catch (error) {
@@ -50,7 +50,9 @@ class SubjectsRemoteDataSource {
       if (!response.status) {
         return Left(FailureModel(error: '', message: response.message));
       }
-      final created = SubjectModel.fromJson(response.data as Map<String, dynamic>);
+      final created =
+          SubjectModel.fromJson(response.data as Map<String, dynamic>);
+      await NotificationServices.subscribeToTopic(created.topicID);
       return Right(created);
     } catch (error) {
       return Left(FailureModel(
@@ -71,7 +73,8 @@ class SubjectsRemoteDataSource {
         return Left(FailureModel(error: '', message: response.message));
       }
       await NotificationServices.unSubscribeToTopic(
-          model.subscribeToTopicForMembers);
+        model.topicID,
+      );
       return const Right(true);
     } catch (error) {
       return Left(FailureModel(error: error.toString(), message: ''));
@@ -100,6 +103,10 @@ class SubjectsRemoteDataSource {
     SubjectModel model,
     String studentEmail,
   ) async {
+    //  log("leave: ${model.topicID}");
+    //   await NotificationServices.unSubscribeToTopic(
+    //     model.topicID,
+    //   );
     return Left(FailureModel(
       error: 'not_supported',
       message: 'Leave subject is not supported by current API yet',
@@ -120,16 +127,8 @@ class SubjectsRemoteDataSource {
         return Left(FailureModel(error: '', message: response.message));
       }
       final data = SubjectModel.fromJson(response.data as Map<String, dynamic>);
-      await NotificationServices.subscribeToTopic(data.subscribeToTopicForMembers);
-      final notification = NotificationModel(
-        topicId: '',
-        type: NotificationType.joinedSubject,
-        body: DataSourceStrings.subjectJoinedBody(name, data.subjectName, 4),
-      );
-      await NotificationServices.sendNotificationToTopic(
-        id: '${AppConstants.joinedSubjectNotificationPrefix}${data.subjectId}',
-        data: notification.toJson(),
-        stringData: notification.toJsonString(),
+      await NotificationServices.subscribeToTopic(
+        data.topicID,
       );
       return Right(data);
     } catch (error) {

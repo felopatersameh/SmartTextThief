@@ -1,5 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../../Utils/Enums/notification_type.dart';
+
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -40,27 +42,26 @@ class LocalNotificationService {
     if (!_initialized) {
       await initialize();
     }
-
-    const androidDetails = AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      channelDescription: 'This channel is used for important notifications.',
+    final type = NotificationType.fromString(title);
+    final androidDetails = AndroidNotificationDetails(
+      type.channelId,
+      type.channelName,
+      channelDescription: '${type.title} notifications',
       importance: Importance.high,
       priority: Priority.high,
-      ticker: 'ticker',
       playSound: true,
       icon: '@mipmap/launcher_icon',
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
     );
 
     await _notificationsPlugin.show(
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title: title,
+      title: type.title,
       body: body,
-     notificationDetails:  notificationDetails,
+      notificationDetails: notificationDetails,
     );
   }
 }

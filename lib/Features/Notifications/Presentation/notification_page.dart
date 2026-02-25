@@ -23,7 +23,7 @@ class _NotificationPageState extends State<NotificationPage> {
       return;
     }
 
-    final hasUnread = state.notificationsList.any((item) => !item.readOut);
+    final hasUnread = state.notificationsList.any((item) => !item.open);
     if (!hasUnread) return;
 
     _isMarkingReadOut = true;
@@ -37,7 +37,9 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_markAllAsReadOutIfNeeded(context.read<NotificationsCubit>().state));
+      final cubit = context.read<NotificationsCubit>();
+      unawaited(cubit.init());
+      unawaited(_markAllAsReadOutIfNeeded(cubit.state));
     });
 
     super.initState();

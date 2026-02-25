@@ -44,7 +44,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
 
     await Future.wait([
       context.read<SubjectCubit>().init(),
-      context.read<NotificationsCubit>().init([]),
+      context.read<NotificationsCubit>().init(),
     ]);
     if (!mounted) return;
 

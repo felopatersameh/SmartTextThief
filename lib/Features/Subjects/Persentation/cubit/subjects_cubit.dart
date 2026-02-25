@@ -1,3 +1,4 @@
+
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
@@ -17,6 +18,8 @@ import 'package:smart_text_thief/Features/Subjects/Domain/usecases/leave_subject
 import 'package:smart_text_thief/Features/Subjects/Domain/usecases/search_subjects_use_case.dart';
 import 'package:smart_text_thief/Features/Subjects/Domain/usecases/toggle_subject_open_use_case.dart';
 
+import '../../../../Core/Services/Notifications/notification_services.dart';
+
 part 'subjects_state.dart';
 
 class SubjectCubit extends Cubit<SubjectState> {
@@ -27,7 +30,8 @@ class SubjectCubit extends Cubit<SubjectState> {
             SubjectRepositoryImpl(
               remoteDataSource: SubjectsRemoteDataSource(),
             ),
-        _searchSubjectsUseCase = searchSubjectsUseCase ?? SearchSubjectsUseCase(),
+        _searchSubjectsUseCase =
+            searchSubjectsUseCase ?? SearchSubjectsUseCase(),
         super(const SubjectState()) {
     _getSubjectsUseCase = GetSubjectsUseCase(_repository);
     _getSubjectExamsUseCase = GetSubjectExamsUseCase(_repository);
@@ -49,7 +53,7 @@ class SubjectCubit extends Cubit<SubjectState> {
   late final ToggleSubjectOpenUseCase _toggleSubjectOpenUseCase;
   late final LeaveSubjectUseCase _leaveSubjectUseCase;
 
-  Future<void> init() async {
+  Future<List<SubjectModel>> init() async {
     emit(
       state.copyWith(
         loadingSubjects: true,
@@ -76,15 +80,21 @@ class SubjectCubit extends Cubit<SubjectState> {
         action: null,
       ),
     );
+    return state.subjects;
+  }
+
+  Future<void> logOut() async {
+    final list = state.subjects;
+    for (var element in list) {
+      await NotificationServices.unSubscribeToTopic(
+        element.topicID,
+      );
+    }
   }
 
   Future<void> getExams(String subjectId) async {
     emit(
-      state.copyWith(
-        loadingExams: true,
-        error: null,
-        exams: []
-      ),
+      state.copyWith(loadingExams: true, error: null, exams: []),
     );
 
     final response = await _getSubjectExamsUseCase(subjectId);
@@ -215,8 +225,6 @@ class SubjectCubit extends Cubit<SubjectState> {
     );
   }
 
-
-
   void searchSubject(String query) {
     emit(
       state.copyWith(
@@ -252,7 +260,8 @@ class SubjectCubit extends Cubit<SubjectState> {
   }
 
   List<SubjectModel> _upsertSubject(SubjectModel model) {
-    final index = state.subjects.indexWhere((e) => e.subjectId == model.subjectId);
+    final index =
+        state.subjects.indexWhere((e) => e.subjectId == model.subjectId);
     if (index == -1) return [model, ...state.subjects];
 
     final updated = List<SubjectModel>.from(state.subjects);

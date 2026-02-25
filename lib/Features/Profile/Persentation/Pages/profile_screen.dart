@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../../../../Config/app_config.dart';
 import '../../../Notifications/Presentation/cubit/notifications_cubit.dart';
 import '../../../login/Data/authentication_source.dart';
@@ -148,6 +149,8 @@ class ProfileScreen extends StatelessWidget {
                               if (!context.mounted) return;
                               await context.read<NotificationsCubit>().clear();
                               if (!context.mounted) return;
+                              await context.read<SubjectCubit>().logOut();
+                              if (!context.mounted) return;
                               AppRouter.pushToLogin(context);
                             },
                           );
@@ -180,7 +183,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Future<bool?> _showDeleteAccountDialog(BuildContext context) {
     return AppDialogService.showConfirmDialog(

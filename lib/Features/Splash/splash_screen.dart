@@ -5,6 +5,7 @@ import '../../Core/LocalStorage/local_storage_keys.dart';
 import '../../Core/LocalStorage/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
 
+import '../Notifications/Presentation/cubit/notifications_cubit.dart';
 import '../Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../Profile/Persentation/cubit/profile_cubit.dart';
 import '../../Core/Utils/Enums/enum_user.dart';
@@ -77,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       await Future.wait([
         context.read<SubjectCubit>().init(),
-        // context.read<NotificationsCubit>().init(user.subscribedTopics),
+        context.read<NotificationsCubit>().init(),
       ]);
 
       await _smoothProgressUpdate(0.7, 1.0, 2);

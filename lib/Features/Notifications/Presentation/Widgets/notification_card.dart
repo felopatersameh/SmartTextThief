@@ -10,6 +10,9 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showBody = notification.body.trim().isNotEmpty &&
+        notification.body.trim() != notification.title.trim();
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -44,15 +47,41 @@ class NotificationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      notification.body,
+                      notification.title,
                       style: const TextStyle(
                         color: AppColors.textWhite,
                         fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    if (showBody) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        notification.body,
+                        style: TextStyle(
+                          color: AppColors.textWhite.withValues(alpha: 0.85),
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    if (notification.hasDetails) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        notification.detailsText,
+                        style: TextStyle(
+                          color: AppColors.textWhite.withValues(alpha: 0.65),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                     const SizedBox(height: 6),
                     Text(
                       notification.formattedTime,
@@ -65,7 +94,7 @@ class NotificationCard extends StatelessWidget {
                 ),
               ),
               // Read indicator
-              if (!notification.readIn)
+              if (!notification.read)
                 Container(
                   width: 8,
                   height: 8,

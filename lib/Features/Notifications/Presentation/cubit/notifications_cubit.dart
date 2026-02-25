@@ -1,12 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../Core/LocalStorage/get_local_storage.dart';
-import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Services/Notifications/notification_model.dart';
-import '../../../../Core/Services/Notifications/notification_services.dart';
 import '../../Data/notification_source.dart';
 
 part 'notifications_state.dart';
@@ -16,17 +15,10 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
   StreamSubscription? _subscription;
 
-  Future<void> init(List<String> subscribedTopics) async {
-    final normalizedTopics = subscribedTopics
-        .map((topic) => topic.trim())
-        .where((topic) => topic.isNotEmpty)
-        .toSet()
-        .toList();
-
+  Future<void> init() async {
     emit(
       state.copyWith(
         loading: true,
-        subscribedTopics: normalizedTopics,
         errorMessage: null,
       ),
     );
@@ -34,20 +26,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     await _subscription?.cancel();
     _subscription = null;
 
-    if (normalizedTopics.isEmpty) {
-      emit(
-        state.copyWith(
-          loading: false,
-          notificationsList: const [],
-          badgeCount: 0,
-        ),
-      );
-      return;
-    }
-
-    _subscription = NotificationSource.listenNotificationsForTopics(
-      normalizedTopics,
-    ).listen((either) {
+    _subscription =
+        NotificationSource.listenNotificationsForTopics().listen((either) {
       either.fold(
         (failure) {
           emit(
@@ -58,7 +38,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           );
         },
         (notifications) {
-          final unread = notifications.where((item) => !item.readOut).length;
+          log("list :${notifications.toSet()} ");
+          final unread = notifications.where((item) => !item.open).length;
           emit(
             state.copyWith(
               loading: false,
@@ -73,13 +54,12 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   }
 
   Future<void> readout() async {
-    final email = GetLocalStorage.getEmailUser();
-    if (email.isEmpty) return;
+    final email = GetLocalStorage.getEmailUser().trim();
     if (state.notificationsList.isEmpty) return;
 
     bool hasFailure = false;
     for (final notification in state.notificationsList) {
-      if (!notification.readOut) {
+      if (!notification.open) {
         final result =
             await NotificationSource.markReadOut(notification, email);
         result.fold(
@@ -91,9 +71,10 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
     final updated = state.notificationsList.map(
       (item) {
-        if (item.readOut) return item;
-        final readOut = <String>{email, ...item.listReadOut}.toList();
-        return item.copyWith(readOut: readOut);
+        if (item.open) return item;
+        return item.copyWith(
+          open: true,
+        );
       },
     ).toList();
 
@@ -107,8 +88,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   }
 
   Future<void> readIn(String notificationId) async {
-    final email = GetLocalStorage.getEmailUser();
-    if (email.isEmpty) return;
+    final email = GetLocalStorage.getEmailUser().trim();
 
     final index = state.notificationsList.indexWhere(
       (notification) => notification.id == notificationId,
@@ -117,7 +97,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
     final model = state.notificationsList[index];
     bool hasFailure = false;
-    if (!model.readIn) {
+    if (!model.read) {
       final result = await NotificationSource.markReadIn(model, email);
       result.fold(
         (_) => hasFailure = true,
@@ -127,17 +107,20 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
     final updated = state.notificationsList.map((notification) {
       if (notification.id != notificationId) return notification;
-      return notification.readIn
+      return notification.read
           ? notification
           : notification.copyWith(
-              readIn: <String>{email, ...notification.listReadIn}.toList(),
+              read: true,
+              open: true,
             );
     }).toList();
 
     emit(
       state.copyWith(
         notificationsList: updated,
-        errorMessage: hasFailure ? 'Failed to mark notification as readIn' : null,
+        badgeCount: updated.where((item) => !item.open).length,
+        errorMessage:
+            hasFailure ? 'Failed to mark notification as readIn' : null,
       ),
     );
   }
@@ -146,18 +129,11 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     await _subscription?.cancel();
     _subscription = null;
 
-    for (final topic in state.subscribedTopics) {
-      if (keepAllUsers && topic == AppConstants.allUsersTopic) continue;
-      await NotificationServices.unSubscribeToTopic(topic);
-    }
-
     emit(
       state.copyWith(
         loading: false,
         badgeCount: 0,
         notificationsList: const [],
-        subscribedTopics:
-            keepAllUsers ? [AppConstants.allUsersTopic] : const [],
       ),
     );
   }

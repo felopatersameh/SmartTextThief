@@ -211,11 +211,7 @@ class DoExamCubit extends Cubit<DoExamState> {
       await _repository.deleteLiveExam(model);
     } catch (_) {}
 
-    if (isNewSubmission) {
-      try {
-        await _repository.notifySubmitted(model);
-      } catch (_) {}
-    }
+    
   }
 
   bool validateAllQuestionsAnswered() {

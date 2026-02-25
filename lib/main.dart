@@ -13,7 +13,6 @@ import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/LocalStorage/local_storage_service.dart';
-import 'Core/Utils/Enums/notification_type.dart';
 import 'Features/Notifications/Presentation/cubit/notifications_cubit.dart';
 import 'Features/Profile/Persentation/cubit/profile_cubit.dart';
 import 'Features/Subjects/Persentation/cubit/subjects_cubit.dart';
@@ -21,8 +20,10 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setupDependencies();
-  await dotenv.load(fileName: '.env');
+  await Future.wait([
+    setupDependencies(),
+    dotenv.load(fileName: '.env'),
+  ]);
   await Future.wait([
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
     LocalStorageService.init(),
@@ -44,7 +45,7 @@ Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
   }
   final NotificationModel message = NotificationModel.fromJson(onData.data);
   await LocalNotificationService.showNotification(
-    title: NotificationType.fromString(message.title).title,
+    title: message.type,
     body: message.body,
   );
 }

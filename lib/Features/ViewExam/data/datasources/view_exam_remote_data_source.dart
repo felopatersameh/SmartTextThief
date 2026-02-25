@@ -1,10 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_endpoints.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_service.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
-import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/notification_type.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 
@@ -58,20 +54,7 @@ class ViewExamRemoteDataSource {
         return Left(body['message']?.toString() ?? 'Failed to save exam');
       }
 
-      final model = NotificationModel(
-        topicId: examModel.examIdSubject,
-        type: NotificationType.createdExam,
-        body: DataSourceStrings.examCreatedBody(
-          examModel.specialIdLiveExam,
-          nameSubject,
-          examModel.durationBeforeStarted,
-          examModel.durationAfterStarted,
-        ),
-      );
-      await NotificationServices.sendNotificationToTopic(
-        data: model.toJson(),
-        stringData: model.toJsonString(),
-      );
+      
       return const Right(true);
     } catch (error) {
       return Left(error.toString());

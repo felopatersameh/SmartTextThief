@@ -9,6 +9,7 @@ class SubjectModel extends Equatable {
   const SubjectModel({
     required this.subjectId,
     required this.subjectCode,
+    required this.topicID,
     required this.subjectName,
     required this.subjectTeacher,
     required this.subjectIsOpen,
@@ -18,6 +19,7 @@ class SubjectModel extends Equatable {
   final String subjectId;
   final String subjectCode;
   final String subjectName;
+  final String topicID;
   final SubjectTeacher subjectTeacher;
   final bool subjectIsOpen;
   final DateTime subjectCreatedAt;
@@ -26,6 +28,7 @@ class SubjectModel extends Equatable {
     String? subjectId,
     String? subjectCode,
     String? subjectName,
+    String? topicID,
     SubjectTeacher? subjectTeacher,
     List<String>? subjectEmailSts,
     bool? subjectIsOpen,
@@ -34,6 +37,7 @@ class SubjectModel extends Equatable {
     return SubjectModel(
       subjectId: subjectId ?? this.subjectId,
       subjectCode: subjectCode ?? this.subjectCode,
+      topicID: topicID ?? this.topicID,
       subjectName: subjectName ?? this.subjectName,
       subjectTeacher: subjectTeacher ?? this.subjectTeacher,
       subjectIsOpen: subjectIsOpen ?? this.subjectIsOpen,
@@ -58,6 +62,7 @@ class SubjectModel extends Equatable {
       subjectName: (json[DataKey.name.key]).toString(),
       subjectTeacher: SubjectTeacher.fromJson(json[DataKey.instructorInfo.key]),
       subjectIsOpen: status,
+      topicID: (json[DataKey.topicId.key]).toString(),
       subjectCreatedAt: parseDate(json[DataKey.createdAt.key]),
     );
   }
@@ -68,6 +73,7 @@ class SubjectModel extends Equatable {
         subjectCode,
         subjectName,
         subjectTeacher,
+        topicID,
         subjectIsOpen,
         subjectCreatedAt,
       ];

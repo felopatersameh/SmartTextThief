@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static var baseUrl = 'http://192.168.1.12:8080/';
+  static var baseUrl = 'https://apitextthief-production.up.railway.app/';
 
   static const String authGoogle = 'auth/google';
   static const String userProfile = 'v1/user';
@@ -16,5 +16,5 @@ class ApiEndpoints {
   static String subjectRemove(String id) => 'v1/subject/$id/remove';
   static String subjectCreateExam(String id) => 'v1/subject/$id/create_exam';
   static String subjectGetExams(String id) => 'v1/subject/$id/get_exams';
+  static const String notifications = 'v1/notifications';
 }
-  
