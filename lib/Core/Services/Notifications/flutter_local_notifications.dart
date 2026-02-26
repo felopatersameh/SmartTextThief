@@ -6,8 +6,14 @@ class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
   static bool _initialized = false;
+  static void Function(String? payload)? _onNotificationTap;
 
-  static Future<void> initialize() async {
+  static Future<void> initialize({
+    void Function(String? payload)? onNotificationTap,
+  }) async {
+    if (onNotificationTap != null) {
+      _onNotificationTap = onNotificationTap;
+    }
     if (_initialized) return;
 
     const initializationSettingsAndroid =
@@ -18,6 +24,9 @@ class LocalNotificationService {
 
     await _notificationsPlugin.initialize(
       settings: initializationSettings,
+      onDidReceiveNotificationResponse: (response) {
+        _onNotificationTap?.call(response.payload);
+      },
     );
 
     const channel = AndroidNotificationChannel(
@@ -32,12 +41,19 @@ class LocalNotificationService {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
+    final launchDetails = await _notificationsPlugin
+        .getNotificationAppLaunchDetails();
+    if (launchDetails?.didNotificationLaunchApp ?? false) {
+      _onNotificationTap?.call(launchDetails?.notificationResponse?.payload);
+    }
+
     _initialized = true;
   }
 
   static Future<void> showNotification({
     required String title,
     required String body,
+    String? payload,
   }) async {
     if (!_initialized) {
       await initialize();
@@ -51,13 +67,11 @@ class LocalNotificationService {
       priority: Priority.high,
       playSound: true,
       icon: '@mipmap/launcher_icon',
-    styleInformation: BigTextStyleInformation(
-      body,
-      contentTitle: type.title,
-      summaryText: body,
-    ),
-
-
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: type.title,
+        summaryText: body,
+      ),
     );
 
     final notificationDetails = NotificationDetails(
@@ -69,6 +83,7 @@ class LocalNotificationService {
       title: type.title,
       body: body,
       notificationDetails: notificationDetails,
+      payload: payload,
     );
   }
 }

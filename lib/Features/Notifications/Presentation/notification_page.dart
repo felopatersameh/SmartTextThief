@@ -16,30 +16,13 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  bool _isMarkingReadOut = false;
-
-  Future<void> _markAllAsReadOutIfNeeded(NotificationsState state) async {
-    if (_isMarkingReadOut || state.loading || state.notificationsList.isEmpty) {
-      return;
-    }
-
-    final hasUnread = state.notificationsList.any((item) => !item.open);
-    if (!hasUnread) return;
-
-    _isMarkingReadOut = true;
-    try {
-      await context.read<NotificationsCubit>().readout();
-    } finally {
-      _isMarkingReadOut = false;
-    }
-  }
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cubit = context.read<NotificationsCubit>();
-      unawaited(cubit.init());
-      unawaited(_markAllAsReadOutIfNeeded(cubit.state));
+      unawaited(
+        cubit.ensureInitialized().then((_) => cubit.markAllAsRead()),
+      );
     });
 
     super.initState();
@@ -50,9 +33,7 @@ class _NotificationPageState extends State<NotificationPage> {
     return Scaffold(
       appBar: AppBar(title: Text(NameRoutes.notification.titleAppBar)),
       body: BlocConsumer<NotificationsCubit, NotificationsState>(
-        listener: (context, state) {
-          unawaited(_markAllAsReadOutIfNeeded(state));
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           if (state.loading) {
             return const Center(child: CircularProgressIndicator());
@@ -60,58 +41,61 @@ class _NotificationPageState extends State<NotificationPage> {
 
           final notifications = state.notificationsList;
 
-          return CustomScrollView(
-            physics: AppConfig.physicsCustomScrollView,
-            slivers: [
-              // Notifications list
-              notifications.isEmpty
-                  ? SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              AppIcons.notificationsNone,
-                              size: 80,
-                              color: AppColors.white38,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              NotificationStrings.noNotificationsYet,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(color: AppColors.white70),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              NotificationStrings.noNotificationsHint,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: AppColors.white54),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+          return RefreshIndicator(
+            onRefresh: () => context.read<NotificationsCubit>().refresh(),
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: AppConfig.physicsCustomScrollView,
+              ),
+              slivers: [
+                notifications.isEmpty
+                    ? SliverFillRemaining(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                AppIcons.notificationsNone,
+                                size: 80,
+                                color: AppColors.white38,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                NotificationStrings.noNotificationsYet,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(color: AppColors.white70),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                NotificationStrings.noNotificationsHint,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.white54),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
+                      )
+                    : SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return NotificationCard(
+                            notification: notifications[index],
+                            onTap: () async {
+                              final id = notifications[index].id;
+                              await context
+                                  .read<NotificationsCubit>()
+                                  .openNotification(id);
+                            },
+                          );
+                        }, childCount: notifications.length),
                       ),
-                    )
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return NotificationCard(
-                          notification: notifications[index],
-                          onTap: () async {
-                            await context.read<NotificationsCubit>().readIn(
-                                  notifications[index].id,
-                                );
-                          },
-                        );
-                      }, childCount: notifications.length),
-                    ),
-
-              // Bottom spacing
-              const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            ],
+                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              ],
+            ),
           );
         },
       ),

@@ -17,4 +17,6 @@ class ApiEndpoints {
   static String subjectCreateExam(String id) => 'v1/subject/$id/create_exam';
   static String subjectGetExams(String id) => 'v1/subject/$id/get_exams';
   static const String notifications = 'v1/notifications';
+  static const String notificationsRead = 'v1/notifications/read';
+  static const String notificationsOpen = 'v1/notifications/open';
 }

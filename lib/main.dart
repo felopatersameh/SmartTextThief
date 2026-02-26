@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +44,7 @@ Future<void> handlerOnBackgroundMessage(RemoteMessage onData) async {
   await LocalNotificationService.showNotification(
     title: message.type,
     body: message.body,
+    payload: jsonEncode(message.toJson()),
   );
 }
 
@@ -57,11 +60,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await AppScreenOrientationHelper.lockPortrait();
-      NotificationServices.onMessageOpenedAppCallback = (onData) {
-        if (onData) {
-          AppRouter.goNamedByPath(context, NameRoutes.notification);
-        }
-      };
+      NotificationServices.setOnNotificationTapCallback((message) async {
+        await getIt<NotificationsCubit>().openNotification(message.id);
+        await getIt<NotificationsCubit>().markNotificationRead(message.id);
+        if (!mounted || message.topicId.isEmpty) return;
+        AppRouter.goNamedByPath(context, NameRoutes.notification);
+      });
     });
     super.initState();
   }

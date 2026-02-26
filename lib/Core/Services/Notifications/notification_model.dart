@@ -237,8 +237,8 @@ class NotificationModel extends Equatable {
 
     final readOut = _parseStringList(json['readOut']);
     final readIn = _parseStringList(json['readIn']);
-    final read = _parseBool(json['read']) ?? _isCurrentUserIn(readIn);
-    final open = _parseBool(json['open']) ?? _isCurrentUserIn(readOut);
+    final read = _parseBool(json['isRead']) ?? _isCurrentUserIn(readIn);
+    final open = _parseBool(json['isOpen']) ?? _isCurrentUserIn(readOut);
 
     final rawId = _firstNonEmpty([json['id'], json['_id']]);
     final fallbackId =
@@ -289,8 +289,8 @@ class NotificationModel extends Equatable {
       },
       'createdAt': _createdAt?.toIso8601String(),
       'updatedAt': _updatedAt?.toIso8601String(),
-      'read': _read,
-      'open': _open,
+      'isRead': _read,
+      'isOpen': _open,
       'titleTopic': _titleTopic.name,
       'body': _body,
     };
@@ -310,8 +310,8 @@ class NotificationModel extends Equatable {
       'updatedAt': (_updatedAt?.millisecondsSinceEpoch ??
               DateTime.now().millisecondsSinceEpoch)
           .toString(),
-      'read': _read.toString(),
-      'open': _open.toString(),
+      'isRead': _read.toString(),
+      'isOpen': _open.toString(),
     };
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,12 +15,30 @@ class NotificationServices {
 
   static Function(bool)? onMessageOpenedAppCallback;
   static Function(RemoteMessage)? onMessageCallback;
+  static Future<void> Function(NotificationModel)? _onNotificationTapCallback;
+  static final List<NotificationModel> _pendingTappedNotifications =
+      <NotificationModel>[];
 
   static Stream<NotificationModel> get notificationsStream =>
       _notificationsController.stream;
 
+  static void setOnNotificationTapCallback(
+    Future<void> Function(NotificationModel)? callback,
+  ) {
+    _onNotificationTapCallback = callback;
+    if (callback == null || _pendingTappedNotifications.isEmpty) return;
+
+    final pending = List<NotificationModel>.from(_pendingTappedNotifications);
+    _pendingTappedNotifications.clear();
+    for (final notification in pending) {
+      unawaited(callback(notification));
+    }
+  }
+
   static Future<void> initFCM() async {
-    await LocalNotificationService.initialize();
+    await LocalNotificationService.initialize(
+      onNotificationTap: _handleLocalNotificationTapPayload,
+    );
     await _firebaseMessaging.requestPermission();
 
     // final tokenFCM = await _firebaseMessaging.getToken();
@@ -33,10 +52,10 @@ class NotificationServices {
     //   await LocalStorageService.setValue(LocalStorageKeys.tokenFCM, tokenFCM);
     // }
 
-    FirebaseMessaging.onMessageOpenedApp.listen((onData) {
+    FirebaseMessaging.onMessageOpenedApp.listen((onData) async {
       final message = NotificationModel.fromJson(onData.data);
       _emitNotification(message);
-      onMessageOpenedAppCallback?.call(message.topicId.isNotEmpty);
+      await _handleNotificationTap(message);
     });
 
     FirebaseMessaging.onMessage.listen((onData) async {
@@ -46,10 +65,18 @@ class NotificationServices {
       await LocalNotificationService.showNotification(
         title: message.type,
         body: message.body,
+        payload: jsonEncode(message.toJson()),
       );
 
       onMessageCallback?.call(onData);
     });
+
+    final initialMessage = await _firebaseMessaging.getInitialMessage();
+    if (initialMessage != null) {
+      final message = NotificationModel.fromJson(initialMessage.data);
+      _emitNotification(message);
+      await _handleNotificationTap(message);
+    }
   }
 
   static Future<void> subscribeToTopic(String topic) async {
@@ -188,5 +215,35 @@ class NotificationServices {
     if (_notificationsController.isClosed) return;
     _notificationsController.add(model);
     log("notification::${model.toJson()}");
+  }
+
+  static Future<void> _handleLocalNotificationTapPayload(
+    String? payload,
+  ) async {
+    final rawPayload = payload?.trim() ?? '';
+    if (rawPayload.isEmpty) return;
+
+    try {
+      final decoded = jsonDecode(rawPayload);
+      if (decoded is! Map) return;
+
+      final message = NotificationModel.fromJson(
+        Map<String, dynamic>.from(decoded),
+      );
+      _emitNotification(message);
+      await _handleNotificationTap(message);
+    } catch (_) {}
+  }
+
+  static Future<void> _handleNotificationTap(NotificationModel message) async {
+    onMessageOpenedAppCallback?.call(message.topicId.isNotEmpty);
+
+    final callback = _onNotificationTapCallback;
+    if (callback == null) {
+      _pendingTappedNotifications.add(message);
+      return;
+    }
+
+    await callback(message);
   }
 }
