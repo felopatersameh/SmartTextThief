@@ -228,6 +228,7 @@ class NotificationModel extends Equatable {
       json['type'],
       json['titleTopic'],
       content['type'],
+      content['content'],
     ]);
     final title = _firstNonEmpty([content['title'], json['title']]);
     final body = _firstNonEmpty([content['body'], json['body']]);

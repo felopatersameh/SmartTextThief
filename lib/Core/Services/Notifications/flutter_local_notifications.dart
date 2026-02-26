@@ -51,6 +51,13 @@ class LocalNotificationService {
       priority: Priority.high,
       playSound: true,
       icon: '@mipmap/launcher_icon',
+    styleInformation: BigTextStyleInformation(
+      body,
+      contentTitle: type.title,
+      summaryText: body,
+    ),
+
+
     );
 
     final notificationDetails = NotificationDetails(

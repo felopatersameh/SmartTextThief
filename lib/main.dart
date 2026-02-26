@@ -9,7 +9,6 @@ import 'Core/Services/Notifications/notification_model.dart';
 import 'Config/di/service_locator.dart';
 import 'Config/setting.dart';
 import 'Core/Services/Api/api_service.dart';
-import 'Core/Services/Firebase/real_time_firbase.dart';
 import 'Core/Services/Notifications/flutter_local_notifications.dart';
 import 'Core/Services/Notifications/notification_services.dart';
 import 'Core/LocalStorage/local_storage_service.dart';
@@ -28,11 +27,7 @@ void main() async {
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
     LocalStorageService.init(),
   ]);
-  await Future.wait([
-    RealtimeFirebase.initialize(),
-    NotificationServices.initFCM(),
-    DioHelper.init()
-  ]);
+  await Future.wait([NotificationServices.initFCM(), DioHelper.init()]);
   FirebaseMessaging.onBackgroundMessage(handlerOnBackgroundMessage);
   runApp(const MyApp());
 }
