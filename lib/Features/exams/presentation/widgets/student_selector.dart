@@ -5,16 +5,16 @@ import 'package:smart_text_thief/Core/Utils/Models/exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class StudentSelector extends StatelessWidget {
-  final List<ExamResultModel> examResults;
-  final String? selectedEmail;
-  final Function(String) onSelect;
-
   const StudentSelector({
     super.key,
     required this.examResults,
     required this.selectedEmail,
     required this.onSelect,
   });
+
+  final List<ExamResultModel> examResults;
+  final String? selectedEmail;
+  final ValueChanged<String> onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +43,7 @@ class StudentSelector extends StatelessWidget {
             runSpacing: 8.h,
             children: examResults.map((result) {
               final isSelected = selectedEmail == result.examResultEmailSt;
+
               return GestureDetector(
                 onTap: () => onSelect(result.examResultEmailSt),
                 child: Container(
@@ -68,7 +69,6 @@ class StudentSelector extends StatelessWidget {
                         text: result.examResultEmailSt,
                         textStyle: AppTextStyles.bodySmallMedium.copyWith(
                           color: AppColors.textWhite,
-                          fontSize: 12.sp,
                         ),
                       ),
                       SizedBox(width: 6.w),
@@ -89,7 +89,6 @@ class StudentSelector extends StatelessWidget {
                             color: isSelected
                                 ? AppColors.textWhite
                                 : AppColors.colorPrimary,
-                            fontSize: 10.sp,
                           ),
                         ),
                       ),

@@ -6,10 +6,12 @@ import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Config/di/service_locator.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
+import 'package:smart_text_thief/Core/Utils/Widget/ButtonsStyle/create_button.dart'
+    as core_button;
+import 'package:smart_text_thief/Core/Utils/Widget/exam_date_section.dart'
+    as core_date;
 import 'package:smart_text_thief/Features/CreateExam/data/repositories/create_exam_repository.dart';
 import 'package:smart_text_thief/Features/CreateExam/presentation/cubit/create_exam_cubit.dart';
-import 'package:smart_text_thief/Features/CreateExam/presentation/widgets/create_button.dart';
-import 'package:smart_text_thief/Features/CreateExam/presentation/widgets/exam_date_section.dart';
 import 'package:smart_text_thief/Features/CreateExam/presentation/widgets/level_dropdown.dart';
 import 'package:smart_text_thief/Features/CreateExam/presentation/widgets/question_numbers_row.dart';
 import 'package:smart_text_thief/Features/CreateExam/presentation/widgets/type_exam_field.dart';
@@ -89,7 +91,7 @@ class _CreateExamBody extends StatelessWidget {
             ),
             QuestionNumbersRow(state: state),
             SizedBox(height: 5.h),
-            ExamDateSection(
+            core_date.ExamDateSection(
               startDate: state.startDate,
               endDate: state.endDate,
               onStartChanged: (date) => cubit.changeStartDate(date),
@@ -99,7 +101,7 @@ class _CreateExamBody extends StatelessWidget {
             UploadOptionSection(state: state),
             SizedBox(height: 5.h),
             const Spacer(),
-            CreateButton(
+            core_button.CreateButton(
               onPress: cubit.state.loadingCreating
                   ? null
                   : () async => await cubit.submitExam(context),

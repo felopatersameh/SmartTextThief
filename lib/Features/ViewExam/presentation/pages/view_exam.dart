@@ -2,20 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Config/di/service_locator.dart';
-import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/screenshot_protection_service.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
-import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'package:smart_text_thief/Features/ViewExam/data/repositories/view_exam_repository.dart';
-import 'package:smart_text_thief/Features/ViewExam/presentation/cubit/view_exam_cubit.dart';
-import 'package:smart_text_thief/Features/ViewExam/presentation/widgets/create_button.dart';
-import 'package:smart_text_thief/Features/ViewExam/presentation/widgets/exam_date_section.dart';
-import 'package:smart_text_thief/Features/ViewExam/presentation/widgets/exam_info_card.dart';
-import 'package:smart_text_thief/Features/ViewExam/presentation/widgets/questions_list.dart';
-import 'package:smart_text_thief/Features/ViewExam/presentation/widgets/student_selector.dart';
+import 'package:smart_text_thief/Features/exams/presentation/cubits/student_result/student_result_cubit.dart';
+import 'package:smart_text_thief/Features/exams/presentation/cubits/teacher_result/teacher_result_cubit.dart';
+import 'package:smart_text_thief/Features/exams/presentation/enums/exam_mode.dart';
+import 'package:smart_text_thief/Features/exams/presentation/screens/exam_view.dart';
 
 class ViewExam extends StatefulWidget {
   const ViewExam({
@@ -48,114 +42,84 @@ class _ViewExamState extends State<ViewExam> {
 
   @override
   Widget build(BuildContext context) {
+    final isTeacherFlow = widget.isEditMode || widget.examModel.isTeacher;
+    if (isTeacherFlow) {
+      return BlocProvider(
+        create: (context) => TeacherResultCubit(
+          exam: widget.examModel,
+          isEditMode: widget.isEditMode,
+          nameSubject: widget.nameSubject,
+          repository: getIt<ViewExamRepository>(),
+        ),
+        child: _TeacherExamContent(
+          mode: widget.isEditMode ? ExamMode.create : ExamMode.teacherResult,
+        ),
+      );
+    }
+
     return BlocProvider(
-      create: (context) => ViewExamCubit(
+      create: (context) => StudentResultCubit(
         exam: widget.examModel,
-        isEditMode: widget.isEditMode,
-        nameSubject: widget.nameSubject,
         repository: getIt<ViewExamRepository>(),
       )..init(),
-      child: const _ViewExamContent(),
+      child: const _StudentExamContent(),
     );
   }
 }
 
-class _ViewExamContent extends StatelessWidget {
-  const _ViewExamContent();
+class _TeacherExamContent extends StatelessWidget {
+  const _TeacherExamContent({required this.mode});
+
+  final ExamMode mode;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ViewExamCubit, ViewExamState>(
+    return BlocBuilder<TeacherResultCubit, TeacherResultState>(
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: Text(state.exam.examStatic.typeExam)),
-          body: CustomScrollView(
-            physics: AppConfig.physicsCustomScrollView,
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.all(16.w),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    ExamInfoCard(exam: state.exam),
-                    SizedBox(height: 16.h),
-                    if (!state.exam.isEnded)
-                      ExamDateSection(
-                        startDate: state.startDate,
-                        endDate: state.endDate,
-                        isEditMode: state.isEditMode,
-                        onStartChanged: (date) =>
-                            context.read<ViewExamCubit>().changeStartDate(date),
-                        onEndChanged: (date) =>
-                            context.read<ViewExamCubit>().changeEndDate(date),
-                      ),
-                    SizedBox(height: 20.h),
-                    if (!state.isEditMode &&
-                        state.exam.examResult.isNotEmpty) ...[
-                      StudentSelector(
-                        examResults: state.exam.examResult,
-                        selectedEmail: state.selectedStudentEmail,
-                        onSelect: (email) => context
-                            .read<ViewExamCubit>()
-                            .selectStudentResult(email),
-                      ),
-                      SizedBox(height: 20.h),
-                    ],
-                    AppCustomText.generate(
-                      text: state.isEditMode
-                          ? ViewExamStrings.questionsEditMode
-                          : ViewExamStrings.resultsTitle(
-                              int.tryParse(
-                                    state.exam.myTest?.examResultDegree ?? '0',
-                                  ) ??
-                                  0,
-                              state.exam.examStatic.numberOfQuestions,
-                            ),
-                      textStyle: AppTextStyles.h5SemiBold.copyWith(
-                        color: AppColors.textWhite,
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    QuestionsList(
-                      questions: state.exam.questions,
-                      isEditMode: state.isEditMode,
-                      studentAnswers: state.selectedStudentEmail != null &&
-                              state.selectedStudentEmail != ''
-                          ? state.exam.examResult
-                              .firstWhere(
-                                (result) =>
-                                    result.examResultEmailSt ==
-                                    state.selectedStudentEmail,
-                                orElse: () => state.exam.examResult.first,
-                              )
-                              .examResultQA
-                          : null,
-                      onUpdate: (index, question) => context
-                          .read<ViewExamCubit>()
-                          .updateQuestion(index, question),
-                      onDelete: (index) =>
-                          context.read<ViewExamCubit>().deleteQuestion(index),
-                    ),
-                  ]),
-                ),
-              ),
-            ],
-          ),
-          persistentFooterButtons: state.isEditMode
-              ? [
-                  CreateButton(
-                    onPress: state.loadingSave
-                        ? null
-                        : () =>
-                            context.read<ViewExamCubit>().saveSubmit(context),
-                    text: state.loadingSave
-                        ? ViewExamStrings.saving
-                        : ViewExamStrings.saveAndSubmit,
-                  ),
-                  if (state.loadingSave)
-                    LinearProgressIndicator(color: AppColors.colorPrimary),
-                ]
+        return ExamView(
+          exam: state.exam,
+          mode: mode,
+          examResults: state.exam.examResult,
+          selectedStudentEmail: state.selectedStudentEmail,
+          startDate: state.startDate,
+          endDate: state.endDate,
+          loadingSave: state.loadingSave,
+          onStartChanged: mode == ExamMode.create
+              ? (date) => context.read<TeacherResultCubit>().changeStartDate(date)
               : null,
-          persistentFooterDecoration: const BoxDecoration(),
+          onEndChanged: mode == ExamMode.create
+              ? (date) => context.read<TeacherResultCubit>().changeEndDate(date)
+              : null,
+          onStudentSelect: mode == ExamMode.teacherResult
+              ? (email) => context.read<TeacherResultCubit>().selectStudentResult(email)
+              : null,
+          onQuestionUpdated: mode == ExamMode.create
+              ? (index, question) => context
+                  .read<TeacherResultCubit>()
+                  .updateQuestion(index, question.toGenerated())
+              : null,
+          onQuestionDeleted: mode == ExamMode.create
+              ? (index) => context.read<TeacherResultCubit>().deleteQuestion(index)
+              : null,
+          onSave: mode == ExamMode.create
+              ? () => context.read<TeacherResultCubit>().saveSubmit(context)
+              : null,
+        );
+      },
+    );
+  }
+}
+
+class _StudentExamContent extends StatelessWidget {
+  const _StudentExamContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StudentResultCubit, StudentResultState>(
+      builder: (context, state) {
+        return ExamView(
+          exam: state.exam,
+          mode: ExamMode.studentResult,
         );
       },
     );

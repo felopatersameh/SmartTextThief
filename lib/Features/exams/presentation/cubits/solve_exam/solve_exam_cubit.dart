@@ -2,18 +2,21 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/result_exam_status.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
 import 'package:smart_text_thief/Features/DoExam/data/repositories/do_exam_repository.dart';
 
-part 'do_exam_state.dart';
+part 'solve_exam_state.dart';
 
-class DoExamCubit extends Cubit<DoExamState> {
-  DoExamCubit({DoExamRepository? repository})
+class SolveExamCubit extends Cubit<SolveExamState> {
+  SolveExamCubit({DoExamRepository? repository})
       : _repository = repository ?? DoExamRepository(),
-        super(DoExamState());
+        super(const SolveExamState());
 
   static const Duration backgroundGraceDuration =
       AppConstants.doExamBackgroundGraceDuration;
@@ -24,9 +27,15 @@ class DoExamCubit extends Cubit<DoExamState> {
   int _seconds = 0;
   Timer? _examTimer;
   Timer? _backgroundGraceTimer;
+  Timer? _connectionGraceTimer;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   DateTime? _backgroundAt;
+  DateTime? _connectionLostAt;
   DateTime? _startTime;
   ExamModel? _currentExam;
+  AppLifecycleState _lastLifecycleState = AppLifecycleState.resumed;
+  final Connectivity _connectivity = Connectivity();
+  final List<ResultExamStatus> _statusHistory = <ResultExamStatus>[];
 
   List<ExamResultQA> _shuffleExam(
     List<ExamResultQA> questions,
@@ -56,8 +65,13 @@ class DoExamCubit extends Cubit<DoExamState> {
 
     _seconds = 0;
     _backgroundAt = null;
+    _connectionLostAt = null;
     _currentExam = model;
     _startTime = DateTime.now();
+    _lastLifecycleState = AppLifecycleState.resumed;
+    _statusHistory
+      ..clear()
+      ..add(ResultExamStatus.running);
 
     final totalQuestions = model.examStatic.examResultQA.length;
     final examDurationMinutes =
@@ -103,6 +117,7 @@ class DoExamCubit extends Cubit<DoExamState> {
     try {
       await _repository.createLiveExam(model);
       await _createListeningExam(model);
+      _startConnectivityMonitor();
     } catch (_) {}
 
     _examTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
@@ -114,7 +129,11 @@ class DoExamCubit extends Cubit<DoExamState> {
 
       if (remaining.isNegative || remaining.inSeconds <= 0) {
         timer.cancel();
-        await finishExam(model);
+        await finishExam(
+          model,
+          status: ResultExamStatus.timeExpired,
+          source: ResultExamStatus.timeExpired.value,
+        );
         return;
       }
 
@@ -172,17 +191,28 @@ class DoExamCubit extends Cubit<DoExamState> {
     }
   }
 
-  Future<void> finishExam(ExamModel model) async {
+  Future<void> finishExam(
+    ExamModel model, {
+    required ResultExamStatus status,
+    String? source,
+  }) async {
     if (state.isExamFinished || state.isBlockedBySubmission) return;
 
     _examTimer?.cancel();
     _examTimer = null;
+    _backgroundGraceTimer?.cancel();
+    _backgroundGraceTimer = null;
+    _cancelConnectionGraceTimer();
+    _addStatus(status);
 
     var isNewSubmission = false;
     try {
       isNewSubmission = await _repository.submitExam(
         model: model,
         userAnswers: state.userAnswers,
+        status: status,
+        statusHistory: List<ResultExamStatus>.from(_statusHistory),
+        source: source,
       );
     } catch (_) {}
 
@@ -210,8 +240,6 @@ class DoExamCubit extends Cubit<DoExamState> {
     try {
       await _repository.deleteLiveExam(model);
     } catch (_) {}
-
-    
   }
 
   bool validateAllQuestionsAnswered() {
@@ -245,28 +273,44 @@ class DoExamCubit extends Cubit<DoExamState> {
     if (state.isBlockedBySubmission) return false;
     if (!validateAllQuestionsAnswered()) return false;
 
-    await finishExam(exam);
+    await finishExam(
+      exam,
+      status: ResultExamStatus.finished,
+      source: ResultExamStatus.finished.value,
+    );
     return !state.isBlockedBySubmission;
   }
 
-  Future<void> forceFinishExam() async {
+  Future<void> forceFinishExam({
+    ResultExamStatus status = ResultExamStatus.disposed,
+    String? source,
+  }) async {
     final exam = _currentExam;
     if (exam == null || state.isExamFinished) return;
-    await finishExam(exam);
+    await finishExam(
+      exam,
+      status: status,
+      source: source ?? status.value,
+    );
   }
 
-  void onAppBackgrounded() {
+  void onAppBackgrounded([AppLifecycleState? lifecycleState]) {
     if (state.isExamFinished || _currentExam == null) return;
+    _lastLifecycleState = lifecycleState ?? _lastLifecycleState;
 
     _backgroundAt ??= DateTime.now();
     _backgroundGraceTimer?.cancel();
     _backgroundGraceTimer = Timer(backgroundGraceDuration, () async {
-      await forceFinishExam();
+      await forceFinishExam(
+        status: _statusFromLifecycleState(_lastLifecycleState),
+        source: _sourceFromLifecycleState(_lastLifecycleState),
+      );
     });
   }
 
   Future<void> onAppResumed() async {
     if (state.isExamFinished) return;
+    _lastLifecycleState = AppLifecycleState.resumed;
 
     final backgroundAt = _backgroundAt;
     _backgroundAt = null;
@@ -278,7 +322,10 @@ class DoExamCubit extends Cubit<DoExamState> {
 
     final awayDuration = DateTime.now().difference(backgroundAt);
     if (awayDuration >= backgroundGraceDuration) {
-      await forceFinishExam();
+      await forceFinishExam(
+        status: ResultExamStatus.disposed,
+        source: 'background_timeout',
+      );
     }
   }
 
@@ -289,7 +336,12 @@ class DoExamCubit extends Cubit<DoExamState> {
     _backgroundGraceTimer?.cancel();
     _backgroundGraceTimer = null;
 
+    _cancelConnectionGraceTimer();
+    await _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
+
     _backgroundAt = null;
+    _connectionLostAt = null;
 
     if (listenerId != null) {
       await _repository.unListenLiveExam(listenerId!);
@@ -313,6 +365,74 @@ class DoExamCubit extends Cubit<DoExamState> {
       (data, key) {},
       onError: (error) {},
     );
+  }
+
+  void _startConnectivityMonitor() {
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
+      (result) {
+        _handleConnectivityChanged(result);
+      },
+      onError: (_) {
+        if (state.isExamFinished || _currentExam == null) return;
+        _connectionLostAt ??= DateTime.now();
+        _connectionGraceTimer ??= Timer(backgroundGraceDuration, () async {
+          await forceFinishExam(
+            status: ResultExamStatus.connectionLost,
+            source: ResultExamStatus.connectionLost.value,
+          );
+        });
+      },
+    );
+  }
+
+  void _handleConnectivityChanged(List<ConnectivityResult> result) {
+    if (state.isExamFinished || _currentExam == null) return;
+
+    final hasConnection =
+        result.isNotEmpty && !result.contains(ConnectivityResult.none);
+    if (hasConnection) {
+      _connectionLostAt = null;
+      _cancelConnectionGraceTimer();
+      return;
+    }
+
+    _connectionLostAt ??= DateTime.now();
+    _connectionGraceTimer ??= Timer(backgroundGraceDuration, () async {
+      await forceFinishExam(
+        status: ResultExamStatus.connectionLost,
+        source: ResultExamStatus.connectionLost.value,
+      );
+    });
+  }
+
+  void _cancelConnectionGraceTimer() {
+    _connectionGraceTimer?.cancel();
+    _connectionGraceTimer = null;
+  }
+
+  ResultExamStatus _statusFromLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      return ResultExamStatus.disposed;
+    }
+    if (state == AppLifecycleState.detached) {
+      return ResultExamStatus.unknown;
+    }
+    return ResultExamStatus.els;
+  }
+
+  String _sourceFromLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) return 'app_backgrounded';
+    if (state == AppLifecycleState.inactive) return 'app_inactive';
+    if (state == AppLifecycleState.detached) return 'app_detached_or_closed';
+    return 'else';
+  }
+
+  void _addStatus(ResultExamStatus status) {
+    if (_statusHistory.isEmpty || _statusHistory.last != status) {
+      _statusHistory.add(status);
+    }
   }
 
   @override

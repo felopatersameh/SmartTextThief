@@ -1,4 +1,5 @@
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/result_exam_status.dart';
 import 'package:smart_text_thief/Features/DoExam/data/datasources/do_exam_remote_data_source.dart';
 
 class DoExamRepository {
@@ -51,8 +52,17 @@ class DoExamRepository {
   Future<bool> submitExam({
     required ExamModel model,
     required Map<String, String> userAnswers,
+    required ResultExamStatus status,
+    required List<ResultExamStatus> statusHistory,
+    String? source,
   }) {
-    return _remoteDataSource.submitExam(model: model, userAnswers: userAnswers);
+    return _remoteDataSource.submitExam(
+      model: model,
+      userAnswers: userAnswers,
+      status: status,
+      statusHistory: statusHistory,
+      source: source,
+    );
   }
 
   Future<void> deleteLiveExam(ExamModel model) {

@@ -1,17 +1,7 @@
-part of 'do_exam_cubit.dart';
+part of 'solve_exam_cubit.dart';
 
-class DoExamState extends Equatable {
-  final int timerExam;
-  final bool loading;
-  final int currentQuestionIndex;
-  final Map<String, String> userAnswers;
-  final bool isExamFinished;
-  final bool isBlockedBySubmission;
-  final Duration remainingTime;
-  final int totalQuestions;
-  final List<ExamResultQA> questions;
-
-  const DoExamState({
+class SolveExamState extends Equatable {
+  const SolveExamState({
     this.timerExam = 0,
     this.loading = false,
     this.currentQuestionIndex = 0,
@@ -23,7 +13,17 @@ class DoExamState extends Equatable {
     this.questions = const [],
   });
 
-  DoExamState copyWith({
+  final int timerExam;
+  final bool loading;
+  final int currentQuestionIndex;
+  final Map<String, String> userAnswers;
+  final bool isExamFinished;
+  final bool isBlockedBySubmission;
+  final Duration remainingTime;
+  final int totalQuestions;
+  final List<ExamResultQA> questions;
+
+  SolveExamState copyWith({
     int? timerExam,
     bool? loading,
     int? currentQuestionIndex,
@@ -34,7 +34,7 @@ class DoExamState extends Equatable {
     int? totalQuestions,
     List<ExamResultQA>? questions,
   }) {
-    return DoExamState(
+    return SolveExamState(
       timerExam: timerExam ?? this.timerExam,
       loading: loading ?? this.loading,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,

@@ -1,15 +1,7 @@
-part of 'view_exam_cubit.dart';
+part of 'teacher_result_cubit.dart';
 
-class ViewExamState extends Equatable {
-  final ExamModel exam;
-  final bool isEditMode;
-  final bool loadingSave;
-  final String? selectedStudentEmail;
-  final DateTime? startDate;
-  final DateTime? endDate;
-  final String nameSubject;
-
-  const ViewExamState({
+class TeacherResultState extends Equatable {
+  const TeacherResultState({
     required this.exam,
     required this.isEditMode,
     this.loadingSave = false,
@@ -19,7 +11,15 @@ class ViewExamState extends Equatable {
     required this.nameSubject,
   });
 
-  ViewExamState copyWith({
+  final ExamModel exam;
+  final bool isEditMode;
+  final bool loadingSave;
+  final String? selectedStudentEmail;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String nameSubject;
+
+  TeacherResultState copyWith({
     ExamModel? exam,
     bool? isEditMode,
     bool? loadingSave,
@@ -28,7 +28,7 @@ class ViewExamState extends Equatable {
     DateTime? endDate,
     String? nameSubject,
   }) {
-    return ViewExamState(
+    return TeacherResultState(
       exam: exam ?? this.exam,
       isEditMode: isEditMode ?? this.isEditMode,
       loadingSave: loadingSave ?? this.loadingSave,

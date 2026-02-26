@@ -2,71 +2,32 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_result.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/ViewExam/data/repositories/view_exam_repository.dart';
 
-part 'view_exam_state.dart';
+part 'teacher_result_state.dart';
 
-class ViewExamCubit extends Cubit<ViewExamState> {
-  ViewExamCubit({
+class TeacherResultCubit extends Cubit<TeacherResultState> {
+  TeacherResultCubit({
     required ExamModel exam,
     required bool isEditMode,
     required String nameSubject,
     ViewExamRepository? repository,
-  }) : super(
-          ViewExamState(
+  })  : _repository = repository ?? ViewExamRepository(),
+        super(
+          TeacherResultState(
             exam: exam,
             isEditMode: isEditMode,
             startDate: exam.startedAt,
             endDate: exam.examFinishAt,
             nameSubject: nameSubject,
           ),
-        ) {
-    _repository = repository ?? ViewExamRepository();
-  }
-
-  late final ViewExamRepository _repository;
-  Future<void> init() async {
-    if (state.exam.isTeacher) return;
-    if (state.isEditMode) return;
-    if (!state.exam.doExam) {
-      final email = GetLocalStorage.getEmailUser();
-      final examResultQA = state.exam.examStatic.examResultQA;
-      final updatedExamResultQA =
-          examResultQA.map((element) => element.copyWith(score: "0")).toList();
-      final ExamResultModel lastModel = ExamResultModel(
-        examResultEmailSt: email,
-        examResultDegree: "0",
-        examResultQA: updatedExamResultQA,
-        levelExam: state.exam.examStatic.levelExam,
-        numberOfQuestions: state.exam.examStatic.numberOfQuestions,
-        typeExam: state.exam.examStatic.typeExam,
-      );
-      final response = await _repository.addDefaultResult(
-        exam: state.exam,
-        result: lastModel,
-      );
-
-      if (response) {
-        emit(
-          state.copyWith(
-            exam: state.exam.copyWith(
-              examResult: [lastModel, ...state.exam.examResult],
-            ),
-          ),
         );
-      }
-    }
-  }
 
-  void toggleMode() {
-    emit(state.copyWith(isEditMode: !state.isEditMode));
-  }
+  final ViewExamRepository _repository;
 
   void updateQuestion(int index, QuestionsGeneratedModel updatedQuestion) {
     final updatedQuestions = List<QuestionsGeneratedModel>.from(
@@ -106,7 +67,7 @@ class ViewExamCubit extends Cubit<ViewExamState> {
 
   void selectStudentResult(String studentEmail) {
     if (studentEmail == state.selectedStudentEmail) {
-      emit(state.copyWith(selectedStudentEmail: ""));
+      emit(state.copyWith(selectedStudentEmail: ''));
       return;
     }
     emit(state.copyWith(selectedStudentEmail: studentEmail));

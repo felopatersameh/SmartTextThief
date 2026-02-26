@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:smart_text_thief/Config/env_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/local_storage_service.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Core/Services/Gemini/api_gemini.dart';
-import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/result_exam_status.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 
 class DoExamRemoteDataSource {
   static const String _liveExamStoragePrefix = 'live_exam_';
+  static const String _statusKey = 'result_exam_status';
+  static const String _statusListKey = 'result_exam_status_list';
+  static const String _statusEventsKey = 'result_exam_status_events';
   static final Map<String, Map<String, dynamic>> _liveExamCache =
       <String, Map<String, dynamic>>{};
   static final Map<String, StreamController<Map<String, dynamic>>>
@@ -63,6 +64,13 @@ class DoExamRemoteDataSource {
     final payload = await _ensureLiveExamPayload(model);
     payload[AppConstants.liveExamTimeKey] = timerExam;
     payload[AppConstants.liveExamDisposeKey] = 0;
+    payload[_statusKey] = ResultExamStatus.running.value;
+    _ensureStatusList(payload, const [ResultExamStatus.running]);
+    _appendStatusEvent(
+      payload: payload,
+      status: ResultExamStatus.running,
+      source: 'timer_tick',
+    );
     await _persistLiveExamPayload(liveExamId, payload);
   }
 
@@ -88,27 +96,28 @@ class DoExamRemoteDataSource {
   Future<bool> submitExam({
     required ExamModel model,
     required Map<String, String> userAnswers,
+    required ResultExamStatus status,
+    required List<ResultExamStatus> statusHistory,
+    String? source,
   }) async {
-    final shortAnswerEvaluations = await _evaluateShortAnswers(
-      model: model,
-      userAnswers: userAnswers,
-    );
-
+    final liveExamId = model.specialIdLiveExam;
+    final payload = await _ensureLiveExamPayload(model);
     for (final question in model.examStatic.examResultQA) {
       final studentAnswer = (userAnswers[question.questionId] ?? '').trim();
-      bool isCorrect;
-
-      if (question.questionType == AppConstants.shortAnswerType) {
-        isCorrect = shortAnswerEvaluations[question.questionId] ?? false;
-      } else {
-        isCorrect = _isExactMatch(studentAnswer, question.correctAnswer);
-      }
-
-      final score = isCorrect ? 1 : 0;
-      if (score < 0) {
-        return false;
-      }
+      final questionData = _asMutableMap(payload[question.questionId]);
+      questionData['studentAnswer'] = studentAnswer;
+      payload[question.questionId] = questionData;
     }
+
+    payload[AppConstants.liveExamDisposeKey] = status == ResultExamStatus.running ? 0 : 1;
+    payload[_statusKey] = status.value;
+    _ensureStatusList(payload, statusHistory);
+    _appendStatusEvent(
+      payload: payload,
+      status: status,
+      source: source,
+    );
+    await _persistLiveExamPayload(liveExamId, payload);
 
     return true;
   }
@@ -132,138 +141,59 @@ class DoExamRemoteDataSource {
     await LocalStorageService.removeValue(_storageKey(liveExamId));
   }
 
-  Future<Map<String, bool>> _evaluateShortAnswers({
-    required ExamModel model,
-    required Map<String, String> userAnswers,
-  }) async {
-    final payload = <Map<String, String>>[];
-    for (final question in model.examStatic.examResultQA) {
-      if (question.questionType != AppConstants.shortAnswerType) continue;
-      final studentAnswer = (userAnswers[question.questionId] ?? '').trim();
-      if (studentAnswer.isEmpty) continue;
-      payload.add({
-        DataKey.questionId.key: question.questionId,
-        DataKey.questionText.key: question.questionText,
-        DataKey.correctAnswer.key: question.correctAnswer,
-        DataKey.studentAnswer.key: studentAnswer,
-      });
-    }
-
-    if (payload.isEmpty) return {};
-
-    final apiKey = await _resolveGeminiApiKey();
-    if (apiKey.isEmpty) return {};
-
-    final modelName = model.examStatic.geminiModel.trim().isEmpty
-        ? AppConstants.defaultGeminiModel
-        : model.examStatic.geminiModel.trim();
-
-    try {
-      final api = ApiGemini(
-        apiKey: apiKey,
-        modelName: modelName,
-        maxOutputTokens: 400,
-        temperature: 0.15,
-      );
-      final response = await api.generateContent(
-        _buildSemanticEvaluationPrompt(payload),
-      );
-      return _parseBooleanMap(response.text ?? '');
-    } catch (_) {
-      return {};
-    }
-  }
-
-  Future<String> _resolveGeminiApiKey() async {
-    return EnvConfig.geminiFallbackApiKey;
-  }
-
-  String _buildSemanticEvaluationPrompt(List<Map<String, String>> payload) {
-    final payloadJson = jsonEncode(payload);
-
-    return '''
-You are grading short-answer exam responses.
-
-Evaluation Guidelines:
-1. Compare studentAnswer with correctAnswer by meaning, not exact wording.
-2. Minor wording differences or synonyms are acceptable.
-3. The core idea must be clearly present.
-4. If the answer is clearly wrong, contradictory, or irrelevant -> return false.
-5. If the answer captures the main concept even with different phrasing -> return true.
-6. If the answer is too vague or missing the main idea -> return false.
-7. Do NOT use external knowledge beyond what is implied by correctAnswer.
-
-Return ONLY a valid JSON object.
-Keys = questionId
-Values = true or false
-
-Example:
-{"Q1": true, "Q2": false}
-
-Evaluate:
-$payloadJson
-''';
-  }
-
-  Map<String, bool> _parseBooleanMap(String responseText) {
-    if (responseText.trim().isEmpty) return {};
-    try {
-      final cleaned = _extractJsonObject(responseText);
-      final decoded = jsonDecode(cleaned);
-      if (decoded is! Map) return {};
-
-      final result = <String, bool>{};
-      for (final entry in decoded.entries) {
-        final value = _toBool(entry.value);
-        if (value != null) {
-          result[entry.key.toString()] = value;
-        }
-      }
-      return result;
-    } catch (_) {
-      return {};
-    }
-  }
-
-  String _extractJsonObject(String rawText) {
-    final text = rawText.trim();
-    final start = text.indexOf('{');
-    final end = text.lastIndexOf('}');
-    if (start == -1 || end == -1 || end <= start) {
-      return text;
-    }
-    return text.substring(start, end + 1);
-  }
-
-  bool? _toBool(dynamic value) {
-    if (value is bool) return value;
-    if (value is String) {
-      final normalized = value.trim().toLowerCase();
-      if (normalized == 'true') return true;
-      if (normalized == 'false') return false;
-    }
-    return null;
-  }
-
-  bool _isExactMatch(String studentAnswer, String correctAnswer) {
-    return _normalizeAnswer(studentAnswer) == _normalizeAnswer(correctAnswer);
-  }
-
-  String _normalizeAnswer(String text) {
-    return text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ').trim();
-  }
-
   Map<String, dynamic> _buildInitialPayload(ExamModel model) {
     final payload = <String, dynamic>{
       AppConstants.liveExamStartTimeKey: DateTime.now().millisecondsSinceEpoch,
       AppConstants.liveExamTimeKey: 0,
       AppConstants.liveExamDisposeKey: 0,
+      _statusKey: ResultExamStatus.running.value,
+      _statusListKey: <String>[ResultExamStatus.running.value],
+      _statusEventsKey: <Map<String, dynamic>>[
+        {
+          'status': ResultExamStatus.running.value,
+          'source': 'init',
+          'at': DateTime.now().toIso8601String(),
+        },
+      ],
     };
 
     for (final element in model.examStatic.examResultQA) {
       payload[element.questionId] = element.toJson();
     }
     return payload;
+  }
+
+  void _ensureStatusList(
+    Map<String, dynamic> payload,
+    List<ResultExamStatus> statusHistory,
+  ) {
+    payload[_statusListKey] = statusHistory.map((e) => e.value).toList(growable: false);
+  }
+
+  void _appendStatusEvent({
+    required Map<String, dynamic> payload,
+    required ResultExamStatus status,
+    String? source,
+  }) {
+    final existing = payload[_statusEventsKey];
+    final events = <Map<String, dynamic>>[];
+    if (existing is List) {
+      for (final item in existing) {
+        if (item is Map<String, dynamic>) {
+          events.add(Map<String, dynamic>.from(item));
+        } else if (item is Map) {
+          events.add(Map<String, dynamic>.from(item));
+        }
+      }
+    }
+    events.add(
+      {
+        'status': status.value,
+        'source': (source == null || source.trim().isEmpty) ? 'unknown' : source,
+        'at': DateTime.now().toIso8601String(),
+      },
+    );
+    payload[_statusEventsKey] = events;
   }
 
   Future<Map<String, dynamic>> _ensureLiveExamPayload(ExamModel model) async {
