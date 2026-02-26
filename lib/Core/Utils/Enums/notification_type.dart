@@ -8,7 +8,7 @@ enum NotificationType {
     Color(0xFF4CAF50),
     Color(0xFFE8F5E9),
     'student_channel',
-    'Student Notifications',
+    'New Students ',
   ),
 
   createdExam(

@@ -184,10 +184,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ),
                 ),
                 body,
+                if (selected.isME)
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 88.h),
+                  ),
               ],
             ),
             floatingActionButton: selected.isME
                 ? FloatingActionButton.extended(
+                    heroTag: 'details_screen_fab',
+                    elevation: 6,
+                    focusElevation: 8,
                     onPressed: () {
                       AppRouter.pushToCreateExam(
                         context,
@@ -195,15 +202,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       );
                     },
                     backgroundColor: AppColors.colorPrimary,
+                    foregroundColor: AppColors.textWhite,
                     icon: AppIcons.add,
                     label: AppCustomText.generate(
-                      text: "New Exam",
-                      textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                        color: AppColors.white70,
+                      text: 'New Exam',
+                      textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
+                        color: AppColors.textWhite,
                       ),
                     ),
                   )
                 : null,
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           );
         },
       ),

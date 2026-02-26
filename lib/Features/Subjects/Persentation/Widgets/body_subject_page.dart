@@ -73,7 +73,9 @@ class BodySubjectPage extends StatelessWidget {
             ),
           )
         else
-          SliverList(
+          SliverPadding(
+            padding: const EdgeInsets.only(bottom: 88),
+            sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final model = displayList[index];
@@ -92,6 +94,7 @@ class BodySubjectPage extends StatelessWidget {
                 );
               },
               childCount: displayList.length,
+            ),
             ),
           ),
       ],

@@ -61,7 +61,10 @@ class SubjectPage extends StatelessWidget {
                   )
                 : BodySubjectPage(state: state),
             floatingActionButton: FloatingActionButton.extended(
-              tooltip: isStudent ? "Join Subject" : "Add Subject",
+              heroTag: 'subject_page_fab',
+              tooltip: isStudent ? 'Join Subject' : 'Add Subject',
+              elevation: 6,
+              focusElevation: 8,
               onPressed: () async {
                 if (isStudent) {
                   await _showJoinSubjectDialog(
@@ -78,12 +81,19 @@ class SubjectPage extends StatelessWidget {
                 }
               },
               backgroundColor: AppColors.colorPrimary,
-              icon:  Icon(isStudent ? AppIcons.join :AppIcons.groupsOutlined,color: AppColors.white70,),
+              icon: Icon(
+                isStudent ? AppIcons.join : AppIcons.groupsOutlined,
+                color: AppColors.textWhite,
+                size: 22,
+              ),
               label: AppCustomText.generate(
-                text: isStudent ? "Join Subject" : "create Subject",
-                textStyle: AppTextStyles.bodyMediumMedium.copyWith(color: AppColors.white70,),
+                text: isStudent ? 'Join Subject' : 'Create Subject',
+                textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
+                  color: AppColors.textWhite,
+                ),
               ),
             ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           );
         },
       ),
