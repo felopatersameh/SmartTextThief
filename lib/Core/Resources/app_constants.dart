@@ -1,4 +1,4 @@
-﻿
+
 class AppConstants {
   static const Duration animationFast = Duration(milliseconds: 200);
   static const Duration animationMedium = Duration(milliseconds: 250);
@@ -16,8 +16,6 @@ class AppConstants {
   static const String liveExamStartTimeKey = 'start_time';
   static const String liveExamTimeKey = 'time';
   static const String liveExamDisposeKey = 'dispose_exam';
-  static const String multipleChoiceType = 'multiple_choice';
-  static const String shortAnswerType = 'short_answer';
   static const String submittedExamNotificationPrefix = 'doExam_';
   static const String adminTopicSuffix = '_admin';
   static const String subjectClosedErrorCode = 'subject_closed';

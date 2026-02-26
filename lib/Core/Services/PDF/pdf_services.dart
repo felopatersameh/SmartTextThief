@@ -5,6 +5,7 @@ import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../../Utils/Enums/exam_question_type.dart';
 import '../../Utils/Models/exam_model.dart';
 import '../../Utils/Models/questions_generated_model.dart';
 import '../../Utils/Models/subject_model.dart';
@@ -512,7 +513,7 @@ class ExamPdfUtil {
           ],
 
           // Answer space for short answer questions
-          if (questionType == 'short_answer') ...[
+          if (questionType == ExamQuestionType.shortAnswer.value) ...[
             pw.SizedBox(height: 10),
             pw.Text(
               'Answer space',

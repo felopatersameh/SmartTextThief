@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../../../../Config/app_config.dart';
 import '../../../Notifications/Presentation/cubit/notifications_cubit.dart';
@@ -156,22 +157,44 @@ class ProfileScreen extends StatelessWidget {
                           );
                         },
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20.h),
-                        margin: EdgeInsets.symmetric(vertical: 5.h),
-                        decoration: BoxDecoration(
-                          color: AppColors.colorsBackGround2,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: AppCustomText.generate(
-                            text: ProfileStrings.appVersionPatch,
-                            textStyle: AppTextStyles.h6Bold.copyWith(
-                              color: AppColors.white70,
+                      FutureBuilder<PackageInfo>(
+                        future: PackageInfo.fromPlatform(),
+                        builder: (context, snapshot) {
+                          if (snapshot.data == null) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.h),
+                              child: AppCustomText.generate(
+                                text: ProfileStrings.appVersionPatch,
+                                textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                  color: AppColors.white54,
+                                ),
+                              ),
+                            );
+                          }
+                          final info = snapshot.data!;
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AppCustomText.generate(
+                                  text: info.appName,
+                                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                    color: AppColors.white60,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                AppCustomText.generate(
+                                  text: 'Version ${info.version}+${info.buildNumber}',
+                                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                    color: AppColors.white54,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),

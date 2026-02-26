@@ -1,3 +1,4 @@
+import '../../Utils/Enums/exam_question_type.dart';
 import '../../Utils/Enums/level_exam.dart';
 
 /// Prompt generator for different scenarios
@@ -43,9 +44,9 @@ STRICT RULES:
 7. Return ONLY a JSON array (no text, no markdown, no explanation).
 
 IMPORTANT STRUCTURE RULES:
-- "multiple_choice" MUST contain exactly 4 options.
-- "true_false" MUST contain exactly 2 options.
-- "short_answer" MUST have an empty options array [].
+- "${ExamQuestionType.multipleChoice.value}" MUST contain exactly 4 options.
+- "${ExamQuestionType.trueFalse.value}" MUST contain exactly 2 options.
+- "${ExamQuestionType.shortAnswer.value}" MUST have an empty options array [].
 - "studentAnswer" must always be an empty string "".
 - IDs must be sequential: Q1, Q2, Q3...
 
@@ -54,7 +55,7 @@ JSON Structure Examples:
 Multiple Choice Example:
 {
 "id": "Q1",
-"type": "multiple_choice",
+"type": "${ExamQuestionType.multipleChoice.value}",
 "text": "Question text",
 "options": [
   "Option A",
@@ -69,7 +70,7 @@ Multiple Choice Example:
 True/False Example:
 {
 "id": "Q2",
-"type": "true_false",
+"type": "${ExamQuestionType.trueFalse.value}",
 "text": "Statement text",
 "options": ["True", "False"],
 "correctAnswer": "True",
@@ -79,7 +80,7 @@ True/False Example:
 Short Answer Example:
 {
 "id": "Q3",
-"type": "short_answer",
+"type": "${ExamQuestionType.shortAnswer.value}",
 "text": "Question text",
 "options": [],
 "correctAnswer": "Expected answer",

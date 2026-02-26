@@ -1,4 +1,6 @@
 import 'dart:convert';
+
+import 'package:smart_text_thief/Core/Utils/Enums/exam_question_type.dart';
 import 'package:smart_text_thief/Core/Utils/Models/questions_generated_model.dart';
 
 
@@ -76,14 +78,14 @@ class ExamResponseParser {
         return false;
       }
 
-      if (!['multiple_choice', 'true_false', 'short_answer'].contains(q.type)) {
+      if (!ExamQuestionType.isValid(q.type)) {
         return false;
       }
-
-      if (q.type == 'multiple_choice' && q.options.length != 4) {
+      final qType = ExamQuestionType.fromString(q.type);
+      if (qType == ExamQuestionType.multipleChoice && q.options.length != 4) {
         return false;
       }
-      if (q.type == 'true_false' && q.options.length != 2) {
+      if (qType == ExamQuestionType.trueFalse && q.options.length != 2) {
         return false;
       }
     }

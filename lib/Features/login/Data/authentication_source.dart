@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:smart_text_thief/Core/Services/Device/device_info_service.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/data_key.dart';
 
 import '../../../Config/env_config.dart';
@@ -21,10 +20,11 @@ class AuthenticationSource {
         clientId: webClientId.isEmpty ? null : webClientId,
       );
       final account = await _googleSignIn.authenticate();
+      final payload = await _buildGooglePayload(account);
 
       final response = await DioHelper.postData(
         path: ApiEndpoints.authGoogle,
-        data: _buildGooglePayload(account),
+        data: payload,
       );
       final body = response.data as Map<String, dynamic>;
       final token = body[DataKey.token.key];
@@ -63,16 +63,13 @@ class AuthenticationSource {
     LocalStorageService.clear();
   }
 
-  static Map<String, dynamic> _buildGooglePayload(GoogleSignInAccount account) {
+  static Future<Map<String, dynamic>> _buildGooglePayload(
+    GoogleSignInAccount account,
+  ) async {
+    final deviceInfo = await DeviceInfoService.getDeviceInfo();
     return {
-      'deviceId': "account.id",
-      'deviceInfo': {
-        'platform': Platform.operatingSystem,
-        'manufacturer': Platform.numberOfProcessors,
-        'model': Platform.pathSeparator,
-        'osVersion': Platform.operatingSystemVersion,
-        'brand': Platform.localHostname,
-      },
+      'deviceId': account.id,
+      'deviceInfo': deviceInfo,
       'clientProfile': {
         'googleId': account.id,
         'email': account.email,

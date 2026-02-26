@@ -226,7 +226,8 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
     required int optionIndex,
     required String option,
   }) {
-    final isCorrectAnswer = option == _selectedCorrectAnswer;
+    // Never highlight the correct answer while the student is solving.
+    final isCorrectAnswer = !_isSolvingMode && option == _selectedCorrectAnswer;
     final isStudentAnswer = _effectiveAnswer == option;
     final isSolvingSelected = _isSolvingMode && (widget.currentAnswer == option);
 

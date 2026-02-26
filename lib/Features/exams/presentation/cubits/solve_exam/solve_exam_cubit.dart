@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Utils/Enums/exam_question_type.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/result_exam_status.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/exam_result_q_a.dart';
@@ -47,7 +48,7 @@ class SolveExamCubit extends Cubit<SolveExamState> {
     final shuffledQuestions = List<ExamResultQA>.from(questions)..shuffle(random);
 
     return shuffledQuestions.map((question) {
-      if (question.questionType == AppConstants.multipleChoiceType &&
+      if (question.questionType == ExamQuestionType.multipleChoice.value &&
           question.options.length > 1) {
         final shuffledOptions = List<String>.from(question.options)
           ..shuffle(random);
