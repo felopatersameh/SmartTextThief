@@ -6,6 +6,12 @@ import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 import 'info_row.dart';
 
+enum _SubjectHeaderAction {
+  toggleOpen,
+  deleteSubject,
+  leaveSubject,
+}
+
 class SubjectInfoCard extends StatelessWidget {
   final SubjectModel subjectModel;
   final int? examLength;
@@ -39,7 +45,7 @@ class SubjectInfoCard extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
+          border: Border.all(
             color: AppColors.textWhite.withValues(alpha: 0.1),
             width: 1,
           ),
@@ -47,8 +53,7 @@ class SubjectInfoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            _buildHeader(),
+            _buildHeader(context),
 
             Divider(
               color: AppColors.textWhite.withValues(alpha: 0.08),
@@ -83,7 +88,7 @@ class SubjectInfoCard extends StatelessWidget {
                         child: _buildStatCard(
                           icon: AppIcons.students,
                           label: SubjectStrings.students,
-                          value: '${0}',
+                          value: '${subjectModel.studentCount}',
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -114,7 +119,7 @@ class SubjectInfoCard extends StatelessWidget {
                   // Code with Copy
                   _buildCodeSection(),
 
-                  if (_hasActions) ...[
+                  if (_hasBottomAction) ...[
                     SizedBox(height: 12.h),
                     _buildActionsSection(),
                   ],
@@ -127,19 +132,163 @@ class SubjectInfoCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-      child: AppCustomText.generate(
-        text: subjectModel.subjectName,
-        textStyle: AppTextStyles.bodyLargeBold.copyWith(
-          color: AppColors.textWhite,
-          fontSize: 16.sp,
-        ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: AppCustomText.generate(
+              text: subjectModel.subjectName,
+              textStyle: AppTextStyles.bodyLargeBold.copyWith(
+                color: AppColors.textWhite,
+                fontSize: 16.sp,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (_hasQuickActions) ...[
+            SizedBox(width: 10.w),
+            _buildQuickActionsMenu(context),
+          ],
+        ],
       ),
     );
+  }
+
+  Widget _buildQuickActionsMenu(BuildContext context) {
+    return PopupMenuButton<_SubjectHeaderAction>(
+      tooltip: '',
+      padding: EdgeInsets.zero,
+      menuPadding: EdgeInsets.all(8.w),
+      position: PopupMenuPosition.under,
+      offset: Offset(0, 10.h),
+      constraints: BoxConstraints(
+        minWidth: 190.w,
+        maxWidth: 220.w,
+      ),
+      color: AppColors.colorsBackGround2.withValues(alpha: 0.98),
+      surfaceTintColor: AppColors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14.r),
+        side: BorderSide(
+          color: AppColors.textWhite.withValues(alpha: 0.12),
+        ),
+      ),
+      itemBuilder: (context) => _buildQuickActionItems(),
+      onSelected: _onQuickActionSelected,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: AppColors.textWhite.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(
+            color: AppColors.textWhite.withValues(alpha: 0.12),
+          ),
+        ),
+        child: Icon(
+          Icons.more_horiz_rounded,
+          color: AppColors.textWhite,
+          size: 18.sp,
+        ),
+      ),
+    );
+  }
+
+  List<PopupMenuEntry<_SubjectHeaderAction>> _buildQuickActionItems() {
+    final items = <PopupMenuEntry<_SubjectHeaderAction>>[];
+
+    if (onToggleOpen != null) {
+      final isOpen = subjectModel.subjectIsOpen;
+      items.add(
+        _buildQuickActionItem(
+          action: _SubjectHeaderAction.toggleOpen,
+          title: isOpen ? SubjectStrings.closeSubject : SubjectStrings.openSubject,
+          icon: isOpen ? AppIcons.lockOutlineRounded : AppIcons.lockOpenRounded,
+          color: isOpen ? AppColors.warningDark : AppColors.success,
+        ),
+      );
+    }
+
+    if (onLeaveSubject != null) {
+      if (items.isNotEmpty) {
+        items.add(PopupMenuDivider(height: 8.h));
+      }
+      items.add(
+        _buildQuickActionItem(
+          action: _SubjectHeaderAction.leaveSubject,
+          title: SubjectStrings.leaveSubject,
+          icon: Icons.logout_rounded,
+          color: AppColors.dangerSoft,
+        ),
+      );
+    }
+
+    if (onDeleteSubject != null) {
+      if (items.isNotEmpty) {
+        items.add(PopupMenuDivider(height: 8.h));
+      }
+      items.add(
+        _buildQuickActionItem(
+          action: _SubjectHeaderAction.deleteSubject,
+          title: SubjectStrings.deleteSubject,
+          icon: AppIcons.deleteOutline,
+          color: AppColors.dangerSoft,
+        ),
+      );
+    }
+
+    return items;
+  }
+
+  PopupMenuItem<_SubjectHeaderAction> _buildQuickActionItem({
+    required _SubjectHeaderAction action,
+    required String title,
+    required IconData icon,
+    required Color color,
+  }) {
+    return PopupMenuItem<_SubjectHeaderAction>(
+      value: action,
+      padding: EdgeInsets.zero,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.13),
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 16.sp),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: AppCustomText.generate(
+                text: title,
+                textStyle: AppTextStyles.bodySmallBold.copyWith(color: color),
+                maxLines: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onQuickActionSelected(_SubjectHeaderAction action) {
+    switch (action) {
+      case _SubjectHeaderAction.toggleOpen:
+        onToggleOpen?.call();
+        break;
+      case _SubjectHeaderAction.deleteSubject:
+        onDeleteSubject?.call();
+        break;
+      case _SubjectHeaderAction.leaveSubject:
+        onLeaveSubject?.call();
+        break;
+    }
   }
 
   Widget _buildStatCard({
@@ -242,11 +391,10 @@ class SubjectInfoCard extends StatelessWidget {
     );
   }
 
-  bool get _hasActions =>
-      onToggleOpen != null ||
-      onDeleteSubject != null ||
-      onLeaveSubject != null ||
-      onOpenDashboard != null;
+  bool get _hasQuickActions =>
+      onToggleOpen != null || onDeleteSubject != null || onLeaveSubject != null;
+
+  bool get _hasBottomAction => onOpenDashboard != null;
 
   Widget _buildStatusSection() {
     final isOpen = subjectModel.subjectIsOpen;
@@ -280,56 +428,13 @@ class SubjectInfoCard extends StatelessWidget {
   }
 
   Widget _buildActionsSection() {
-    if (subjectModel.isME) {
-      return Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  title:
-                      subjectModel.subjectIsOpen
-                          ? SubjectStrings.closeSubject
-                          : SubjectStrings.openSubject,
-                  onTap: onToggleOpen,
-                  background: AppColors.amber.withValues(alpha: 0.18),
-                  borderColor: AppColors.amber.withValues(alpha: 0.5),
-                  textColor: AppColors.warningDark,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: _buildActionButton(
-                  title: SubjectStrings.deleteSubject,
-                  onTap: onDeleteSubject,
-                  background: AppColors.danger.withValues(alpha: 0.18),
-                  borderColor: AppColors.danger.withValues(alpha: 0.5),
-                  textColor: AppColors.dangerSoft,
-                ),
-              ),
-            ],
-          ),
-          if (onOpenDashboard != null) ...[
-            SizedBox(height: 8.h),
-            _buildActionButton(
-              title: SubjectStrings.subjectDashboard,
-              onTap: onOpenDashboard,
-              background: AppColors.colorPrimary.withValues(alpha: 0.18),
-              borderColor: AppColors.colorPrimary.withValues(alpha: 0.5),
-              textColor: AppColors.colorPrimary,
-            ),
-          
-        ],
-    ]);
-      
-    }
-
+    if (onOpenDashboard == null) return const SizedBox.shrink();
     return _buildActionButton(
-      title: SubjectStrings.leaveSubject,
-      onTap: onLeaveSubject,
-      background: AppColors.danger.withValues(alpha: 0.18),
-      borderColor: AppColors.danger.withValues(alpha: 0.5),
-      textColor: AppColors.dangerSoft,
+      title: SubjectStrings.subjectDashboard,
+      onTap: onOpenDashboard,
+      background: AppColors.colorPrimary.withValues(alpha: 0.18),
+      borderColor: AppColors.colorPrimary.withValues(alpha: 0.5),
+      textColor: AppColors.colorPrimary,
     );
   }
 

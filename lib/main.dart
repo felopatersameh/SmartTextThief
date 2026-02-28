@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/notification_route.dart';
 import 'Core/Services/Notifications/notification_model.dart';
 
 import 'Config/di/service_locator.dart';
@@ -64,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         await getIt<NotificationsCubit>().openNotification(message.id);
         await getIt<NotificationsCubit>().markNotificationRead(message.id);
         if (!mounted || message.topicId.isEmpty) return;
-        AppRouter.goNamedByPath(context, NameRoutes.notification);
+        NotificationRoute.push(context);
       });
     });
     super.initState();

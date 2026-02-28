@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/notification_route.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/profile_route.dart';
 import '../../../Core/LocalStorage/get_local_storage.dart';
 import '../../../Config/Routes/app_router.dart';
 import '../../../Core/Resources/resources.dart';
@@ -43,9 +45,9 @@ List<BottomNavigationBarItem> items(int notificationsBadgeCount) {
     if (index == 0) {
       AppRouter.pushToMainScreen(context);
     } else if (index == 1) {
-      AppRouter.pushToNotifications(context);
+      NotificationRoute.push(context);
     } else {
-      AppRouter.pushToProfile(
+      ProfileRoute.push(
         context,
         email: GetLocalStorage.getEmailUser(),
       );

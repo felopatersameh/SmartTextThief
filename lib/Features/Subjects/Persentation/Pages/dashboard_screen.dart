@@ -6,8 +6,8 @@
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 // import 'package:smart_text_thief/Core/Resources/resources.dart';
-// import 'package:smart_text_thief/Core/Utils/Enums/level_exam.dart';
-// import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
+// import 'package:smart_text_thief/Features/exam/domain/enums/level_exam.dart';
+// import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 // import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 
 // class DashboardScreen extends StatefulWidget {

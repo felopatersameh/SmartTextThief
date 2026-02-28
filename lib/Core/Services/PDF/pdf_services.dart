@@ -5,8 +5,8 @@ import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../Utils/Enums/exam_question_type.dart';
-import '../../Utils/Models/exam_model.dart';
+import '../../../Features/exam/data/models/exam_model.dart';
+import '../../../Features/exam/domain/enums/exam_question_type.dart';
 import '../../Utils/Models/questions_generated_model.dart';
 import '../../Utils/Models/subject_model.dart';
 
@@ -419,8 +419,8 @@ class ExamPdfUtil {
   ) {
     final String questionText = question.text;
     final String questionType = question.type;
-    final List<String> options =
-        question.options.map((option) => option.choice).toList(growable: false);
+    final List<String>? options =
+        question.options?.map((option) => option.choice).toList(growable: false);
     bool isQuestionArabic = _isArabic(questionText);
 
     return pw.Container(
@@ -468,9 +468,9 @@ class ExamPdfUtil {
           pw.SizedBox(height: 10),
 
           // Options
-          if (options.isNotEmpty) ...[
+          if (options?.isNotEmpty??false) ...[
             pw.SizedBox(height: 10),
-            ...options.asMap().entries.map((entry) {
+            ...options!.asMap().entries.map((entry) {
               int index = entry.key;
               String option = entry.value;
               String optionLabel = String.fromCharCode(65 + index);

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/about_route.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/help_route.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/login_route.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import '../../../../Config/app_config.dart';
 import '../../../Notifications/Presentation/cubit/notifications_cubit.dart';
@@ -11,7 +14,6 @@ import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import '../../../../Core/LocalStorage/local_storage_service.dart';
 import '/Core/Utils/show_message_snack_bar.dart';
 
-import '../../../../Config/Routes/app_router.dart';
 import '../../../../Config/Routes/name_routes.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Utils/Widget/custom_text_app.dart';
@@ -85,14 +87,14 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       OptionTile(
                         title: ProfileStrings.about,
-                        onTap: () async => AppRouter.pushToAbout(
+                        onTap: () async => AboutRoute.push(
                           context,
                           email: GetLocalStorage.getEmailUser(),
                         ),
                       ),
                       OptionTile(
                         title: ProfileStrings.help,
-                        onTap: () async => AppRouter.pushToHelp(
+                        onTap: () async => HelpRoute.push(
                           context,
                           email: GetLocalStorage.getEmailUser(),
                         ),
@@ -123,7 +125,7 @@ class ProfileScreen extends StatelessWidget {
                               await AuthenticationSource.logout();
                               await LocalStorageService.clear();
                               if (!context.mounted) return;
-                              AppRouter.pushToLogin(context);
+                              LoginRoute.push(context);
                             },
                           );
 
@@ -152,7 +154,7 @@ class ProfileScreen extends StatelessWidget {
                               if (!context.mounted) return;
                               await context.read<SubjectCubit>().logOut();
                               if (!context.mounted) return;
-                              AppRouter.pushToLogin(context);
+                              LoginRoute.push(context);
                             },
                           );
                         },

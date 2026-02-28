@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 
-import '../../../../Core/Utils/Models/exam_model.dart';
 import '../repositories/subject_repository.dart';
 
 class GetSubjectExamsUseCase {
@@ -12,4 +12,5 @@ class GetSubjectExamsUseCase {
     return _repository.getExams(subjectId);
   }
 }
+
 

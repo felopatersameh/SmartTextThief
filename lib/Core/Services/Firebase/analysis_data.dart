@@ -1,7 +1,7 @@
+import '../../../Features/exam/data/models/exam_model.dart';
 import '../Api/api_endpoints.dart';
 import '../Api/api_service.dart';
 import '../../Utils/Models/data_model.dart';
-import '../../Utils/Models/exam_model.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class AnalysisData {

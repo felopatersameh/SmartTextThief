@@ -1,4 +1,3 @@
-
 import 'package:dartz/dartz.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Services/Api/api_endpoints.dart';
@@ -6,8 +5,10 @@ import '../../../../Core/Services/Api/api_service.dart';
 import '../../../../Core/Services/Firebase/failure_model.dart';
 import '../../../../Core/Services/Notifications/notification_services.dart';
 import '../../../../Core/Utils/Enums/data_key.dart';
-import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
+import 'package:smart_text_thief/Features/exam/data/dto/responses/exams_list_response_model.dart';
+import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
+import 'package:smart_text_thief/Features/exam/data/models/exams_v3_legacy_mapper.dart';
 
 class SubjectsRemoteDataSource {
   Future<Either<String, List<ExamModel>>> getExams(String subjectId) async {
@@ -15,14 +16,21 @@ class SubjectsRemoteDataSource {
       final response = await DioHelper.getData(
         path: ApiEndpoints.subjectGetExams(subjectId),
       );
-      final body = response.data;
-      if (body is! List) {
+      if (!response.status) {
+        return Left(response.message);
+      }
+
+      final parsed = ExamsListResponseModel.fromJson({
+        'message': response.message,
+        'data': response.data,
+      });
+      if (parsed.data.isEmpty) {
         return const Right(<ExamModel>[]);
       }
-      final exams = <ExamModel>[
-        for (final item in body)
-          ExamModel.fromJson(item as Map<String, dynamic>),
-      ];
+
+      final exams = parsed.data
+          .map(ExamsV3LegacyMapper.toLegacyExam)
+          .toList(growable: false);
       return Right(exams);
     } catch (error) {
       return Left(error.toString());
@@ -136,3 +144,4 @@ class SubjectsRemoteDataSource {
     }
   }
 }
+

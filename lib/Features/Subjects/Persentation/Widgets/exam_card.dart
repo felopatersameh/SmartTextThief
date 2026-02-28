@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
+import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Widget/custom_text_app.dart';
 
 class ExamCard extends StatelessWidget {
@@ -181,9 +181,9 @@ class ExamCard extends StatelessWidget {
           children: [
             Expanded(
               child: _buildInfoItem(
-                icon: AppIcons.repeat,
-                label: ExamCardStrings.attempts,
-                value: '${0}',
+                icon: AppIcons.time,
+                label: ExamCardStrings.time,
+                value: '${exam.timeMinutes} ',
                 color: AppColors.purple,
               ),
             ),
@@ -426,3 +426,4 @@ class ExamCard extends StatelessWidget {
     );
   }
 }
+

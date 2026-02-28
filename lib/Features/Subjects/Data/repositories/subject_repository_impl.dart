@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 
 import '../../../../Core/Services/Firebase/failure_model.dart';
-import '../../../../Core/Utils/Models/exam_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 import '../../Domain/repositories/subject_repository.dart';
 import '../datasources/subjects_remote_data_source.dart';
@@ -58,3 +58,4 @@ class SubjectRepositoryImpl implements SubjectRepository {
     return _remoteDataSource.toggleSubjectOpen(model, isOpen);
   }
 }
+

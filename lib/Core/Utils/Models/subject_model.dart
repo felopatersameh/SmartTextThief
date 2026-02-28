@@ -14,6 +14,7 @@ class SubjectModel extends Equatable {
     required this.subjectTeacher,
     required this.subjectIsOpen,
     required this.subjectCreatedAt,
+    required this.studentCount,
   });
 
   final String subjectId;
@@ -23,6 +24,7 @@ class SubjectModel extends Equatable {
   final SubjectTeacher subjectTeacher;
   final bool subjectIsOpen;
   final DateTime subjectCreatedAt;
+  final int studentCount;
 
   SubjectModel copyWith({
     String? subjectId,
@@ -30,9 +32,9 @@ class SubjectModel extends Equatable {
     String? subjectName,
     String? topicID,
     SubjectTeacher? subjectTeacher,
-    List<String>? subjectEmailSts,
     bool? subjectIsOpen,
     DateTime? subjectCreatedAt,
+    int? studentCount,
   }) {
     return SubjectModel(
       subjectId: subjectId ?? this.subjectId,
@@ -42,6 +44,7 @@ class SubjectModel extends Equatable {
       subjectTeacher: subjectTeacher ?? this.subjectTeacher,
       subjectIsOpen: subjectIsOpen ?? this.subjectIsOpen,
       subjectCreatedAt: subjectCreatedAt ?? this.subjectCreatedAt,
+      studentCount: studentCount ?? this.studentCount,
     );
   }
 
@@ -57,13 +60,16 @@ class SubjectModel extends Equatable {
     final status = (json[DataKey.status.key]) == 'active' ? true : false;
 
     return SubjectModel(
-      subjectId: (json[DataKey.id_.key] ?? '').toString(),
-      subjectCode: (json[DataKey.code.key]).toString(),
-      subjectName: (json[DataKey.name.key]).toString(),
-      subjectTeacher: SubjectTeacher.fromJson(json[DataKey.instructorInfo.key]),
-      subjectIsOpen: status,
-      topicID: (json[DataKey.topicId.key]).toString(),
-      subjectCreatedAt: parseDate(json[DataKey.createdAt.key]),
+      subjectId: (json[DataKey.id_.key] ?? '').toString(), //
+      subjectCode: (json[DataKey.code.key]).toString(), //
+      subjectName: (json[DataKey.name.key]).toString(), // 
+      subjectTeacher: SubjectTeacher.fromJson(json[DataKey.instructorInfo.key]), //
+      subjectIsOpen: status, //
+      topicID: (json[DataKey.topicId.key]).toString(), //
+      subjectCreatedAt: parseDate(json[DataKey.createdAt.key]), //
+      studentCount: (json['count'] ?? 0) is int
+          ? json['count'] ?? 0
+          : int.tryParse(json['count'].toString()) ?? 0, //
     );
   }
 
@@ -76,6 +82,7 @@ class SubjectModel extends Equatable {
         topicID,
         subjectIsOpen,
         subjectCreatedAt,
+        studentCount,
       ];
 
   String get createdAt => subjectCreatedAt.shortMonthYear;

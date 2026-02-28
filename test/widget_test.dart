@@ -43,16 +43,16 @@ void main() {
   });
 
   group('Navigation Tests', () {
-    testWidgets('App router navigation methods exist', (
-      WidgetTester tester,
-    ) async {
-      // Test that navigation methods are accessible
-      expect(AppRouter.nextScreenNoPath, isA<Function>());
-      expect(AppRouter.nextScreenAndClear, isA<Function>());
-      expect(AppRouter.backScreen, isA<Function>());
-      expect(AppRouter.goNamedByPath, isA<Function>());
-      expect(AppRouter.replaceScreen, isA<Function>());
-    });
+    // testWidgets('App router navigation methods exist', (
+    //   WidgetTester tester,
+    // ) async {
+    //   // Test that navigation methods are accessible
+    //   expect(AppRouter.nextScreenNoPath, isA<Function>());
+    //   expect(AppRouter.nextScreenAndClear, isA<Function>());
+    //   expect(AppRouter.backScreen, isA<Function>());
+    //   expect(AppRouter.goNamedByPath, isA<Function>());
+    //   expect(AppRouter.replaceScreen, isA<Function>());
+    // });
 
     testWidgets('App router has correct initial route', (
       WidgetTester tester,

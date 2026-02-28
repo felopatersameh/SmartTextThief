@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Core/Utils/Models/user_model.dart';
+import '../../Config/Routes/Routes/choose_role_route.dart';
+import '../../Config/Routes/Routes/login_route.dart';
 import '../../Core/LocalStorage/local_storage_keys.dart';
 import '../../Core/LocalStorage/local_storage_service.dart';
 import '../../Config/Routes/app_router.dart';
@@ -55,11 +57,11 @@ class _SplashScreenState extends State<SplashScreen>
       await _updateProgress(0.2);
 
       if (token.isEmpty || !isLoggedIn) {
-        _navigateSafely(AppRouter.pushToLogin);
+        _navigateSafely(LoginRoute.push);
         return;
       }
       if (role == UserType.non.value) {
-        _navigateSafely(AppRouter.pushToChooseRole);
+        _navigateSafely(ChooseRoleRoute.push);
         return;
       }
       _updateProgress(0.3);
@@ -68,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen>
       final user = await context.read<ProfileCubit>().init();
 
       if (user == UserModel.empty()) {
-        _navigateSafely(AppRouter.pushToLogin);
+        _navigateSafely(LoginRoute.push);
         return;
       }
 
@@ -85,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       _navigateSafely(AppRouter.pushToMainScreen);
     } catch (e) {
-      _navigateSafely(AppRouter.pushToLogin);
+      _navigateSafely(LoginRoute.push);
     }
   }
 

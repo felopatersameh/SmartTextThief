@@ -1,11 +1,11 @@
 import 'package:get_it/get_it.dart';
 
-import '../../Features/CreateExam/data/datasources/create_exam_remote_data_source.dart';
-import '../../Features/CreateExam/data/repositories/create_exam_repository.dart';
-import '../../Features/DoExam/data/datasources/do_exam_remote_data_source.dart';
-import '../../Features/DoExam/data/repositories/do_exam_repository.dart';
-import '../../Features/ViewExam/data/datasources/view_exam_remote_data_source.dart';
-import '../../Features/ViewExam/data/repositories/view_exam_repository.dart';
+import '../../Features/exam/data/datasource/create_exam_remote_data_source.dart';
+import '../../Features/exam/data/datasource/do_exam_remote_data_source.dart';
+import '../../Features/exam/data/datasource/view_exam_remote_data_source.dart';
+import '../../Features/exam/data/repositories/create_exam_repository.dart';
+import '../../Features/exam/data/repositories/do_exam_repository.dart';
+import '../../Features/exam/data/repositories/view_exam_repository.dart';
 import '../../Features/Main/cubit/main_cubit.dart';
 import '../../Features/Notifications/Presentation/cubit/notifications_cubit.dart';
 import '../../Features/Profile/Persentation/cubit/profile_cubit.dart';

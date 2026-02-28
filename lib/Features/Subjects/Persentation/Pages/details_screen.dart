@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Config/Routes/DataScreens/create_exam_route_data.dart';
+import 'package:smart_text_thief/Config/Routes/DataScreens/dashboard_route_data.dart';
+import 'package:smart_text_thief/Config/Routes/DataScreens/do_exam_route_data.dart';
+import 'package:smart_text_thief/Config/Routes/DataScreens/view_exam_route_data.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/create_exam_route.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/dashboard_route.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/do_exam_route.dart';
+import 'package:smart_text_thief/Config/Routes/Routes/result_route.dart';
 import 'package:smart_text_thief/Config/Routes/app_router.dart';
-import 'package:smart_text_thief/Config/Routes/route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/PDF/pdf_services.dart';
-import 'package:smart_text_thief/Core/Utils/Models/exam_model.dart';
+import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/centered_section.dart';
@@ -93,7 +100,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           );
                           return;
                         }
-                        await AppRouter.pushToDoExam<bool>(
+                        await DoExamRoute.push(
                           context,
                           data: DoExamRouteData(exam: exam),
                           idSubject: selected.subjectId,
@@ -127,12 +134,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 ));
                       },
                       showQA: () {
-                        AppRouter.pushToResult(
+                        ResultRoute.push(
                           context,
                           data: ViewExamRouteData(
                             exam: exam,
                             isEditMode: false,
                             nameSubject: selected.subjectName,
+                            idSubject: selected.subjectId
                           ),
                           email: GetLocalStorage.getEmailUser(),
                           idSubject: selected.subjectId,
@@ -196,7 +204,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     elevation: 6,
                     focusElevation: 8,
                     onPressed: () {
-                      AppRouter.pushToCreateExam(
+                     CreateExamRoute.push(
                         context,
                         data: CreateExamRouteData(subject: selected),
                       );
@@ -277,9 +285,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
     SubjectModel subject,
     List<ExamModel> exams,
   ) {
-    AppRouter.pushToDashboard(
+    DashboardRoute.push(
       context,
       data: DashboardRouteData(subjectId: subject.subjectId),
     );
   }
 }
+

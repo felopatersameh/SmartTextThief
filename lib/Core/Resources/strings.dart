@@ -143,7 +143,7 @@ class ExamCardStrings {
   static const String upcoming = 'Upcoming';
   static const String start = 'Start';
   static const String end = 'End';
-  static const String attempts = 'Attempts';
+  static const String time = 'Time';
   static const String questions = 'Questions';
   static const String viewResults = 'View Results';
   static const String pdf = 'PDF';

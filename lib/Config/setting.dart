@@ -1,6 +1,6 @@
 //* Routes
 export 'Routes/app_router.dart';
-export 'Routes/error_screen.dart';
+export 'Routes/BuilderErrorsScreens/error_screen.dart';
 export 'Routes/name_routes.dart';
 
 //* Setting

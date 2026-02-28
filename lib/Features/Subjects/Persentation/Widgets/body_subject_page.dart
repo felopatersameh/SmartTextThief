@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_text_thief/Config/Routes/DataScreens/subject_details_route_data.dart';
 import 'package:smart_text_thief/Config/setting.dart';
-import 'package:smart_text_thief/Config/Routes/route_data.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/empty_list_subjects.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/exams_header_card.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subjects_card.dart';
+
+import '../../../../Config/Routes/Routes/subject_details_route.dart';
 
 
 class BodySubjectPage extends StatelessWidget {
@@ -85,7 +87,7 @@ class BodySubjectPage extends StatelessWidget {
                     model: model,
                     openSubjectDetails: () {
                       context.read<SubjectCubit>().selectSubject(model);
-                      AppRouter.pushToSubjectDetails(
+                      SubjectDetailsRoute.push(
                         context,
                         data: SubjectDetailsRouteData(subject: model),
                       );

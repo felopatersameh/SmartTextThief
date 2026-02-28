@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../Config/Routes/Routes/choose_role_route.dart';
 import '../../../../Config/Routes/app_router.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Utils/show_message_snack_bar.dart';
@@ -51,7 +52,7 @@ class _BodyScreenState extends State<BodyScreen> {
 
     if (!context.mounted || !isSuccess) return;
     if (state.requireRoleSelection) {
-      AppRouter.pushToChooseRole(context);
+      ChooseRoleRoute.push(context);
     } else {
       AppRouter.pushToMainScreen(context);
     }

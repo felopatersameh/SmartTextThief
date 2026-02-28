@@ -16,6 +16,10 @@ class ApiEndpoints {
   static String subjectRemove(String id) => 'v1/subject/$id/remove';
   static String subjectCreateExam(String id) => 'v1/subject/$id/create_exam';
   static String subjectGetExams(String id) => 'v1/subject/$id/get_exams';
+  static String subjectSubmitExam(String id, String idExam) =>
+      'v1/subject/$id/exam/$idExam/submit_exam';
+  static String subjectGetResult(String id, String examId) =>
+      'v1/subject/$id/exam/$examId/get_result';
   static const String notifications = 'v1/notifications';
   static const String notificationsRead = 'v1/notifications/read';
   static const String notificationsOpen = 'v1/notifications/open';
