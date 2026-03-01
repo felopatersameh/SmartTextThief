@@ -98,51 +98,6 @@ class ExamCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
-    Color badgeColor;
-    String badgeText;
-    IconData badgeIcon;
-
-    if (exam.isEnded) {
-      badgeColor = AppColors.danger;
-      badgeText = ExamCardStrings.ended;
-      badgeIcon = AppIcons.checkCircle;
-    } else if (exam.isStart) {
-      badgeColor = AppColors.success;
-      badgeText = ExamCardStrings.live;
-      badgeIcon = AppIcons.circle;
-    } else {
-      badgeColor = AppColors.amber;
-      badgeText = ExamCardStrings.upcoming;
-      badgeIcon = AppIcons.schedule;
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-          color: badgeColor.withValues(alpha: 0.5),
-          width: 1.2,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(badgeIcon, color: badgeColor, size: 12.sp),
-          SizedBox(width: 4.w),
-          AppCustomText.generate(
-            text: badgeText,
-            textStyle: AppTextStyles.bodySmallBold.copyWith(
-              color: badgeColor,
-              fontSize: 11.sp,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildInfoGrid() {
     return Column(
@@ -256,80 +211,119 @@ class ExamCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionSection(bool inst) {
-    // final Color primary = AppColors.colorPrimary;
+Widget _buildStatusBadge() {
+  Color badgeColor;
+  String badgeText;
+  IconData badgeIcon;
 
-    if (exam.doExam) {
-      return _buildActionButton(
-        onPressed: showQA,
-        icon: AppIcons.showQuestions,
-        label: ExamCardStrings.viewResults,
-        isPrimary: true,
-        fullWidth: true
-      );
-    }
-
-    if (!exam.isStart) {
-      return _buildInfoMessage(
-        message: ExamCardStrings.examStartsIn(exam.durationBeforeStarted),
-        icon: AppIcons.schedule,
-        color: AppColors.amber,
-      );
-    } else if (exam.isStart && !exam.isEnded && !inst ) {
-      if (exam.doExam) {
-        return _buildInfoMessage(
-          message: ExamCardStrings.waitingForResults,
-          subtitle: ExamCardStrings.timeLeft(exam.durationAfterStarted),
-          icon: AppIcons.hourglassEmpty,
-          color: AppColors.blue,
-        );
-      } else {
-        return Column(
-          children: [
-            _buildInfoMessage(
-              message: ExamCardStrings.timeRemaining(exam.durationAfterStarted),
-              icon: AppIcons.timer,
-              color: AppColors.success,
-              compact: true,
-            ),
-            SizedBox(height: 10.h),
-            _buildActionButton(
-              onPressed: againTest,
-              icon: AppIcons.quiz,
-              label: ExamCardStrings.startExamNow,
-              isPrimary: true,
-              fullWidth: true,
-            ),
-          ],
-        );
-      }
-    } else {
-      return Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: _buildActionButton(
-              onPressed: showQA,
-              icon: AppIcons.showQuestions,
-              label: ExamCardStrings.showMyResults,
-              isPrimary: true,
-            ),
-          ),
-          SizedBox(width: 8.w),
-          Expanded(
-            flex: 2,
-            child: _buildActionButton(
-              onPressed: pdf,
-              icon: AppIcons.download,
-              label: ExamCardStrings.pdf,
-              isPrimary: false,
-            ),
-          ),
-        ],
-      );
-    }
+  if (!exam.isStart) {
+    badgeColor = AppColors.amber;
+    badgeText = ExamCardStrings.upcoming;
+    badgeIcon = AppIcons.schedule;
+  } else if (exam.isStart && !exam.isEnded) {
+    badgeColor = AppColors.success;
+    badgeText = ExamCardStrings.live;
+    badgeIcon = AppIcons.circle;
+  } else {
+    badgeColor = AppColors.danger;
+    badgeText = ExamCardStrings.ended;
+    badgeIcon = AppIcons.checkCircle;
   }
 
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+    decoration: BoxDecoration(
+      color: badgeColor.withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(20.r),
+      border: Border.all(
+        color: badgeColor.withValues(alpha: 0.5),
+        width: 1.2,
+      ),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(badgeIcon, color: badgeColor, size: 12.sp),
+        SizedBox(width: 4.w),
+        AppCustomText.generate(
+          text: badgeText,
+          textStyle: AppTextStyles.bodySmallBold.copyWith(
+            color: badgeColor,
+            fontSize: 11.sp,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildActionSection(bool inst) {
+  // 1. لسه مبدأش
+  if (!exam.isStart) {
+    return _buildInfoMessage(
+      message: ExamCardStrings.examStartsIn(exam.durationBeforeStarted),
+      icon: AppIcons.schedule,
+      color: AppColors.amber,
+    );
+  }
+
+  // 2. شغال + مخلصش + مش instructor
+  if (exam.isStart && !exam.isEnded && !inst) {
+    // الطالب عمله وبينتظر
+    if (exam.showPendingResult) {
+      return _buildInfoMessage(
+        message: ExamCardStrings.waitingForResults,
+        subtitle: ExamCardStrings.timeLeft(exam.durationAfterStarted),
+        icon: AppIcons.hourglassEmpty,
+        color: AppColors.blue,
+      );
+    }
+    // الطالب لسه معملوش
+    return Column(
+      children: [
+        _buildInfoMessage(
+          message: ExamCardStrings.timeRemaining(exam.durationAfterStarted),
+          icon: AppIcons.timer,
+          color: AppColors.success,
+          compact: true,
+        ),
+        SizedBox(height: 10.h),
+        _buildActionButton(
+          onPressed: againTest,
+          icon: AppIcons.quiz,
+          label: ExamCardStrings.startExamNow,
+          isPrimary: true,
+          fullWidth: true,
+        ),
+      ],
+    );
+  }
+
+  return Row(
+    children: [
+      Expanded(
+        flex: 3,
+        child: _buildActionButton(
+          onPressed: showQA,
+          icon: AppIcons.showQuestions,
+          label: ExamCardStrings.showMyResults,
+          isPrimary: true,
+        ),
+      ),
+      SizedBox(width: 8.w),
+      if (inst)
+      Expanded(
+        flex: 2,
+        child: _buildActionButton(
+          onPressed: pdf,
+          icon: AppIcons.download,
+          label: ExamCardStrings.pdf,
+          isPrimary: false,
+        ),
+      ),
+    ],
+  );
+}
   Widget _buildActionButton({
     required VoidCallback? onPressed,
     required IconData icon,

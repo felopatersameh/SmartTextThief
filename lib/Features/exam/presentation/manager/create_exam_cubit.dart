@@ -329,7 +329,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         isEditMode: true,
         nameSubject: state.subject.subjectName,
         idSubject: state.subject.subjectId,
-        
+        isTeacherView: true,
       ),
     );
   }

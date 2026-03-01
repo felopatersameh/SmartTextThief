@@ -21,7 +21,7 @@ class LocalNotificationService {
 
     const initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
-
+  
     await _notificationsPlugin.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (response) {

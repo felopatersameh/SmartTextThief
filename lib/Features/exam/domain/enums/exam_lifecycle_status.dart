@@ -12,7 +12,7 @@ enum ExamStatus {
   static ExamStatus fromString(String value) {
     return ExamStatus.values.firstWhere(
       (element) => element.value == value,
-      orElse: () => ExamStatus.unknown,
+      orElse: () => ExamStatus.unknown, 
     );
   }
 

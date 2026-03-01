@@ -6,11 +6,13 @@ class ViewExamRouteData {
     required this.isEditMode,
     required this.nameSubject,
     required this.idSubject,
+    this.isTeacherView = false,
   });
 
   final ExamModel exam;
   final bool isEditMode;
   final String nameSubject;
   final String idSubject;
+  final bool isTeacherView;
 }
 

@@ -18,7 +18,7 @@ class StudentResultCubit extends Cubit<StudentResultState> {
 
   Future<void> init() async {
     if (state.exam.isTeacher) return;
-    if (state.exam.doExam) return;
+    if (!state.exam.doExam && !state.exam.showResult) return;
 
     emit(state.copyWith(loading: true, error: null));
     final response = await _repository.getResult(

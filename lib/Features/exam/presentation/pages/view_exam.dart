@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_text_thief/Config/di/service_locator.dart';
+import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import 'package:smart_text_thief/Core/Services/screenshot_protection_service.dart';
 import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 import 'package:smart_text_thief/Features/exam/data/repositories/view_exam_repository.dart';
@@ -19,12 +21,14 @@ class ViewExam extends StatefulWidget {
     required this.isEditMode,
     required this.nameSubject,
     required this.idSubject,
+    this.isTeacherView = false,
   });
 
   final ExamModel examModel;
   final String nameSubject;
   final String idSubject;
   final bool isEditMode;
+  final bool isTeacherView;
 
   @override
   State<ViewExam> createState() => _ViewExamState();
@@ -45,7 +49,8 @@ class _ViewExamState extends State<ViewExam> {
 
   @override
   Widget build(BuildContext context) {
-    final isTeacherFlow = widget.isEditMode || widget.examModel.isTeacher;
+    final isTeacherFlow =
+        widget.isEditMode || widget.isTeacherView || widget.examModel.isTeacher;
     if (isTeacherFlow) {
       return BlocProvider(
         create: (context) => TeacherResultCubit(
@@ -108,7 +113,23 @@ class _TeacherExamContent extends StatelessWidget {
               ? (index) => context.read<TeacherResultCubit>().deleteQuestion(index)
               : null,
           onSave: mode == ExamMode.create
-              ? () => context.read<TeacherResultCubit>().saveSubmit(context)
+              ? () async {
+                  final cubit = context.read<TeacherResultCubit>();
+                  final confirmed = await AppDialogService.showConfirmDialog(
+                    context,
+                    title: ViewExamStrings.saveAndSubmit,
+                    message: ViewExamStrings.saveExamMessage,
+                    confirmText: ViewExamStrings.saveAndSubmit,
+                    barrierDismissible: false,
+                    instructionsTitle: SubjectStrings.actionWarningsTitle,
+                    instructions: const [
+                      ViewExamStrings.saveExamWarningQuestions,
+                      ViewExamStrings.saveExamWarningPublish,
+                    ],
+                  );
+                  if (confirmed != true || !context.mounted) return;
+                  await cubit.saveSubmit(context);
+                }
               : null,
         );
       },

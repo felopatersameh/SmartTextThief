@@ -135,6 +135,23 @@ class SubjectStrings {
       'Students will be able to join this subject again.';
   static const String closeSubjectMessage =
       'No new student will be able to join this subject.';
+  static const String actionWarningsTitle = 'Please Read Before Continuing';
+  static const String deleteSubjectWarningPermanent =
+      'Deleting this subject is permanent and cannot be undone later.';
+  static const String deleteSubjectWarningDataLoss =
+      'All exams and related data inside this subject will be removed.';
+  static const String leaveSubjectWarningAccess =
+      'After leaving, you will lose access to this subject and its exams.';
+  static const String leaveSubjectWarningRejoin =
+      'You may need a new invite or code to join again later.';
+  static const String openSubjectWarningJoin =
+      'Opening the subject allows students to join using the subject code again.';
+  static const String openSubjectWarningExisting =
+      'Current members are not changed, only new joining becomes available.';
+  static const String closeSubjectWarningJoin =
+      'Closing the subject prevents any new student from joining.';
+  static const String closeSubjectWarningExisting =
+      'Current members keep access, but new joining will stay blocked until reopened.';
 }
 
 class ExamCardStrings {
@@ -150,6 +167,14 @@ class ExamCardStrings {
   static const String waitingForResults = 'Waiting for results...';
   static const String startExamNow = 'Start Exam Now';
   static const String showMyResults = 'Show My Results';
+  static const String startExamMessage =
+      'Your exam attempt will start immediately after confirmation.';
+  static const String startExamWarningNoExit =
+      'Once the timer starts, you should not leave the exam before it finishes.';
+  static const String startExamWarningExitRisk =
+      'Leaving the screen, closing the app, or losing connection may end your attempt.';
+  static const String startExamWarningReady =
+      'Make sure you are ready before starting because the remaining time keeps running.';
 
   static String examStartsIn(String duration) => 'Exam starts in $duration';
   static String timeLeft(String duration) => 'Time left: $duration';
@@ -393,6 +418,12 @@ class ViewExamStrings {
   static const String from = 'From';
   static const String saveAndSubmit = 'Save && Submit';
   static const String saving = 'Saving';
+  static const String saveExamMessage =
+      'The exam will be saved with the current questions and schedule.';
+  static const String saveExamWarningQuestions =
+      'Review all questions, answers, and dates before continuing.';
+  static const String saveExamWarningPublish =
+      'Students will see the saved exam based on the configured schedule.';
   static const String selectStudent = 'Select Student';
   static const String level = 'Level';
   static const String questions = 'Questions';

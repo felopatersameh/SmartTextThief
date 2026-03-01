@@ -48,9 +48,9 @@ class ExamModel extends Equatable {
       name: json['name'].toString(),
       levelExam: LevelExam.fromString(json['levelExam'].toString()).name,
       isRandom: json['isRandom'] ?? false,
-      questionCount: int.tryParse(json['questionCount'] ?? 0) ?? 0,
+      questionCount: (json['questionCount'] ?? 0) as int,
       statusExam: ExamStatus.fromString((json['status'] ?? '').toString()),
-      timeMinutes: int.tryParse(json['timeMinutes'] ?? 0) ?? 0,
+      timeMinutes: (json['timeMinutes'] ?? 0) as int,
       startAt: _parseDateTime(json['startAt']), //
       endAt: _parseDateTime(json['endAt']), //
       createdAt: _parseDateTime(json['createdAt']), //
@@ -140,11 +140,17 @@ class ExamModel extends Equatable {
     return '$examName--$id';
   }
 
-  bool get isTeacher => teacherMode;
+  bool get doExam =>
+      statusExam == ExamStatus.available && !isTeacher && isStart && !isEnded;
 
-  bool get doExam => statusExam == ExamStatus.available && !isTeacher;
+  bool get showResult =>
+      statusExam == ExamStatus.time ||
+      (statusExam == ExamStatus.pendingTime && isEnded);
 
-  bool get showResult => statusExam == ExamStatus.time || isEnded;
+  bool get showPendingResult =>
+      statusExam == ExamStatus.pendingTime && !isEnded;
+
+  bool get isTeacher => statusExam == ExamStatus.instructor || teacherMode;
 
   static List<QuestionsGeneratedModel> _parseQuestions(dynamic raw) {
     if (raw is! List) return const [];

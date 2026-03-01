@@ -7,6 +7,8 @@ Future<bool?> showSubjectActionDialog(
   required String message,
   required String confirmText,
   bool destructive = false,
+  List<String> instructions = const [],
+  String? instructionsTitle,
 }) {
   return AppDialogService.showConfirmDialog(
     context,
@@ -14,5 +16,7 @@ Future<bool?> showSubjectActionDialog(
     message: message,
     confirmText: confirmText,
     destructive: destructive,
+    instructions: instructions,
+    instructionsTitle: instructionsTitle,
   );
 }

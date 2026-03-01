@@ -23,6 +23,8 @@ class AppDialogService {
     String cancelText = AppStrings.cancel,
     bool destructive = false,
     bool barrierDismissible = true,
+    List<String> instructions = const [],
+    String? instructionsTitle,
   }) {
     final confirmColor =
         destructive ? AppColors.dangerAccent : AppColors.colorPrimary;
@@ -37,11 +39,69 @@ class AppDialogService {
           text: title,
           textStyle: AppTextStyles.h6Bold.copyWith(color: confirmColor),
         ),
-        content: AppCustomText.generate(
-          text: message,
-          textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-            color: AppColors.textCoolGray,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppCustomText.generate(
+              text: message,
+              textStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                color: AppColors.textCoolGray,
+              ),
+            ),
+            if (instructions.isNotEmpty) ...[
+              SizedBox(height: 14.h),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12.w),
+                decoration: BoxDecoration(
+                  color: AppColors.colorPrimary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(
+                    color: AppColors.colorPrimary.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppCustomText.generate(
+                      text: instructionsTitle ?? 'Instructions & Warnings',
+                      textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
+                        color: AppColors.textWhite,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    for (final instruction in instructions) ...[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 4.h),
+                            child: Icon(
+                              Icons.warning_amber_rounded,
+                              size: 14.sp,
+                              color: confirmColor,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: AppCustomText.generate(
+                              text: instruction,
+                              textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                color: AppColors.textCoolGray,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (instruction != instructions.last) SizedBox(height: 8.h),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
         ),
         actions: [
           TextButton(

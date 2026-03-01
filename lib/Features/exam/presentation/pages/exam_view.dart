@@ -171,7 +171,7 @@ class ExamView extends StatelessWidget {
         children: [
           ExamInfoCard(exam: exam),
           SizedBox(height: 16.h),
-          if (!exam.isEnded)
+          if (!_isResultMode && !exam.isEnded)
             exam_date.ExamDateSection(
               startDate: startDate ?? exam.startedAt,
               endDate: endDate ?? exam.examFinishAt,

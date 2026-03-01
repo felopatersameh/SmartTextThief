@@ -1,4 +1,5 @@
 import 'package:smart_text_thief/Features/exam/domain/enums/exam_lifecycle_status.dart';
+import 'package:smart_text_thief/Features/exam/domain/enums/result_exam_status.dart';
 import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart'
     as legacy_exam;
 import 'package:smart_text_thief/Features/exam/data/models/questions_generated_model.dart';
@@ -53,16 +54,17 @@ class ExamsV3LegacyMapper {
       return ExamStatus.instructor;
     }
 
-    switch ((status ?? '').trim()) {
-      case 'running':
+    switch (ResultExamStatus.fromString(status?.trim())) {
+      case ResultExamStatus.running:
         return ExamStatus.pendingTime;
-      case 'finished':
-      case 'time_expired':
-      case 'connection_lost':
-      case 'disposed':
+      case ResultExamStatus.finished:
+      case ResultExamStatus.timeExpired:
+      case ResultExamStatus.connectionLost:
+      case ResultExamStatus.disposed:
+        return ExamStatus.time;
+      case ResultExamStatus.unknown:
+      case ResultExamStatus.els:
         return ExamStatus.available;
-      default:
-        return ExamStatus.pendingTime;
     }
   }
 }

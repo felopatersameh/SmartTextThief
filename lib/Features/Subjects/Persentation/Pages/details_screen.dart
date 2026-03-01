@@ -14,6 +14,9 @@ import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Config/app_config.dart';
 import 'package:smart_text_thief/Core/LocalStorage/get_local_storage.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
+import 'package:smart_text_thief/Core/Services/Api/api_endpoints.dart';
+import 'package:smart_text_thief/Core/Services/Api/api_service.dart';
+import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import 'package:smart_text_thief/Core/Services/PDF/pdf_services.dart';
 import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
@@ -90,26 +93,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     final exam = exams[index];
                     return ExamCard(
                       exam: exam,
-                      inst:selected.isME ,
-                      againTest: () async {
-                        if (exam.doExam) {
-                          await showMessageSnackBar(
-                            context,
-                            title: DoExamStrings.alreadySubmitted,
-                            type: MessageType.warning,
-                          );
-                          return;
-                        }
-                        await DoExamRoute.push(
-                          context,
-                          data: DoExamRouteData(exam: exam),
-                          idSubject: selected.subjectId,
-                        );
-                        if (!context.mounted) return;
-                        await context.read<SubjectCubit>().getExams(
-                              selected.subjectId,
-                            );
-                      },
+                       inst:selected.isME ,
+                       againTest: () async =>
+                           _startExamAttempt(context, selected, exam),
                       pdf: () async {
                         if (!selected.isME) return;
                         final canAccessFiles = await FileAccessPermissionService
@@ -140,7 +126,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             exam: exam,
                             isEditMode: false,
                             nameSubject: selected.subjectName,
-                            idSubject: selected.subjectId
+                            idSubject: selected.subjectId,
+                            isTeacherView: selected.isME,
                           ),
                           email: GetLocalStorage.getEmailUser(),
                           idSubject: selected.subjectId,
@@ -248,6 +235,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
           : SubjectStrings.closeSubjectMessage,
       confirmText:
           nextStatus ? SubjectStrings.openSubject : SubjectStrings.closeSubject,
+      instructionsTitle: SubjectStrings.actionWarningsTitle,
+      instructions: nextStatus
+          ? const [
+              SubjectStrings.openSubjectWarningJoin,
+              SubjectStrings.openSubjectWarningExisting,
+            ]
+          : const [
+              SubjectStrings.closeSubjectWarningJoin,
+              SubjectStrings.closeSubjectWarningExisting,
+            ],
     );
     if (confirmed != true || !context.mounted) return;
     await context.read<SubjectCubit>().toggleSubjectOpen(subject, nextStatus);
@@ -261,6 +258,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
       message: SubjectStrings.deleteSubjectMessage,
       confirmText: AppStrings.delete,
       destructive: true,
+      instructionsTitle: SubjectStrings.actionWarningsTitle,
+      instructions: const [
+        SubjectStrings.deleteSubjectWarningPermanent,
+        SubjectStrings.deleteSubjectWarningDataLoss,
+      ],
     );
     if (confirmed != true || !context.mounted) return;
     await context.read<SubjectCubit>().removeSubject(subject);
@@ -273,11 +275,119 @@ class _DetailsScreenState extends State<DetailsScreen> {
       message: SubjectStrings.leaveSubjectMessage,
       confirmText: SubjectStrings.leave,
       destructive: true,
+      instructionsTitle: SubjectStrings.actionWarningsTitle,
+      instructions: const [
+        SubjectStrings.leaveSubjectWarningAccess,
+        SubjectStrings.leaveSubjectWarningRejoin,
+      ],
     );
     if (confirmed != true || !context.mounted) return;
     await context
         .read<SubjectCubit>()
         .leaveSubject(subject, GetLocalStorage.getEmailUser());
+  }
+
+  Future<void> _startExamAttempt(
+    BuildContext context,
+    SubjectModel subject,
+    ExamModel exam,
+  ) async {
+    final subjectCubit = context.read<SubjectCubit>();
+
+    if (exam.doExam) {
+      await showMessageSnackBar(
+        context,
+        title: DoExamStrings.alreadySubmitted,
+        type: MessageType.warning,
+      );
+      return;
+    }
+
+    final confirmed = await AppDialogService.showConfirmDialog(
+      context,
+      title: ExamCardStrings.startExamNow,
+      message: ExamCardStrings.startExamMessage,
+      confirmText: ExamCardStrings.startExamNow,
+      barrierDismissible: false,
+      instructionsTitle: SubjectStrings.actionWarningsTitle,
+      instructions: const [
+        ExamCardStrings.startExamWarningNoExit,
+        ExamCardStrings.startExamWarningExitRisk,
+        ExamCardStrings.startExamWarningReady,
+      ],
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      final response = await DioHelper.postData(
+        path: ApiEndpoints.subjectStartExam(subject.subjectId, exam.id),
+      );
+        
+      final message = response.message.trim();
+      final rawData = response.data;
+      final data = rawData is Map<String, dynamic>
+          ? rawData
+          : rawData is Map
+              ? Map<String, dynamic>.from(rawData)
+              : const <String, dynamic>{};
+      final status = (data['status'] ?? '').toString().trim();
+
+      if (!response.status) {
+        if (!context.mounted) return;
+        await showMessageSnackBar(
+          context,
+          title: message.isEmpty ? DoExamStrings.error : message,
+          type: MessageType.warning,
+        );
+        return;
+      }
+
+      if (status == 'running') {
+        final isExistingAttempt =
+            message.toLowerCase().contains('already started');
+        if (isExistingAttempt && context.mounted) {
+          await showMessageSnackBar(
+            context,
+            title: message,
+            type: MessageType.info,
+          );
+        }
+        if (!context.mounted) return;
+        await DoExamRoute.push(
+          context,
+          data: DoExamRouteData(exam: exam),
+          idSubject: subject.subjectId,
+        );
+        if (!context.mounted) return;
+        await subjectCubit.getExams(subject.subjectId);
+        return;
+      }
+
+      if (status == 'time_expired') {
+        if (!context.mounted) return;
+        await showMessageSnackBar(
+          context,
+          title: message.isEmpty ? 'Exam time expired' : message,
+          type: MessageType.info,
+        );
+        await subjectCubit.getExams(subject.subjectId);
+        return;
+      }
+
+      if (!context.mounted) return;
+      await showMessageSnackBar(
+        context,
+        title: message.isEmpty ? DoExamStrings.error : message,
+        type: MessageType.warning,
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      await showMessageSnackBar(
+        context,
+        title: error.toString(),
+        type: MessageType.error,
+      );
+    }
   }
 
   void _openSubjectDashboard(

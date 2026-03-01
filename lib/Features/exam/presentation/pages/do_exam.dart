@@ -76,7 +76,7 @@ class _DoExamState extends State<DoExam> with WidgetsBindingObserver {
       unawaited(_cubit!.onAppResumed());
       return;
     }
-
+    //  
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {

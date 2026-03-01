@@ -32,6 +32,7 @@ class ViewExamRoute {
               isEditMode: routeData.isEditMode,
               nameSubject: routeData.nameSubject,
               idSubject: routeData.idSubject,
+              isTeacherView: routeData.isTeacherView,
             ),
           );
         },
