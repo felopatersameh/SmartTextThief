@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_endpoints.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_service.dart';
@@ -65,6 +67,7 @@ class ViewExamRemoteDataSource {
       if (!response.status) {
         return Left(response.message);
       }
+      log("list ::: ${response.data}");
 
       final parsed = StudentResultResponseModel.fromJson({
         'message': response.message,
@@ -76,4 +79,3 @@ class ViewExamRemoteDataSource {
     }
   }
 }
-

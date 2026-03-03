@@ -160,21 +160,7 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
               ),
             ),
           ),
-        if (_isResultMode && !_hasStudentAnswer)
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: AppCustomText.generate(
-              text: 'Pending',
-              textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                color: AppColors.warning,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+
         if (_isEditablePreview && widget.onDelete != null)
           IconButton(
             onPressed: widget.onDelete,

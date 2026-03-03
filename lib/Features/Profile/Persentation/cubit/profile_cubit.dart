@@ -39,7 +39,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
 
-
   Future<bool> deleteCurrentUserData() async {
     bool result = false;
     final response = await ProfileSource.deleteCurrentUserData();

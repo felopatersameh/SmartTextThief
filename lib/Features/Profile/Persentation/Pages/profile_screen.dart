@@ -167,7 +167,8 @@ class ProfileScreen extends StatelessWidget {
                               padding: EdgeInsets.symmetric(vertical: 8.h),
                               child: AppCustomText.generate(
                                 text: ProfileStrings.appVersionPatch,
-                                textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                textStyle:
+                                    AppTextStyles.bodySmallMedium.copyWith(
                                   color: AppColors.white54,
                                 ),
                               ),
@@ -181,14 +182,17 @@ class ProfileScreen extends StatelessWidget {
                               children: [
                                 AppCustomText.generate(
                                   text: info.appName,
-                                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                  textStyle:
+                                      AppTextStyles.bodySmallMedium.copyWith(
                                     color: AppColors.white60,
                                   ),
                                 ),
                                 SizedBox(height: 2.h),
                                 AppCustomText.generate(
-                                  text: 'Version ${info.version}+${info.buildNumber}',
-                                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
+                                  text:
+                                      'Version ${info.version}+${info.buildNumber}',
+                                  textStyle:
+                                      AppTextStyles.bodySmallMedium.copyWith(
                                     color: AppColors.white54,
                                     fontSize: 11,
                                   ),

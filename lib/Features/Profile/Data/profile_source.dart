@@ -4,8 +4,8 @@ import 'package:smart_text_thief/Core/LocalStorage/local_storage_keys.dart';
 import 'package:smart_text_thief/Core/LocalStorage/local_storage_service.dart';
 import 'package:smart_text_thief/Core/Utils/Enums/enum_user.dart';
 import '../../../Core/Services/Api/api_endpoints.dart';
+import '../../../Core/Services/Api/api_response_model.dart';
 import '../../../Core/Services/Api/api_service.dart';
-import '../../../Core/Services/Firebase/analysis_data.dart';
 import '../../../Core/Services/Firebase/failure_model.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Utils/Models/data_model.dart';
@@ -15,14 +15,17 @@ class ProfileSource {
   static Future<Either<FailureModel, (UserModel, List<DataModel>)>>
       getDataUser() async {
     try {
-      final response = await DioHelper.getData(path: ApiEndpoints.userProfile);
-      final model = UserModel.fromJson(response.data as Map<String, dynamic>);
+      final response = await Future.wait(
+          [DioHelper.getData(path: ApiEndpoints.userProfile), analyzeUser()]);
+      final model = UserModel.fromJson(
+          (response[0] as ApiResponseModel<dynamic>).data
+              as Map<String, dynamic>);
       await LocalStorageService.setValue(
           LocalStorageKeys.email, model.userEmail);
       await LocalStorageService.setValue(LocalStorageKeys.name, model.userName);
       await LocalStorageService.setValue(
           LocalStorageKeys.role, model.userType.value);
-      final analysis = <DataModel>[];
+      final analysis = response[1] as List<DataModel>;
       return Right((model, analysis));
     } on DioException catch (error) {
       return Left(
@@ -41,13 +44,15 @@ class ProfileSource {
     }
   }
 
-  static Future<List<DataModel>> analyzeUser(UserModel model) async {
-    final email = model.userEmail;
-    if (email.isEmpty) return [];
-    if (model.isTe) {
-      return AnalysisData.analyzedInstructor(email: email);
+  static Future<List<DataModel>> analyzeUser() async {
+    final response = await DioHelper.getData(path: ApiEndpoints.userDashboard);
+    if (!response.status) {
+      return [];
     }
-    return AnalysisData.analyzedStudent(email: email);
+    final model =
+        (response.data as List).map((e) => DataModel.fromJson(e)).toList();
+
+    return (model);
   }
 
   static Future<Either<FailureModel, bool>> updateType(String type) async {

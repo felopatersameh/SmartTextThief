@@ -9,17 +9,36 @@ import '../../../../Core/Utils/Enums/data_key.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 
+import '../../../exam/data/models/analytics_model.dart';
+
 class SubjectsRemoteDataSource {
   Future<Either<String, List<ExamModel>>> getExams(String subjectId) async {
     try {
       final response = await DioHelper.getData(
         path: ApiEndpoints.subjectGetExams(subjectId),
       );
-      if (!response.status) { 
+      if (!response.status) {
         return Left(response.message);
       }
       final exams =
-          (response.data as List).map((e) => ExamModel.fromJson(e)).toList();
+          ((response.data ?? []) as List).map((e) => ExamModel.fromJson(e)).toList();
+      return Right(exams);
+    } catch (error) {
+      return Left(error.toString());
+    }
+  }
+
+  Future<Either<String, AnalyticsSubjectModel>> getAnalyticsSubjects(
+      String subjectId) async {
+    try {
+      final response = await DioHelper.getData(
+        path: ApiEndpoints.subjectGetAnalytics(subjectId),
+      );
+      if (!response.status) {
+        return Left(response.message);
+      }
+      final exams =
+          AnalyticsSubjectModel.fromJson(response.data as Map<String, dynamic>);
       return Right(exams);
     } catch (error) {
       return Left(error.toString());

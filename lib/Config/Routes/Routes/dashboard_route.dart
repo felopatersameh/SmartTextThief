@@ -11,7 +11,14 @@ class DashboardRoute {
   static GoRoute get route => GoRoute(
         name: NameRoutes.dashboard,
         path: NameRoutes.dashboard,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: DashboardScreen()),
+        pageBuilder: (context, state) {
+          final data = state.extra;
+          final routeData = data is DashboardRouteData
+              ? data
+              : DashboardRouteData(subjectId: data as String?);
+          return NoTransitionPage(
+            child: DashboardScreen(subjectId: routeData.subjectId),
+          );
+        },
       );
 }

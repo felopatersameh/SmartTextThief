@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
@@ -5,6 +6,7 @@ import 'package:equatable/equatable.dart';
 
 import 'package:smart_text_thief/Core/Services/Firebase/failure_model.dart';
 import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
+import 'package:smart_text_thief/Features/exam/data/models/analytics_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Features/Subjects/Data/datasources/subjects_remote_data_source.dart';
 import 'package:smart_text_thief/Features/Subjects/Data/repositories/subject_repository_impl.dart';
@@ -19,6 +21,7 @@ import 'package:smart_text_thief/Features/Subjects/Domain/usecases/search_subjec
 import 'package:smart_text_thief/Features/Subjects/Domain/usecases/toggle_subject_open_use_case.dart';
 
 import '../../../../Core/Services/Notifications/notification_services.dart';
+import '../../Domain/usecases/get_analytics_subjects.dart';
 
 part 'subjects_state.dart';
 
@@ -40,6 +43,7 @@ class SubjectCubit extends Cubit<SubjectState> {
     _deleteSubjectUseCase = DeleteSubjectUseCase(_repository);
     _toggleSubjectOpenUseCase = ToggleSubjectOpenUseCase(_repository);
     _leaveSubjectUseCase = LeaveSubjectUseCase(_repository);
+    _getAnalyticsSubjectsUseCase = GetAnalyticsSubjectsUseCase(_repository);
   }
 
   final SubjectRepository _repository;
@@ -52,6 +56,7 @@ class SubjectCubit extends Cubit<SubjectState> {
   late final DeleteSubjectUseCase _deleteSubjectUseCase;
   late final ToggleSubjectOpenUseCase _toggleSubjectOpenUseCase;
   late final LeaveSubjectUseCase _leaveSubjectUseCase;
+  late final GetAnalyticsSubjectsUseCase _getAnalyticsSubjectsUseCase;
 
   Future<List<SubjectModel>> init() async {
     emit(
@@ -209,6 +214,26 @@ class SubjectCubit extends Cubit<SubjectState> {
     );
   }
 
+  Future<AnalyticsSubjectModel> getAnalyticsSubjects(String subjectId) async {
+    final response = await _getAnalyticsSubjectsUseCase(subjectId);
+    return response.fold(
+      (failure) => const AnalyticsSubjectModel(
+        totalStudents: [],
+        totalExams: 0,
+        totalSubmissions: 0,
+        participation: null,
+        scores: null,
+        examsDifficulty: null,
+        questionsAnalysis: null,
+        generatedAt: null,
+      ),
+      (model) {
+        log('message Cubit: ${model.toJson()}');
+        return model;
+      },
+    );
+  }
+
   Future<void> leaveSubject(SubjectModel model, String studentEmail) async {
     await _runBoolOperation(
       operation: () => _leaveSubjectUseCase(model, studentEmail),
@@ -343,4 +368,3 @@ class SubjectCubit extends Cubit<SubjectState> {
 }
 
 const _selectedSubjectNotChanged = Object();
-

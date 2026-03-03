@@ -205,14 +205,9 @@ class ExamView extends StatelessWidget {
 
   Widget _buildTeacherTabs() {
     final results = examResults ?? const <ExamResultModel>[];
-    final shortAnswerCount = _effectiveQuestions
-        .where((question) => question.isShortAnswer)
-        .length;
-    final selectedEmailText =
-        (selectedStudentEmail ?? '').trim().isEmpty ? '-' : selectedStudentEmail!;
 
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.colorsBackGround2,
@@ -231,7 +226,7 @@ class ExamView extends StatelessWidget {
               tabs: const [
                 Tab(text: 'Students'),
                 Tab(text: 'Analytics'),
-                Tab(text: 'Essays'),
+
               ],
             ),
             SizedBox(
@@ -270,30 +265,7 @@ class ExamView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppCustomText.generate(
-                          text: 'Essay grading section',
-                          textStyle: AppTextStyles.bodyMediumSemiBold.copyWith(
-                            color: AppColors.colorPrimary,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        AppCustomText.generate(
-                          text: 'Short-answer questions: $shortAnswerCount',
-                          textStyle: AppTextStyles.bodyMediumMedium,
-                        ),
-                        SizedBox(height: 8.h),
-                        AppCustomText.generate(
-                          text: 'Selected student: $selectedEmailText',
-                          textStyle: AppTextStyles.bodyMediumMedium,
-                        ),
-                      ],
-                    ),
-                  ),
+                
                 ],
               ),
             ),

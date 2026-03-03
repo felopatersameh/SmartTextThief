@@ -3,6 +3,7 @@ class ApiEndpoints {
 
   static const String authGoogle = 'auth/google';
   static const String userProfile = 'v1/user';
+  static const String userDashboard = 'v1/user/dashboard';
   static const String userLogout = 'v1/user/logout';
   static const String userSubmitRole = 'v1/user/submitRole';
   static const String userRemove = 'v1/user/remove';
@@ -15,7 +16,8 @@ class ApiEndpoints {
       'v1/subject/$id/update_status';
   static String subjectRemove(String id) => 'v1/subject/$id/remove';
   static String subjectCreateExam(String id) => 'v1/subject/$id/create_exam';
-  static String subjectGetExams(String id) => 'v1/subject/$id/get_exams';
+  static String subjectGetExams(String id) => 'v1/subject/$id/get_exams'; 
+  static String subjectGetAnalytics(String id) => 'v1/subject/$id/analytics';
   static String subjectStartExam(String id, String idExam) =>
       'v1/subject/$id/exam/$idExam/start_exam';
   static String subjectSubmitExam(String id, String idExam) =>

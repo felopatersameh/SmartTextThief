@@ -3,6 +3,7 @@ import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
 
 import '../../../../Core/Services/Firebase/failure_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
+import '../../../exam/data/models/analytics_model.dart';
 import '../../Domain/repositories/subject_repository.dart';
 import '../datasources/subjects_remote_data_source.dart';
 
@@ -26,6 +27,10 @@ class SubjectRepositoryImpl implements SubjectRepository {
   @override
   Future<Either<String, List<ExamModel>>> getExams(String subjectId) {
     return _remoteDataSource.getExams(subjectId);
+  }
+  @override
+  Future<Either<String, AnalyticsSubjectModel>> getAnalyticsSubjects(String subjectId) {
+    return _remoteDataSource.getAnalyticsSubjects(subjectId);
   }
 
   @override
