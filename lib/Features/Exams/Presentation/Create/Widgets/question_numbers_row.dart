@@ -41,13 +41,13 @@ class QuestionNumbersRow extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8.w),
-            Expanded(
-              child: _NumberField(
-                label: CreateExamStrings.qa,
-                initialValue: state.numQA??'',
-                onChanged: (v) => cubit.changeQuestionNumbers(qa: v),
-              ),
-            ),
+            // Expanded(
+            //   child: _NumberField(
+            //     label: CreateExamStrings.qa,
+            //     initialValue: state.numQA??'',
+            //     onChanged: (v) => cubit.changeQuestionNumbers(qa: v),
+            //   ),
+            // ),
           ],
         ),
         SizedBox(height: 10.h),

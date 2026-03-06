@@ -27,7 +27,7 @@ class CreateExamState extends Equatable {
     this.canOpenQuestions = false,
     this.numMultipleChoice = '',
     this.numTrueFalse = '',
-    this.numQA = '',
+    this.numQA = '0',
     this.time = 10,
     this.uploadOption = UploadOption.file,
     this.uploadedFiles = const [],

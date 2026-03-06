@@ -63,7 +63,6 @@ flutter:
     - .env
     - assets/Fonts/
     - assets/Image/
-    - assets/service_account.json
     - shorebird.yaml 
 
 flutter_launcher_icons:
