@@ -213,31 +213,31 @@ class SubjectInfoCard extends StatelessWidget {
     }
 
     if (onLeaveSubject != null) {
-      if (items.isNotEmpty) {
-        items.add(PopupMenuDivider(height: 8.h));
-      }
-      items.add(
-        _buildQuickActionItem(
-          action: _SubjectHeaderAction.leaveSubject,
-          title: SubjectStrings.leaveSubject,
-          icon: Icons.logout_rounded,
-          color: AppColors.dangerSoft,
-        ),
-      );
+      // if (items.isNotEmpty) {
+      //   items.add(PopupMenuDivider(height: 8.h));
+      // }
+      // items.add(
+      //   _buildQuickActionItem(
+      //     action: _SubjectHeaderAction.leaveSubject,
+      //     title: SubjectStrings.leaveSubject,
+      //     icon: Icons.logout_rounded,
+      //     color: AppColors.dangerSoft,
+      //   ),
+      // );
     }
 
     if (onDeleteSubject != null) {
-      if (items.isNotEmpty) {
-        items.add(PopupMenuDivider(height: 8.h));
-      }
-      items.add(
-        _buildQuickActionItem(
-          action: _SubjectHeaderAction.deleteSubject,
-          title: SubjectStrings.deleteSubject,
-          icon: AppIcons.deleteOutline,
-          color: AppColors.dangerSoft,
-        ),
-      );
+      // if (items.isNotEmpty) {
+      //   items.add(PopupMenuDivider(height: 8.h));
+      // }
+      // items.add(
+      //   _buildQuickActionItem(
+      //     action: _SubjectHeaderAction.deleteSubject,
+      //     title: SubjectStrings.deleteSubject,
+      //     icon: AppIcons.deleteOutline,
+      //     color: AppColors.dangerSoft,
+      //   ),
+      // );
     }
 
     return items;

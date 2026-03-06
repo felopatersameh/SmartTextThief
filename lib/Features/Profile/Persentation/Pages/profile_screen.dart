@@ -10,7 +10,6 @@ import '../../../../Config/app_config.dart';
 import '../../../Notifications/Presentation/cubit/notifications_cubit.dart';
 import '../../../login/Data/authentication_source.dart';
 import '../../../../Core/LocalStorage/get_local_storage.dart';
-import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import '../../../../Core/LocalStorage/local_storage_service.dart';
 import '/Core/Utils/show_message_snack_bar.dart';
 
@@ -99,45 +98,45 @@ class ProfileScreen extends StatelessWidget {
                           email: GetLocalStorage.getEmailUser(),
                         ),
                       ),
-                      OptionTile(
-                        title: ProfileStrings.deleteAccount,
-                        color: AppColors.danger.withValues(alpha: .45),
-                        onTap: () async {
-                          final isConfirm = await _showDeleteAccountDialog(
-                            context,
-                          );
-                          if (isConfirm != true || !context.mounted) return;
+                      // OptionTile(
+                      //   title: ProfileStrings.deleteAccount,
+                      //   color: AppColors.danger.withValues(alpha: .45),
+                      //   onTap: () async {
+                      //     final isConfirm = await _showDeleteAccountDialog(
+                      //       context,
+                      //     );
+                      //     if (isConfirm != true || !context.mounted) return;
 
-                          bool isDeleted = false;
-                          await showMessageSnackBar(
-                            context,
-                            title: ProfileStrings.deletingAccount,
-                            type: MessageType.loading,
-                            onLoading: () async {
-                              isDeleted = await context
-                                  .read<ProfileCubit>()
-                                  .deleteCurrentUserData();
-                              if (!isDeleted || !context.mounted) return;
+                      //     bool isDeleted = false;
+                      //     await showMessageSnackBar(
+                      //       context,
+                      //       title: ProfileStrings.deletingAccount,
+                      //       type: MessageType.loading,
+                      //       onLoading: () async {
+                      //         isDeleted = await context
+                      //             .read<ProfileCubit>()
+                      //             .deleteCurrentUserData();
+                      //         if (!isDeleted || !context.mounted) return;
 
-                              await context.read<NotificationsCubit>().clear(
-                                    keepAllUsers: true,
-                                  );
-                              await AuthenticationSource.logout();
-                              await LocalStorageService.clear();
-                              if (!context.mounted) return;
-                              LoginRoute.push(context);
-                            },
-                          );
+                      //         await context.read<NotificationsCubit>().clear(
+                      //               keepAllUsers: true,
+                      //             );
+                      //         await AuthenticationSource.logout();
+                      //         await LocalStorageService.clear();
+                      //         if (!context.mounted) return;
+                      //         LoginRoute.push(context);
+                      //       },
+                      //     );
 
-                          if (!isDeleted && context.mounted) {
-                            await showMessageSnackBar(
-                              context,
-                              title: ProfileStrings.failedToDeleteAccount,
-                              type: MessageType.error,
-                            );
-                          }
-                        },
-                      ),
+                      //     if (!isDeleted && context.mounted) {
+                      //       await showMessageSnackBar(
+                      //         context,
+                      //         title: ProfileStrings.failedToDeleteAccount,
+                      //         type: MessageType.error,
+                      //       );
+                      //     }
+                      //   },
+                      // ),
                       OptionTile(
                         title: ProfileStrings.logout,
                         color: AppColors.dangerAccent.withValues(alpha: .3),
@@ -213,13 +212,13 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<bool?> _showDeleteAccountDialog(BuildContext context) {
-    return AppDialogService.showConfirmDialog(
-      context,
-      title: ProfileStrings.deleteAccount,
-      message: ProfileStrings.deleteAccountConfirm,
-      confirmText: AppStrings.delete,
-      destructive: true,
-    );
-  }
+  // Future<bool?> _showDeleteAccountDialog(BuildContext context) {
+  //   return AppDialogService.showConfirmDialog(
+  //     context,
+  //     title: ProfileStrings.deleteAccount,
+  //     message: ProfileStrings.deleteAccountConfirm,
+  //     confirmText: AppStrings.delete,
+  //     destructive: true,
+  //   );
+  // }
 }
