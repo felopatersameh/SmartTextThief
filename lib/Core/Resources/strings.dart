@@ -328,9 +328,9 @@ class HelpStrings {
 }
 
 class AboutStrings {
-  static const String overview = 'What Is Smart Text Thief?';
+  static const String overview = 'What Is Examora?';
   static const String overviewText1 =
-      'Smart Text Thief helps instructors create high-quality exams quickly using AI.';
+      'Examora helps instructors create high-quality exams quickly using AI.';
   static const String overviewText2 =
       'It supports the full exam workflow: creating, publishing, taking exams, and reviewing performance.';
   static const String keyConcept = 'Core Idea';
@@ -504,3 +504,5 @@ class DataSourceStrings {
     return '$userName Submitted Exam $examType $specialIdLiveExam $suffix';
   }
 }
+
+

@@ -1,4 +1,4 @@
-
+﻿
 class NameRoutes {
   static const String splash = '/';
   static const String login = 'login';
@@ -26,7 +26,7 @@ class NameRoutes {
     createExam: "Create Exam",
     subjectDetails: "Detail",
     doExam: "Exam Live",
-    about: "About Smart Text Thief",
+    about: "About Examora",
     help: "Help & Support",
     dashboard: "Dashboard",
   };
@@ -47,3 +47,5 @@ extension PathStringExtension on String {
 
   String get titleAppBar => NameRoutes.titleAppBar[this] ?? "";
 }
+
+

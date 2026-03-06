@@ -8,11 +8,11 @@ class DeviceInfoService {
   /// Returns device info map for auth payload.
   /// Platform: android | ios
   /// manufacturer, model, brand, osVersion
-  static Future<Map<String, dynamic>> getDeviceInfo() async {
+  static Future<(Map<String, dynamic>, String)> getDeviceInfo() async {
     try {
       if (Platform.isAndroid) {
         final android = await _plugin.androidInfo;
-        return {
+        return ({
           'platform': 'android',
           'manufacturer': android.manufacturer,
           'model': android.model,
@@ -20,11 +20,11 @@ class DeviceInfoService {
           'osVersion': '${android.version.release} (SDK ${android.version.sdkInt})',
           'device': android.device,
           'product': android.product,
-        };
+        }, android.id);
       }
       if (Platform.isIOS) {
         final ios = await _plugin.iosInfo;
-        return {
+        return ({
           'platform': 'ios',
           'manufacturer': 'Apple',
           'model': ios.model,
@@ -32,12 +32,12 @@ class DeviceInfoService {
           'osVersion': ios.systemVersion,
           'name': ios.name,
           'systemName': ios.systemName,
-        };
+      },ios.identifierForVendor??"");
       }
     } catch (_) {}
-    return {
+    return ({
       'platform': Platform.operatingSystem,
       'osVersion': Platform.operatingSystemVersion,
-    };
+    }, '');
   }
 }

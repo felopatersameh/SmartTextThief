@@ -68,8 +68,8 @@ class AuthenticationSource {
   ) async {
     final deviceInfo = await DeviceInfoService.getDeviceInfo();
     return {
-      'deviceId': account.id,
-      'deviceInfo': deviceInfo,
+      'deviceId': deviceInfo.$2,
+      'deviceInfo': deviceInfo.$1,
       'clientProfile': {
         'googleId': account.id,
         'email': account.email,

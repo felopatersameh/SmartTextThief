@@ -1,6 +1,6 @@
 ﻿<div align="center">
 
-# 📚 Smart Text Thief
+# 📚 Examora
 
 ### Intelligent SaaS platform for secure online exam creation and management
 
@@ -16,40 +16,49 @@
 
 ---
 
-## 🎯 What Makes It Different
+## ?? What Makes It Different
 
 ```
-✓ Create exams quickly using artificial intelligence
-✓ Simple and straightforward design without complexity
-✓ Robust security system during exams
-✓ Analytics that help improve assessment quality
+? Create exams quickly using artificial intelligence
+? Simple and straightforward design without complexity
+? Robust security system during exams
+? Analytics that help improve assessment quality
 ```
 
 **Goal:** Deliver a faster experience for teachers, a fair experience for students, and complete administrative control at the platform level.
 
+### Product Direction (Current)
+
+- **Exam-level analysis:** every exam has its own analysis and performance view.
+- **Subject-level analysis:** each subject includes dashboard and analysis context.
+- **User-level analysis:** each user has personal analytics and progress indicators.
+- **Higher teacher control:** extended control over subject and exam workflows.
+- **Personal student assessment:** individual result context to support improvement.
+- **Easy UX, high quality:** focus on simple operations with better output quality.
+
 ---
 
-## 👥 User Types
+## ?? User Types
 
 <table>
 <tr>
 <td width="33%" align="center">
 
-### 👨‍🏫 Teacher
+### ????? Teacher
 
 Create courses and exams, manage settings, track results
 
 </td>
 <td width="33%" align="center">
 
-### 🎓 Student
+### ?? Student
 
 Join courses, take exams, track results
 
 </td>
 <td width="33%" align="center">
 
-### 👨‍💼 Admin
+### ????? Admin
 
 Manage the system, data, and users at the platform level
 
@@ -61,47 +70,48 @@ Manage the system, data, and users at the platform level
 
 ---
 
-## 👨‍🏫 Teacher Highlights
+## ????? Teacher Highlights
 
 <details open>
-<summary><b>📚 Courses & Exams</b></summary>
+<summary><b>?? Courses & Exams</b></summary>
 
-- ✅ Create educational subjects (Open / Closed)
-- ✅ Create exams and link them to subjects
-- ✅ Review and edit questions before first publication only
-- ✅ Export exams as PDF
-
-</details>
-
-<details>
-<summary><b>⚙️ Flexible Exam Settings</b></summary>
-
-- 🎯 **Difficulty Level:** Easy / Medium / Hard
-- ⏰ **Timing:** Start and end time
-- 📝 **Questions:** Question types and quantities
-- 📎 **Content:** Link exam to content (PDF / Image / Text)
+- ? Create educational subjects (Open / Closed)
+- ? Create exams and link them to subjects
+- ? Review and edit questions before first publication only
+- ? Export exams as PDF
 
 </details>
 
 <details>
-<summary><b>📊 Analytics & Notifications</b></summary>
+<summary><b>?? Flexible Exam Settings</b></summary>
 
-- 📈 Analytical dashboard to track student results and overall performance
-- 🔔 Real-time notifications for important events within the course
+- ?? **Difficulty Level:** Easy / Medium / Hard
+- ? **Timing:** Start and end time
+- ?? **Questions:** Question types and quantities
+- ?? **Content:** Link exam to content (PDF / Image / Text)
+
+</details>
+
+<details>
+<summary><b>?? Analytics & Notifications</b></summary>
+
+- ?? Analytical dashboard to track student results and overall performance
+- ?? Real-time notifications for important events within the course
+- ?? Exam analysis, subject analysis, and user analysis layers
 
 </details>
 
 ---
 
-## 🎓 Student Highlights
+## ?? Student Highlights
 
-### 📚 Exam Experience
+### ?? Exam Experience
 
-- ➕ Quick access to courses and exams
-- ⏰ Take exams within the specified time
-- 📊 View results according to exam policy
+- ? Quick access to courses and exams
+- ? Take exams within the specified time
+- ?? View results according to exam policy
 
-### 📝 Supported Question Types
+### ?? Supported Question Types
 
 | Type | Description |
 |------|-------------|
@@ -109,32 +119,32 @@ Manage the system, data, and users at the platform level
 | **True/False** | True or false questions |
 | **Essay** | Essay questions |
 
-### 🔐 Protection During Testing
+### ?? Protection During Testing
 
 ```
-🚫 Screenshot prevention on Android & iOS
-⏱️ 2-minute grace period when exiting the app
-⚠️ Automatic exam termination after grace period expires
+?? Screenshot prevention on Android & iOS
+?? 2-minute grace period when exiting the app
+?? Automatic exam termination after grace period expires
 ```
 
 ---
 
-## 👨‍💼 Admin Highlights
+## ????? Admin Highlights
 
 <div align="center">
 
 | Area | Description |
 |------|-------------|
-| 👥 **Users** | Manage users and roles |
-| 📚 **Content** | Manage subjects and exams |
-| 📊 **Data** | Monitor platform-wide data |
-| ⚙️ **Settings** | Control system settings and plans |
+| ?? **Users** | Manage users and roles |
+| ?? **Content** | Manage subjects and exams |
+| ?? **Data** | Monitor platform-wide data |
+| ?? **Settings** | Control system settings and plans |
 
 </div>
 
 ---
 
-## 🔐 Security and Authentication
+## ?? Security and Authentication
 
 <div align="center">
 
@@ -147,41 +157,44 @@ graph LR
 
 </div>
 
-- 🔑 Login via **Google Sign-In**
-- 🔥 Firebase-based identity and data flow
-- 🛡️ Exam session protection to reduce cheating and leaks
+- ?? Login via **Google Sign-In**
+- ?? Firebase-based identity and data flow
+- ??? Exam session protection to reduce cheating and leaks
 
 ---
 
-## 🤖 AI Engine
+## ?? AI Engine
 
 <div align="center">
 
-### Powered by **Gemini 2.5 Flash** ⚡
+### Powered by **Multiple Gemini Models** ?
 
 </div>
 
-#### 🎯 Use Cases
+#### ?? Use Cases
 
-- 💡 Support question generation from content
-- 📝 Essay answer analysis
+- ?? Support question generation from content
+- ?? Essay answer analysis
 
-#### ⚙️ Flexibility
+#### ?? Flexibility
 
 ```yaml
-Default Model: gemini-2.5-flash
+Primary Model: Configurable Gemini model
+Fallback Strategy: If one model reaches limits, move to next configured model
 Custom API: Support for user API Key (from profile)
 ```
 
+> The app is no longer tied to a single model only. It supports multi-model fallback for better generation continuity.
+
 ---
 
-## 💎 SaaS Plans
+## ?? SaaS Plans
 
 <table>
 <tr>
 <td width="50%" align="center">
 
-### 🆓 Free Plan
+### ?? Free Plan
 
 **For Basic Use**
 
@@ -190,7 +203,7 @@ Limited features suitable for personal use
 </td>
 <td width="50%" align="center">
 
-### 👑 Pro Plan
+### ?? Pro Plan
 
 **For Professional Use**
 
@@ -200,9 +213,16 @@ All advanced features and full support
 </tr>
 </table>
 
+### ?? Upcoming Expansion
+
+- Subscription plans expansion
+- Workshops for instructors
+- Ads support as part of growth strategy
+- Multi-language support for a broader learning audience
+
 ---
 
-## 🌐 Web Version
+## ?? Web Version
 
 > **Landing Page Only**
 
@@ -210,22 +230,22 @@ All advanced features and full support
 
 | Features | Description |
 |----------|-------------|
-| ℹ️ **Introduction** | Introduce the app |
-| ✨ **Showcase** | Display features |
-| 📱 **Conversion** | Direct users to download the app |
+| ?? **Introduction** | Introduce the app |
+| ? **Showcase** | Display features |
+| ?? **Conversion** | Direct users to download the app |
 
-**❌ Does not include exam execution or Dashboard**
+**? Does not include exam execution or Dashboard**
 
 </div>
 
 ---
 
-## 📱 Screens
+## ?? Screens
 
 <details open>
 <summary><b>View All Screens (Click to Expand)</b></summary>
 
-### 🎨 Authentication Flow
+### ?? Authentication Flow
 
 <table>
 <tr>
@@ -250,7 +270,7 @@ All advanced features and full support
 </tr>
 </table>
 
-### 📚 Main Screens
+### ?? Main Screens
 
 <table>
 <tr>
@@ -269,7 +289,7 @@ All advanced features and full support
 </tr>
 </table>
 
-### 🎓 Exam Screens
+### ?? Exam Screens
 
 <table>
 <tr>
@@ -284,7 +304,7 @@ All advanced features and full support
 </tr>
 </table>
 
-### ⚙️ Common Screens
+### ?? Common Screens
 
 <table>
 <tr>
@@ -307,7 +327,7 @@ All advanced features and full support
 
 ---
 
-## 🛠️ Tech Stack
+## ??? Tech Stack
 
 <div align="center">
 
@@ -338,23 +358,23 @@ All advanced features and full support
 
 ---
 
-## 🚀 Quick Setup
+## ?? Quick Setup
 
-### 1️⃣ Requirements
+### 1?? Requirements
 
 ```bash
-✓ Flutter 3.38.9 (stable) or compatible
-✓ Dart 3.10.x
-✓ Firebase project configured
+? Flutter 3.38.9 (stable) or compatible
+? Dart 3.10.x
+? Firebase project configured
 ```
 
-### 2️⃣ Install dependencies
+### 2?? Install dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 3️⃣ Environment file
+### 3?? Environment file
 
 Copy `.env.example` to `.env` and fill in the values:
 
@@ -365,7 +385,7 @@ FCM_SERVICE_ACCOUNT_PATH=
 GEMINI_FALLBACK_API_KEY=
 ```
 
-### 4️⃣ Firebase files
+### 4?? Firebase files
 
 <table>
 <tr>
@@ -396,7 +416,7 @@ ios/Runner/GoogleService-Info.plist
 lib/firebase_options.dart
 ```
 
-### 5️⃣ Run
+### 5?? Run
 
 ```bash
 flutter run
@@ -404,37 +424,37 @@ flutter run
 
 ---
 
-## 📊 Project Status
+## ?? Project Status
 
 <div align="center">
 
-### ✅ Ready for Publish
+### ? Ready for Publish
 
 ![Progress](https://img.shields.io/badge/Progress-98%25-brightgreen?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Ready-success?style=for-the-badge)
 
 </div>
 
-#### ✔️ Completed
+#### ?? Completed
 
-- ✅ All core features implemented
-- ✅ Firebase integration complete
-- ✅ AI engine integrated
-- ✅ Security system active
-- ✅ UI/UX finalized
+- ? All core features implemented
+- ? Firebase integration complete
+- ? AI engine integrated
+- ? Security system active
+- ? UI/UX finalized
 
-#### 🔄 Remaining Work
+#### ?? Remaining Work
 
-- 🔧 Minor polishing
-- 📱 Store assets finalization
+- ?? Minor polishing
+- ?? Store assets finalization
 
 ---
 
 <div align="center">
 
-### ⭐ If you find this project helpful, please give it a star
+### ? If you find this project helpful, please give it a star
 
-**Made with ❤️ for Education**
+**Made with ?? for Education**
 
 ---
 
@@ -443,3 +463,5 @@ flutter run
 [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](#)
 
 </div>
+
+

@@ -1,9 +1,9 @@
-name: smart_text_thief
-description: "Smart Text Thief is a revolutionary educational platform that enables instructors to create comprehensive exams faster than traditional methods using AI technology. The system bridges the gap between instructors and students, providing a complete exam lifecycle management solution."
+﻿name: smart_text_thief
+description: "Examora is a revolutionary educational platform that enables instructors to create comprehensive exams faster than traditional methods using AI technology. The system bridges the gap between instructors and students, providing a complete exam lifecycle management solution."
 
 publish_to: 'none'
 
-version: 1.1.0+3
+version: 1.2.0+1
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -71,3 +71,5 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/Image/s2.png"
   remove_alpha_ios: true
+
+

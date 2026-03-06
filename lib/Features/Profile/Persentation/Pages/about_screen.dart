@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../Config/Routes/name_routes.dart';
 import '../../../../Core/Resources/resources.dart';
@@ -14,7 +15,7 @@ class AboutScreen extends StatelessWidget {
       backgroundColor: AppColors.colorsBackGround,
       appBar: AppBar(title: Text(NameRoutes.about.titleAppBar)),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -24,139 +25,137 @@ class AboutScreen extends StatelessWidget {
                 height: 100.h,
               ),
             ),
-            const SizedBox(height: 12),
-            _buildSummaryCard(),
-            const SizedBox(height: 24),
-            _buildSectionTitle(AboutStrings.overview),
-            const SizedBox(height: 12),
-            AppCustomText.generate(
-              text: AboutStrings.overviewText1,
-              textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                color: AppColors.textWhite,
-              ),
-              textAlign: TextAlign.justify,
+            SizedBox(height: 12.h),
+            _buildSectionTitle('App Information'),
+            SizedBox(height: 10.h),
+            _buildAppInfoCard(),
+            SizedBox(height: 16.h),
+            _buildSectionTitle('Developer'),
+            SizedBox(height: 10.h),
+            _buildSimpleInfoCard(
+              title: 'Developer Name',
+              value: 'felopater sameh',
             ),
-            const SizedBox(height: 8),
-            AppCustomText.generate(
-              text: AboutStrings.overviewText2,
-              textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                color: AppColors.textWhite,
-              ),
-              textAlign: TextAlign.justify,
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Email',
+              value: 'felopaters37@gmail.com',
             ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(AboutStrings.keyConcept),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.colorPrimary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.colorPrimary.withValues(alpha: 0.2),
-                  width: 1,
-                ),
-              ),
-              child: AppCustomText.generate(
-                text: AboutStrings.keyConceptText,
-                textStyle: AppTextStyles.bodyMediumMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textWhite,
-                ),
-                textAlign: TextAlign.center,
-              ),
+            SizedBox(height: 16.h),
+            _buildSectionTitle('Technical Info'),
+            SizedBox(height: 10.h),
+            _buildSimpleInfoCard(
+              title: 'Backend API',
+              value: 'Dart Frog Framework',
             ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(AboutStrings.keyAdvantages),
-            const SizedBox(height: 12),
-            ...AppList.aboutAdvantages.map(
-              (item) => _buildAdvantageItem(
-                item.$1,
-                item.$2,
-                item.$3,
-              ),
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Database',
+              value: 'MongoDB',
             ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(AboutStrings.technicalStack),
-            const SizedBox(height: 12),
-            _buildTechStackCard(
-              AboutStrings.frameworkLanguage,
-              AppList.aboutFrameworkLanguage,
+            SizedBox(height: 16.h),
+            _buildSectionTitle('Core Capabilities'),
+            SizedBox(height: 10.h),
+            _buildSimpleInfoCard(
+              title: 'Exam Analytics',
+              value:
+                  'Each exam has its own analysis with performance indicators and score distribution.',
             ),
-            const SizedBox(height: 12),
-            _buildTechStackCard(
-              AboutStrings.backendDatabase,
-              AppList.aboutBackendDatabase,
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Subject Analytics',
+              value:
+                  'Each subject has dashboard-level analysis and exam-level insights for instructors.',
             ),
-            const SizedBox(height: 12),
-            _buildTechStackCard(
-              AboutStrings.aiMl,
-              AppList.aboutAiMl,
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'User Analytics',
+              value:
+                  'Each user has personal analytics and progress insights based on activity and results.',
             ),
-            const SizedBox(height: 12),
-            _buildTechStackCard(
-              AboutStrings.additionalTechnologies,
-              AppList.aboutAdditionalTechnologies,
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'AI Model Strategy',
+              value:
+                  'The app supports multiple Gemini models. If one model reaches limits, requests move to the next configured model.',
             ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(AboutStrings.vision),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.colorPrimary.withValues(alpha: 0.1),
-                    AppColors.colorPrimary.withValues(alpha: 0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: AppCustomText.generate(
-                text: AboutStrings.visionText,
-                textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                  color: AppColors.textWhite,
-                ),
-                textAlign: TextAlign.justify,
-              ),
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Teacher Control',
+              value:
+                  'Instructors have expanded control over subject structure, exam behavior, and monitoring.',
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Student Personal Assessment',
+              value:
+                  'Students receive personal result context to support targeted improvement.',
+            ),
+            SizedBox(height: 16.h),
+            _buildSectionTitle('Future Plans'),
+            SizedBox(height: 10.h),
+            _buildSimpleInfoCard(
+              title: 'Planned Modules',
+              value:
+                  'Subscription plans, teacher workshops, ads support, and multi-language support are part of the roadmap.',
+            ),
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Easy UX with High Quality',
+              value:
+                  'Product direction prioritizes easier daily usage while keeping high output quality.',
+            ),
+            SizedBox(height: 16.h),
+            _buildSectionTitle('Legal Links'),
+            SizedBox(height: 10.h),
+            _buildSimpleInfoCard(
+              title: 'Privacy Policy',
+              value: 'Hosted on Firebase (privacy.html)',
+            ),
+            SizedBox(height: 8.h),
+            _buildSimpleInfoCard(
+              title: 'Terms of Service',
+              value: 'Hosted on Firebase (terms.html)',
+            ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildAppInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: AppColors.colorsBackGround2,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: AppColors.colorPrimary.withValues(alpha: 0.2),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppCustomText.generate(
-            text: AboutStrings.appInfoTitle,
-            textStyle: AppTextStyles.bodyMediumBold.copyWith(
-              color: AppColors.colorPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          AppCustomText.generate(
-            text: AboutStrings.appInfoBody,
-            textStyle: AppTextStyles.bodySmallMedium.copyWith(
-              color: AppColors.textWhite.withValues(alpha: 0.9),
-            ),
-          ),
-        ],
+      child: FutureBuilder<PackageInfo>(
+        future: PackageInfo.fromPlatform(),
+        builder: (context, snapshot) {
+          final appName = snapshot.data?.appName ?? 'Examora';
+          final version = snapshot.data == null
+              ? 'Unknown'
+              : '${snapshot.data!.version}+${snapshot.data!.buildNumber}';
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoLine('App Name', appName),
+              SizedBox(height: 6.h),
+              _buildInfoLine('Version', version),
+              SizedBox(height: 6.h),
+              _buildInfoLine(
+                'Description',
+                'Examora helps instructors create and manage exams quickly.',
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -168,81 +167,38 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdvantageItem(String emoji, String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 20)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppCustomText.generate(
-                  text: title,
-                  textStyle: AppTextStyles.bodyMediumBold.copyWith(
-                    color: AppColors.textWhite,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                AppCustomText.generate(
-                  text: description,
-                  textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                    color: AppColors.textWhite.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTechStackCard(String title, List<String> items) {
+  Widget _buildSimpleInfoCard({
+    required String title,
+    required String value,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: AppColors.colorsBackGround2,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: AppColors.colorPrimary.withValues(alpha: 0.2),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: _buildInfoLine(title, value),
+    );
+  }
+
+  Widget _buildInfoLine(String title, String value) {
+    return RichText(
+      text: TextSpan(
         children: [
-          AppCustomText.generate(
-            text: title,
-            textStyle: AppTextStyles.bodyMediumBold.copyWith(
+          TextSpan(
+            text: '$title: ',
+            style: AppTextStyles.bodyMediumBold.copyWith(
               color: AppColors.colorPrimary,
             ),
           ),
-          const SizedBox(height: 8),
-          ...items.map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(left: 8, top: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    AppIcons.checkCircleOutline,
-                    size: 16,
-                    color: AppColors.colorPrimary.withValues(alpha: 0.7),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: AppCustomText.generate(
-                      text: item,
-                      textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                        color: AppColors.textWhite.withValues(alpha: 0.9),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          TextSpan(
+            text: value,
+            style: AppTextStyles.bodySmallMedium.copyWith(
+              color: AppColors.textWhite.withValues(alpha: 0.9),
             ),
           ),
         ],
@@ -250,3 +206,5 @@ class AboutScreen extends StatelessWidget {
     );
   }
 }
+
+
