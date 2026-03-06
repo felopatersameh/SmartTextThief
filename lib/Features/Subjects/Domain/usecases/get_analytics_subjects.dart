@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:smart_text_thief/Features/exam/data/models/analytics_model.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/Analytics/analytics_model.dart';
 
 import '../repositories/subject_repository.dart';
 

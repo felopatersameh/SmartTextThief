@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
-import 'package:smart_text_thief/Features/exam/data/models/analytics_model.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/Analytics/analytics_model.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, required this.subjectId});

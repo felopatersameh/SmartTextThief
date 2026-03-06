@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/view_exam_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Features/exam/presentation/pages/view_exam.dart';
+import 'package:smart_text_thief/Features/Exams/Presentation/View/view_exam.dart';
 
 class ViewExamRoute {
   static void push(

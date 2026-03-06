@@ -18,7 +18,7 @@ import 'package:smart_text_thief/Core/Services/Api/api_endpoints.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_service.dart';
 import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
 import 'package:smart_text_thief/Core/Services/PDF/pdf_services.dart';
-import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/cubit/subjects_cubit.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/centered_section.dart';

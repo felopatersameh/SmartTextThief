@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/do_exam_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
-import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
-import 'package:smart_text_thief/Features/exam/presentation/pages/do_exam.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
+import 'package:smart_text_thief/Features/Exams/Presentation/Do/do_exam.dart';
 
 class DoExamRoute {
   static Future<T?> push<T>(

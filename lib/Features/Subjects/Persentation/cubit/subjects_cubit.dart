@@ -5,8 +5,8 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:smart_text_thief/Core/Services/Firebase/failure_model.dart';
-import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
-import 'package:smart_text_thief/Features/exam/data/models/analytics_model.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/Analytics/analytics_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
 import 'package:smart_text_thief/Features/Subjects/Data/datasources/subjects_remote_data_source.dart';
 import 'package:smart_text_thief/Features/Subjects/Data/repositories/subject_repository_impl.dart';

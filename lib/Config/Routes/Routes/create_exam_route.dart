@@ -4,7 +4,7 @@ import 'package:smart_text_thief/Config/Routes/DataScreens/create_exam_route_dat
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
-import 'package:smart_text_thief/Features/exam/presentation/pages/create_exam_screen.dart';
+import 'package:smart_text_thief/Features/Exams/Presentation/Create/create_exam_screen.dart';
 import 'package:smart_text_thief/Config/Routes/Routes/view_exam_route.dart';
 
 class CreateExamRoute {

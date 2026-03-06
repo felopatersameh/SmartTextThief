@@ -5,9 +5,9 @@ import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../../Features/exam/data/models/exam_model.dart';
-import '../../../Features/exam/domain/enums/exam_question_type.dart';
-import '../../Utils/Models/questions_generated_model.dart';
+import '../../../Features/Exams/shared/Models/exam_model.dart';
+import '../../../Features/Exams/shared/Enums/exam_question_type.dart';
+import '../../../Features/Exams/shared/Models/Results/question_model.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
@@ -83,7 +83,7 @@ class ExamPdfUtil {
       final logoImage = pw.MemoryImage(imageData.buffer.asUint8List());
 
       // Get exam questions
-      final List<QuestionsGeneratedModel> questions = examData.questions;
+      final List<QuestionModel> questions = examData.questions;
 
       // Create PDF document
       final pdf = pw.Document();
@@ -410,7 +410,7 @@ class ExamPdfUtil {
 
   // Build question widget
   static pw.Widget _buildQuestion(
-    QuestionsGeneratedModel question,
+    QuestionModel question,
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,
@@ -419,8 +419,9 @@ class ExamPdfUtil {
   ) {
     final String questionText = question.text;
     final String questionType = question.type;
-    final List<String>? options =
-        question.options?.map((option) => option.choice).toList(growable: false);
+    final List<String>? options = question.options
+        ?.map((option) => option.choice)
+        .toList(growable: false);
     bool isQuestionArabic = _isArabic(questionText);
 
     return pw.Container(
@@ -468,7 +469,7 @@ class ExamPdfUtil {
           pw.SizedBox(height: 10),
 
           // Options
-          if (options?.isNotEmpty??false) ...[
+          if (options?.isNotEmpty ?? false) ...[
             pw.SizedBox(height: 10),
             ...options!.asMap().entries.map((entry) {
               int index = entry.key;
@@ -542,7 +543,7 @@ class ExamPdfUtil {
 
   // Build answer key
   static pw.Widget _buildAnswerKey(
-    QuestionsGeneratedModel question,
+    QuestionModel question,
     int questionNumber,
     pw.Font font,
     pw.Font fontBold,

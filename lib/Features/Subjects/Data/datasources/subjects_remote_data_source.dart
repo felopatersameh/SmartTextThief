@@ -7,9 +7,9 @@ import '../../../../Core/Services/Firebase/failure_model.dart';
 import '../../../../Core/Services/Notifications/notification_services.dart';
 import '../../../../Core/Utils/Enums/data_key.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
-import 'package:smart_text_thief/Features/exam/data/models/exam_model.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
 
-import '../../../exam/data/models/analytics_model.dart';
+import '../../../Exams/shared/Models/Analytics/analytics_model.dart';
 
 class SubjectsRemoteDataSource {
   Future<Either<String, List<ExamModel>>> getExams(String subjectId) async {
