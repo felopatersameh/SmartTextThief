@@ -49,7 +49,6 @@ class ExamView extends StatelessWidget {
 
   final ExamModel exam;
   final ExamMode mode;
-
   final List<ExamQuestionViewModel>? questions;
   final List<ExamResultModel>? examResults;
   final ExamResultModel? studentResult;

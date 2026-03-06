@@ -38,7 +38,8 @@ class SubjectDetailsRoute {
         routes: [
           CreateExamRoute.route,
           DoExamRoute.route,
-          ResultRoute.route,
+          ResultRoute.studentRoute,
+          ResultRoute.teacherRoute,
         ],
       );
 }

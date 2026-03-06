@@ -12,7 +12,8 @@ class NameRoutes {
   static const String createExam = 'create';
   static const String doExam = 'do/';
   static const String view = 'view';
-  static const String result = 'result';
+  static const String resultStudent = 'result-student';
+  static const String resultTeacher = 'result-teacher';
 
   static const String about = 'about';
   static const String help = 'help';

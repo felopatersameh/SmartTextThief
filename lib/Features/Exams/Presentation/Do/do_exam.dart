@@ -11,10 +11,11 @@ import 'package:smart_text_thief/Features/Exams/shared/Enums/result_exam_status.
 import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/show_message_snack_bar.dart';
 import 'package:smart_text_thief/Features/Exams/Domain/Repositories/do_exam_repository.dart';
-import 'package:smart_text_thief/Features/Exams/shared/Template/exam_question_view_model.dart';
 import 'package:smart_text_thief/Features/Exams/Presentation/Do/Cubit/do_exam_cubit.dart';
 import 'package:smart_text_thief/Features/Exams/shared/Enums/exam_mode.dart';
-import 'package:smart_text_thief/Features/Exams/Presentation/View/exam_view.dart';
+import 'package:smart_text_thief/Features/Exams/shared/Template/exam_view.dart';
+
+import '../../shared/Template/exam_question_view_model.dart';
 
 class DoExam extends StatefulWidget {
   const DoExam({

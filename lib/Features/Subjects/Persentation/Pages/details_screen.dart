@@ -120,15 +120,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 ));
                       },
                       showQA: () {
-                        ResultRoute.push(
-                          context,
-                          data: ViewExamRouteData(
-                            exam: exam,
-                            isEditMode: false,
-                            nameSubject: selected.subjectName,
+                        final routeData = ViewExamRouteData(
+                          exam: exam,
+                          isEditMode: false,
+                          nameSubject: selected.subjectName,
+                          idSubject: selected.subjectId,
+                          isTeacherView: selected.isME,
+                        );
+                        if (selected.isME) {
+                          ResultRoute.pushTeacher(
+                            context,
+                            data: routeData,
+                            email: GetLocalStorage.getEmailUser(),
                             idSubject: selected.subjectId,
-                            isTeacherView: selected.isME,
-                          ),
+                          );
+                          return;
+                        }
+                        ResultRoute.pushStudent(
+                          context,
+                          data: routeData,
                           email: GetLocalStorage.getEmailUser(),
                           idSubject: selected.subjectId,
                         );
@@ -401,4 +411,3 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 }
-
