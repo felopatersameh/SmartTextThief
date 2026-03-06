@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
 import 'package:smart_text_thief/Config/Routes/Routes/notification_route.dart';
 import 'Core/Services/Notifications/notification_model.dart';
 
@@ -101,6 +102,16 @@ class _MyAppState extends State<MyApp> {
                 theme: lightThemes(),
                 darkTheme: darkThemes(),
                 routerConfig: AppRouter.router,
+                builder: (context, child) {
+                  return AnnotatedRegion<SystemUiOverlayStyle>(
+                    value: const SystemUiOverlayStyle(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: Brightness.light,
+                      statusBarBrightness: Brightness.dark,
+                    ),
+                    child: child ?? const SizedBox.shrink(),
+                  );
+                },
               );
             },
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../Core/Resources/resources.dart';
 import '../../Config/Routes/name_routes.dart';
@@ -30,32 +31,39 @@ class MainScreen extends StatelessWidget {
             builder: (context, state) {
               final cubit = context.read<MainCubit>();
 
-              return Scaffold(
-                body: SafeArea(child: child),
-                bottomNavigationBar: isExamScreen
-                    ? null
-                    : Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: AppColors.white54),
-                          ),
-                        ),
-                        child: BottomNavigationBar(
-                          showSelectedLabels: false,
-                          showUnselectedLabels: false,
-                          items: cubit.items(badgeCount),
-                          currentIndex: state.index,
-                          onTap: (value) => cubit.changeIndex(value, context),
-                          backgroundColor: AppColors.colorsBackGround,
-                          selectedItemColor: AppColors.colorPrimary,
-                          unselectedItemColor: AppColors.colorUnSelected,
-                        ),
-                      ),
-              );
-            },
-          );
-        },
-      ),
+               return AnnotatedRegion<SystemUiOverlayStyle>(
+                 value: const SystemUiOverlayStyle(
+                   statusBarColor: Colors.transparent,
+                   statusBarIconBrightness: Brightness.light,
+                   statusBarBrightness: Brightness.dark,
+                 ),
+                 child: Scaffold(
+                   body: SafeArea(child: child),
+                   bottomNavigationBar: isExamScreen
+                       ? null
+                       : Container(
+                           decoration: const BoxDecoration(
+                             border: Border(
+                               top: BorderSide(color: AppColors.white54),
+                             ),
+                           ),
+                           child: BottomNavigationBar(
+                             showSelectedLabels: false,
+                             showUnselectedLabels: false,
+                             items: cubit.items(badgeCount),
+                             currentIndex: state.index,
+                             onTap: (value) => cubit.changeIndex(value, context),
+                             backgroundColor: AppColors.colorsBackGround,
+                             selectedItemColor: AppColors.colorPrimary,
+                             unselectedItemColor: AppColors.colorUnSelected,
+                           ),
+                         ),
+                 ),
+               );
+             },
+           );
+         },
+       ),
     );
   }
 
