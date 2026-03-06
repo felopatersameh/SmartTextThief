@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../Core/Services/Firebase/failure_model.dart';
+import '../../../../Core/Services/Error/failure_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 import '../repositories/subject_repository.dart';
 

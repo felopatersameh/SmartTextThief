@@ -57,6 +57,7 @@ class _TeacherResultScreenState extends State<TeacherResultScreen> {
             examResults: state.examResults,
             loading: state.loadingResults,
             selectedStudentEmail: state.selectedStudentEmail,
+            useTeacherTopTabs: true,
             onStudentSelect: (email) =>
                 context.read<TeacherResultCubit>().selectStudentResult(email),
           );
@@ -65,4 +66,3 @@ class _TeacherResultScreenState extends State<TeacherResultScreen> {
     );
   }
 }
-

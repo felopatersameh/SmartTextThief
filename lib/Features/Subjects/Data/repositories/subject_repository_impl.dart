@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
 
-import '../../../../Core/Services/Firebase/failure_model.dart';
+import '../../../../Core/Services/Error/failure_model.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
 import '../../../Exams/shared/Models/Analytics/analytics_model.dart';
 import '../../Domain/repositories/subject_repository.dart';

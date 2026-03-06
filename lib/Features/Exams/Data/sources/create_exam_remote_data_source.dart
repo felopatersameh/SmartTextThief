@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:smart_text_thief/Features/Exams/shared/Enums/level_exam.dart';
 import '../DTO/Responses/exam_generation_result_model.dart';
@@ -52,7 +51,7 @@ int calculateMaxTokensFromRealUsage({
 }) {
   int base = questionCount * avgTokensPerQuestion;
   final max = (base * 1.7).toInt();
-  log("Max Token ::$max ");
+  // log("Max Token ::$max ");
   return max; 
 }
 

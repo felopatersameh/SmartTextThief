@@ -111,7 +111,6 @@ class ExamGeneratorService {
           : null;
 
       final responseText = response.text ?? '';
-      log('responseText :: $responseText');
       if (finishReason == FinishReason.maxTokens) {
         return ExamGenerationResultModel.error(
           'The generated exam was too long and got cut off. Please reduce the number of questions or shorten the content.',
@@ -140,7 +139,6 @@ class ExamGeneratorService {
 
       return ExamGenerationResultModel.success(questions);
     } catch (e) {
-      log('error Generated :$e');
       return ExamGenerationResultModel.error(
         'An unexpected error occurred while generating the exam. Please try again.',
       );

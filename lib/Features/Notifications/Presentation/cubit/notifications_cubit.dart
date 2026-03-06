@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -48,7 +47,6 @@ class NotificationsCubit extends Cubit<NotificationsState> {
             existing: state.notificationsList,
             incoming: notifications,
           );
-          log("list :${merged.toSet()} ");
           final unread = merged.where((item) => !item.read).length;
           emit(
             state.copyWith(

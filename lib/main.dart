@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  @override   
+  @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),

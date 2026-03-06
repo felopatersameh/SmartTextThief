@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import '../../../Core/Services/Api/api_endpoints.dart';
 import '../../../Core/Services/Api/api_service.dart';
-import '../../../Core/Services/Firebase/failure_model.dart';
+import '../../../Core/Services/Error/failure_model.dart';
 import '../../../Core/Services/Notifications/notification_model.dart';
 import '../../../Core/Services/Notifications/notification_services.dart';
 
@@ -104,7 +103,6 @@ class NotificationSource {
         if (item is! Map) continue;
         parsed.add(NotificationModel.fromJson(Map<String, dynamic>.from(item)));
       }
-      log("data::${parsed.toSet()} ");
       return Right(parsed);
     } on DioException catch (error) {
       return Left(

@@ -6,7 +6,7 @@ import 'package:smart_text_thief/Core/Utils/Enums/enum_user.dart';
 import '../../../Core/Services/Api/api_endpoints.dart';
 import '../../../Core/Services/Api/api_response_model.dart';
 import '../../../Core/Services/Api/api_service.dart';
-import '../../../Core/Services/Firebase/failure_model.dart';
+import '../../../Core/Services/Error/failure_model.dart';
 import '../../../Core/Utils/Enums/data_key.dart';
 import '../../../Core/Utils/Models/data_model.dart';
 import '../../../Core/Utils/Models/user_model.dart';

@@ -52,9 +52,27 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
     return widget.question.studentAnswer;
   }
 
-  bool get _hasStudentAnswer => _effectiveAnswer.trim().isNotEmpty;
+  int? get _scoreValue {
+    final raw = widget.question.score;
+    if (raw == null) return null;
+    return int.tryParse(raw);
+  }
 
-  bool get _isCorrectResult => widget.question.isCorrect(_effectiveAnswer);
+  bool get _isEvaluatedResult =>
+      _isResultMode && ((widget.question.evaluated ?? false) || _scoreValue != null);
+
+  bool get _isCorrectResult {
+    if (_isEvaluatedResult) {
+      return (_scoreValue ?? 0) > 0;
+    }
+    return widget.question.isCorrect(_effectiveAnswer);
+  }
+
+  bool get _isWrongResult {
+    if (!_isResultMode) return false;
+    if (_effectiveAnswer.trim().isEmpty) return true;
+    return !_isCorrectResult;
+  }
 
   @override
   void initState() {
@@ -144,7 +162,7 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
           ),
         ),
         const Spacer(),
-        if (_isResultMode && _hasStudentAnswer)
+        if (_isResultMode)
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
             decoration: BoxDecoration(
@@ -376,12 +394,12 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
           text: widget.question.correctAnswer,
           color: AppColors.green,
         ),
-        if (_isResultMode && _hasStudentAnswer) ...[
+        if (_isResultMode) ...[
           SizedBox(height: 12.h),
           _buildSectionLabel(ViewExamStrings.studentAnswer),
           SizedBox(height: 6.h),
           _buildAnswerBox(
-            text: studentAnswer,
+            text: studentAnswer.trim().isEmpty ? 'No Answer' : studentAnswer,
             color: _isCorrectResult ? AppColors.green : AppColors.red,
           ),
         ],
@@ -416,16 +434,13 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
 
   Color _backgroundColor() {
     if (!_isResultMode) return AppColors.colorsBackGround2;
-    if (!_hasStudentAnswer) return AppColors.colorsBackGround2;
-    return _isCorrectResult
-        ? AppColors.green.withValues(alpha: 0.1)
-        : AppColors.red.withValues(alpha: 0.1);
+    return _isWrongResult
+        ? AppColors.red.withValues(alpha: 0.1)
+        : AppColors.green.withValues(alpha: 0.1);
   }
 
   Color _borderColor() {
     if (!_isResultMode) return AppColors.colorPrimary.withValues(alpha: 0.3);
-    if (!_hasStudentAnswer) return AppColors.colorPrimary.withValues(alpha: 0.3);
-    return _isCorrectResult ? AppColors.green : AppColors.red;
+    return _isWrongResult ? AppColors.red : AppColors.green;
   }
 }
-

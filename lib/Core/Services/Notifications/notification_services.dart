@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -214,7 +213,6 @@ class NotificationServices {
   static void _emitNotification(NotificationModel model) {
     if (_notificationsController.isClosed) return;
     _notificationsController.add(model);
-    log("notification::${model.toJson()}");
   }
 
   static Future<void> _handleLocalNotificationTapPayload(

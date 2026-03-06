@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-import 'package:smart_text_thief/Core/Services/Firebase/failure_model.dart';
+import 'package:smart_text_thief/Core/Services/Error/failure_model.dart';
 import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
 import 'package:smart_text_thief/Features/Exams/shared/Models/Analytics/analytics_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
@@ -228,7 +226,6 @@ class SubjectCubit extends Cubit<SubjectState> {
         generatedAt: null,
       ),
       (model) {
-        log('message Cubit: ${model.toJson()}');
         return model;
       },
     );

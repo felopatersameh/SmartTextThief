@@ -8,7 +8,7 @@ import '../../../Core/LocalStorage/local_storage_keys.dart';
 import '../../../Core/LocalStorage/local_storage_service.dart';
 import '../../../Core/Services/Api/api_endpoints.dart';
 import '../../../Core/Services/Api/api_service.dart';
-import '../../../Core/Services/Firebase/failure_model.dart';
+import '../../../Core/Services/Error/failure_model.dart';
 
 class AuthenticationSource {
   static final GoogleSignIn _googleSignIn = GoogleSignIn.instance;

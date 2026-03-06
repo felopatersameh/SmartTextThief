@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 import '../Enums/enum_user.dart';
 import '../Enums/data_key.dart';
 
-  // setting 
-
 class UserModel extends Equatable {
   const UserModel({
     required this.photo,

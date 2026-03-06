@@ -33,12 +33,6 @@ class ExamInfoCard extends StatelessWidget {
             label: ViewExamStrings.level,
             value: exam.levelExam,
           ),
-          SizedBox(height: 8.h),
-          _InfoRow(
-            icon: AppIcons.numbers,
-            label: ViewExamStrings.questions,
-            value: exam.questions.length.toString(),
-          ),
         ],
       ),
     );

@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Services/Api/api_endpoints.dart';
 import '../../../../Core/Services/Api/api_service.dart';
-import '../../../../Core/Services/Firebase/failure_model.dart';
+import '../../../../Core/Services/Error/failure_model.dart';
 import '../../../../Core/Services/Notifications/notification_services.dart';
 import '../../../../Core/Utils/Enums/data_key.dart';
 import '../../../../Core/Utils/Models/subject_model.dart';
@@ -122,10 +122,7 @@ class SubjectsRemoteDataSource {
     SubjectModel model,
     String studentEmail,
   ) async {
-    //  log("leave: ${model.topicID}");
-    //   await NotificationServices.unSubscribeToTopic(
-    //     model.topicID,
-    //   );
+   
     return Left(FailureModel(
       error: 'not_supported',
       message: 'Leave subject is not supported by current API yet',
