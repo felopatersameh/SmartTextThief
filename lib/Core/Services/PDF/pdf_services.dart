@@ -5,9 +5,9 @@ import 'package:open_file/open_file.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-import '../../../Features/Exams/shared/Models/exam_model.dart';
 import '../../../Features/Exams/shared/Enums/exam_question_type.dart';
 import '../../../Features/Exams/shared/Models/Results/question_model.dart';
+import '../../../Features/Exams/shared/Models/exam_model.dart';
 import '../../Utils/Models/subject_model.dart';
 
 class ExamPdfUtil {
@@ -24,31 +24,63 @@ class ExamPdfUtil {
     return sanitized.isEmpty ? 'exam' : sanitized;
   }
 
-  static Future<Directory> _resolveOutputDirectory(String subjectName) async {
+  static List<Directory> _buildCandidateOutputDirectories(String subjectName) {
     final safeSubjectName =
         _sanitizeFileName(subjectName.isEmpty ? 'General' : subjectName);
-
-    final directories = <Directory>[
+    return <Directory>[
       if (Platform.isAndroid)
         Directory(
             '/storage/emulated/0/Download/SmartTextThief/pdf/$safeSubjectName'),
       Directory(
-        '${Directory.systemTemp.path}/SmartTextThief/pdf/$safeSubjectName',
-      ),
+          '${Directory.systemTemp.path}/SmartTextThief/pdf/$safeSubjectName'),
     ];
+  }
 
-    for (final directory in directories) {
+  static Future<File> _writePdfWithFallback({
+    required String subjectName,
+    required String fileName,
+    required List<int> bytes,
+  }) async {
+    final uniquePaths = <String>{};
+    final files = <File>[
+      for (final directory in _buildCandidateOutputDirectories(subjectName))
+        File('${directory.path}/$fileName.pdf'),
+    ].where((file) => uniquePaths.add(file.path)).toList(growable: false);
+
+    Object? lastError;
+    for (final file in files) {
       try {
-        if (!await directory.exists()) {
-          await directory.create(recursive: true);
+        final parent = file.parent;
+        if (!await parent.exists()) {
+          await parent.create(recursive: true);
         }
-        return directory;
-      } catch (_) {
-        // Try next candidate directory.
+
+        if (await file.exists()) {
+          try {
+            await file.delete();
+          } catch (_) {
+            // Ignore stale file deletion errors and continue writing a fresh file.
+          }
+        }
+
+        await file.writeAsBytes(bytes, flush: true);
+        return file;
+      } catch (error) {
+        lastError = error;
       }
     }
 
-    throw FileSystemException('Unable to create a writable PDF directory.');
+    final osError = switch (lastError) {
+      final FileSystemException fileError => fileError.osError,
+      final OSError systemError => systemError,
+      _ => null,
+    };
+
+    throw FileSystemException(
+      'Unable to write PDF file in any output directory.',
+      files.isEmpty ? null : files.first.path,
+      osError,
+    );
   }
 
   static Future<void> createExamPdf({
@@ -57,13 +89,7 @@ class ExamPdfUtil {
   }) async {
     try {
       // final fileName = _sanitizeFileName('Exam_${examData.specialIdLiveExam}');
-      final fileName = examData.name;
-      final outputDirectory = await _resolveOutputDirectory(
-        examInfo.subjectName,
-      );
-
-      // Define the PDF file path
-      final pdfFile = File('${outputDirectory.path}/$fileName.pdf');
+      final fileName = _sanitizeFileName(examData.name);
 
       // Load fonts
       final fontData = await rootBundle.load("assets/Fonts/Roboto-Regular.ttf");
@@ -179,12 +205,13 @@ class ExamPdfUtil {
         ),
       );
 
-      // Save and open the PDF file
-      if (await pdfFile.exists()) {
-        await pdfFile.delete();
-      }
-      await pdfFile.writeAsBytes(await pdf.save());
-      await OpenFile.open(pdfFile.path);
+      // Save and open the PDF file with fallback across writable directories.
+      final savedFile = await _writePdfWithFallback(
+        subjectName: examInfo.subjectName,
+        fileName: fileName,
+        bytes: await pdf.save(),
+      );
+      await OpenFile.open(savedFile.path);
     } catch (e) {
       rethrow;
     }

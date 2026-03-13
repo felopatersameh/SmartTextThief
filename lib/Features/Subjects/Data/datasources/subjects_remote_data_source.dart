@@ -1,4 +1,3 @@
-
 import 'package:dartz/dartz.dart';
 import '../../../../Core/Resources/resources.dart';
 import '../../../../Core/Services/Api/api_endpoints.dart';
@@ -20,8 +19,9 @@ class SubjectsRemoteDataSource {
       if (!response.status) {
         return Left(response.message);
       }
-      final exams =
-          ((response.data ?? []) as List).map((e) => ExamModel.fromJson(e)).toList();
+      final exams = ((response.data ?? []) as List)
+          .map((e) => ExamModel.fromJson(e))
+          .toList();
       return Right(exams);
     } catch (error) {
       return Left(error.toString());
@@ -122,11 +122,20 @@ class SubjectsRemoteDataSource {
     SubjectModel model,
     String studentEmail,
   ) async {
-   
-    return Left(FailureModel(
-      error: 'not_supported',
-      message: 'Leave subject is not supported by current API yet',
-    ));
+    try {
+      final response = await DioHelper.postData(
+        path: ApiEndpoints.subjectLeave(model.subjectId),
+      );
+      if (!response.status) {
+        return Left(FailureModel(error: '', message: response.message));
+      }
+      await NotificationServices.unSubscribeToTopic(model.topicID);
+      return const Right(true);
+    } catch (error) {
+      return Left(
+        FailureModel(error: error.toString(), message: error.toString()),
+      );
+    }
   }
 
   Future<Either<FailureModel, SubjectModel>> joinSubject(

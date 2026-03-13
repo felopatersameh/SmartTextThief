@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_text_thief/Config/animations/page_transition_animations.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Config/Routes/Routes/choose_role_route.dart';
 import 'package:smart_text_thief/Config/Routes/Routes/login_route.dart';
@@ -18,8 +19,15 @@ class AppRouter {
   static void backScreen(BuildContext context) =>
       context.canPop() ? context.pop() : null;
 
-  static void pushToMainScreen(BuildContext context) =>
-      context.goNamed(NameRoutes.subject);
+  static void pushToMainScreen(
+    BuildContext context, {
+    bool fromSplash = false,
+  }) =>
+      context.goNamed(
+        NameRoutes.subject,
+        extra:
+            fromSplash ? {PageTransitionAnimations.splashWoodKey: true} : null,
+      );
 
   static GoRouter router = GoRouter(
     initialLocation: NameRoutes.splash,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_text_thief/Config/animations/api_item_animations.dart';
+import 'package:smart_text_thief/Config/animations/static_animations.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/subject_details_route_data.dart';
 import 'package:smart_text_thief/Config/setting.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
@@ -9,7 +11,6 @@ import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/exams_he
 import 'package:smart_text_thief/Features/Subjects/Persentation/widgets/subjects_card.dart';
 
 import '../../../../Config/Routes/Routes/subject_details_route.dart';
-
 
 class BodySubjectPage extends StatelessWidget {
   const BodySubjectPage({
@@ -36,6 +37,9 @@ class BodySubjectPage extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: ExamsHeaderCard(
               onChanged: context.read<SubjectCubit>().searchSubject,
+            ).staticReveal(
+              delay: const Duration(milliseconds: 60),
+              duration: const Duration(milliseconds: 450),
             ),
           ),
         ),
@@ -78,25 +82,25 @@ class BodySubjectPage extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.only(bottom: 88),
             sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final model = displayList[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22),
-                  child: SubjectsCard(
-                    model: model,
-                    openSubjectDetails: () {
-                      context.read<SubjectCubit>().selectSubject(model);
-                      SubjectDetailsRoute.push(
-                        context,
-                        data: SubjectDetailsRouteData(subject: model),
-                      );
-                    },
-                  ),
-                );
-              },
-              childCount: displayList.length,
-            ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final model = displayList[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22),
+                    child: SubjectsCard(
+                      model: model,
+                      openSubjectDetails: () {
+                        context.read<SubjectCubit>().selectSubject(model);
+                        SubjectDetailsRoute.push(
+                          context,
+                          data: SubjectDetailsRouteData(subject: model),
+                        );
+                      },
+                    ).animateApiItem(index: index),
+                  );
+                },
+                childCount: displayList.length,
+              ),
             ),
           ),
       ],

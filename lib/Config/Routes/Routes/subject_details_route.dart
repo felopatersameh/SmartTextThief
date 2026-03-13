@@ -4,6 +4,7 @@ import 'package:smart_text_thief/Config/Routes/DataScreens/subject_details_route
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
+import 'package:smart_text_thief/Config/animations/page_transition_animations.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/Pages/details_screen.dart';
 import 'package:smart_text_thief/Config/Routes/Routes/create_exam_route.dart';
 import 'package:smart_text_thief/Config/Routes/Routes/do_exam_route.dart';
@@ -31,7 +32,8 @@ class SubjectDetailsRoute {
           final subjectModel = data is SubjectDetailsRouteData
               ? data.subject
               : data as SubjectModel;
-          return NoTransitionPage(
+          return PageTransitionAnimations.smooth(
+            state: state,
             child: DetailsScreen(subjectModel: subjectModel),
           );
         },

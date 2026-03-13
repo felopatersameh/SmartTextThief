@@ -6,7 +6,6 @@ import 'package:smart_text_thief/Features/Exams/shared/Template/exam_question_vi
 import 'package:smart_text_thief/Features/Exams/shared/Enums/exam_mode.dart';
 
 class ExamQuestionCard extends StatefulWidget {
-
   const ExamQuestionCard({
     super.key,
     required this.index,
@@ -36,6 +35,7 @@ class ExamQuestionCard extends StatefulWidget {
 
 class _ExamQuestionCardState extends State<ExamQuestionCard> {
   late final TextEditingController _questionController;
+  late final TextEditingController _correctAnswerController;
   String? _selectedCorrectAnswer;
 
   bool get _isResultMode =>
@@ -44,8 +44,9 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
 
   bool get _isSolvingMode => widget.mode == ExamMode.solving;
 
-  bool get _isEditablePreview =>
-      widget.mode == ExamMode.preview && widget.allowQuestionEditing;
+  bool get _isEditableQuestion =>
+      widget.allowQuestionEditing &&
+      (widget.mode == ExamMode.preview || widget.mode == ExamMode.create);
 
   String get _effectiveAnswer {
     if (_isSolvingMode) return widget.currentAnswer ?? '';
@@ -59,7 +60,8 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
   }
 
   bool get _isEvaluatedResult =>
-      _isResultMode && ((widget.question.evaluated ?? false) || _scoreValue != null);
+      _isResultMode &&
+      ((widget.question.evaluated ?? false) || _scoreValue != null);
 
   bool get _isCorrectResult {
     if (_isEvaluatedResult) {
@@ -78,6 +80,8 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
   void initState() {
     super.initState();
     _questionController = TextEditingController(text: widget.question.text);
+    _correctAnswerController =
+        TextEditingController(text: widget.question.correctAnswer);
     _selectedCorrectAnswer = widget.question.correctAnswer;
   }
 
@@ -94,12 +98,23 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
     }
     if (oldWidget.question.correctAnswer != widget.question.correctAnswer) {
       _selectedCorrectAnswer = widget.question.correctAnswer;
+      if (_correctAnswerController.text != widget.question.correctAnswer) {
+        _correctAnswerController.value =
+            _correctAnswerController.value.copyWith(
+          text: widget.question.correctAnswer,
+          selection: TextSelection.collapsed(
+            offset: widget.question.correctAnswer.length,
+          ),
+          composing: TextRange.empty,
+        );
+      }
     }
   }
 
   @override
   void dispose() {
     _questionController.dispose();
+    _correctAnswerController.dispose();
     super.dispose();
   }
 
@@ -124,7 +139,7 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
           SizedBox(height: 12.h),
           if (hasOptions) ...[
             _buildSectionLabel(
-              _isEditablePreview
+              _isEditableQuestion
                   ? ViewExamStrings.optionsEditMode
                   : ViewExamStrings.options,
             ),
@@ -179,8 +194,7 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
               ),
             ),
           ),
-
-        if (_isEditablePreview && widget.onDelete != null)
+        if (_isEditableQuestion && widget.onDelete != null)
           IconButton(
             onPressed: widget.onDelete,
             icon: Icon(
@@ -199,7 +213,7 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
       children: [
         _buildSectionLabel(ViewExamStrings.questionLabel),
         SizedBox(height: 6.h),
-        if (_isEditablePreview)
+        if (_isEditableQuestion)
           TextField(
             controller: _questionController,
             maxLines: null,
@@ -234,7 +248,8 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
     // Never highlight the correct answer while the student is solving.
     final isCorrectAnswer = !_isSolvingMode && option == _selectedCorrectAnswer;
     final isStudentAnswer = _effectiveAnswer == option;
-    final isSolvingSelected = _isSolvingMode && (widget.currentAnswer == option);
+    final isSolvingSelected =
+        _isSolvingMode && (widget.currentAnswer == option);
 
     Color backgroundColor;
     Color borderColor;
@@ -247,7 +262,8 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
       borderColor = isSolvingSelected
           ? AppColors.colorPrimary
           : AppColors.colorPrimary.withValues(alpha: 0.3);
-      textColor = isSolvingSelected ? AppColors.textWhite : AppColors.textCoolGray;
+      textColor =
+          isSolvingSelected ? AppColors.textWhite : AppColors.textCoolGray;
     } else if (_isResultMode) {
       if (isCorrectAnswer && isStudentAnswer) {
         backgroundColor = AppColors.green.withValues(alpha: 0.2);
@@ -284,7 +300,7 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
             widget.onAnswerChanged?.call(option);
             return;
           }
-          if (_isEditablePreview) {
+          if (_isEditableQuestion) {
             setState(() {
               _selectedCorrectAnswer = option;
             });
@@ -305,11 +321,16 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
                 height: 24.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: (isCorrectAnswer || isStudentAnswer || isSolvingSelected)
-                      ? (isCorrectAnswer ? AppColors.green : AppColors.colorPrimary)
-                      : AppColors.transparent,
+                  color:
+                      (isCorrectAnswer || isStudentAnswer || isSolvingSelected)
+                          ? (isCorrectAnswer
+                              ? AppColors.green
+                              : AppColors.colorPrimary)
+                          : AppColors.transparent,
                   border: Border.all(
-                    color: (isCorrectAnswer || isStudentAnswer || isSolvingSelected)
+                    color: (isCorrectAnswer ||
+                            isStudentAnswer ||
+                            isSolvingSelected)
                         ? (isCorrectAnswer
                             ? AppColors.green
                             : AppColors.colorPrimary)
@@ -321,10 +342,11 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
                   child: AppCustomText.generate(
                     text: String.fromCharCode(65 + optionIndex),
                     textStyle: AppTextStyles.bodySmallMedium.copyWith(
-                      color:
-                          (isCorrectAnswer || isStudentAnswer || isSolvingSelected)
-                              ? AppColors.textWhite
-                              : AppColors.textCoolGray,
+                      color: (isCorrectAnswer ||
+                              isStudentAnswer ||
+                              isSolvingSelected)
+                          ? AppColors.textWhite
+                          : AppColors.textCoolGray,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -352,6 +374,37 @@ class _ExamQuestionCardState extends State<ExamQuestionCard> {
   }
 
   Widget _buildShortAnswerSection() {
+    if (_isEditableQuestion) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionLabel(ViewExamStrings.correctAnswer),
+          SizedBox(height: 6.h),
+          TextField(
+            controller: _correctAnswerController,
+            minLines: 4,
+            maxLines: null,
+            style: AppTextStyles.bodyMediumMedium.copyWith(
+              color: AppColors.textWhite,
+            ),
+            decoration: InputDecoration(
+              hintText: ViewExamStrings.correctAnswer,
+              hintStyle: AppTextStyles.bodyMediumMedium.copyWith(
+                color: AppColors.textCoolGray,
+              ),
+              filled: true,
+              fillColor: AppColors.colorTextFieldBackGround,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.r),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            onChanged: widget.onCorrectAnswerChanged,
+          ),
+        ],
+      );
+    }
+
     if (_isSolvingMode) {
       return TextFormField(
         key: ValueKey('${widget.mode.name}_${widget.question.id}'),

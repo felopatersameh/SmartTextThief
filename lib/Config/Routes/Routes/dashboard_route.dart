@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_text_thief/Config/animations/page_transition_animations.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/dashboard_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Features/Subjects/Persentation/Pages/dashboard_screen.dart';
@@ -16,7 +17,8 @@ class DashboardRoute {
           final routeData = data is DashboardRouteData
               ? data
               : DashboardRouteData(subjectId: data as String?);
-          return NoTransitionPage(
+          return PageTransitionAnimations.smooth(
+            state: state,
             child: DashboardScreen(subjectId: routeData.subjectId),
           );
         },

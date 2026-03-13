@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_text_thief/Config/animations/page_transition_animations.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/create_exam_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
@@ -25,10 +26,10 @@ class CreateExamRoute {
         path: NameRoutes.createExam.removeSlash(),
         pageBuilder: (context, state) {
           final data = state.extra;
-          final subjectModel = data is CreateExamRouteData
-              ? data.subject
-              : data as SubjectModel;
-          return NoTransitionPage(
+          final subjectModel =
+              data is CreateExamRouteData ? data.subject : data as SubjectModel;
+          return PageTransitionAnimations.smooth(
+            state: state,
             child: CreateExamScreen(subject: subjectModel),
           );
         },
@@ -37,4 +38,3 @@ class CreateExamRoute {
         ],
       );
 }
-

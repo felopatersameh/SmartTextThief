@@ -3,7 +3,7 @@ description: "Examora is a revolutionary educational platform that enables instr
 
 publish_to: 'none'
 
-version: 1.2.0+1
+version: 1.2.0+5
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -46,7 +46,9 @@ dependencies:
   sahih_validator: ^2.0.0
   syncfusion_flutter_pdf: ^32.2.3
   fl_chart: ^1.1.1
+  flutter_animate: ^4.5.2
 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,7 +65,7 @@ flutter:
     - .env
     - assets/Fonts/
     - assets/Image/
-    - shorebird.yaml 
+    - shorebird.yaml
 
 flutter_launcher_icons:
   android: "launcher_icon"

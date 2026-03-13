@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Config/animations/api_item_animations.dart';
+import 'package:smart_text_thief/Config/animations/static_animations.dart';
 import '../../../Config/app_config.dart';
 import '../../../Core/Resources/resources.dart';
 import '../../../Core/Services/Notifications/notification_model.dart';
@@ -123,14 +125,20 @@ class _NotificationPageState extends State<NotificationPage> {
     }
 
     final slivers = <Widget>[];
+    var offset = 0;
 
     for (final type in _sectionOrder) {
       final list = grouped[type];
       if (list == null || list.isEmpty) continue;
+      final sectionStart = offset;
+      offset += list.length;
 
       slivers.add(
         SliverToBoxAdapter(
-          child: _SectionHeader(type: type, count: list.length),
+          child: _SectionHeader(type: type, count: list.length).staticReveal(
+            delay: const Duration(milliseconds: 40),
+            duration: const Duration(milliseconds: 360),
+          ),
         ),
       );
       slivers.add(
@@ -141,7 +149,7 @@ class _NotificationPageState extends State<NotificationPage> {
               return NotificationCard(
                 notification: n,
                 onTap: () => onNotificationTap(n.id),
-              );
+              ).animateApiItem(index: sectionStart + index);
             },
             childCount: list.length,
           ),

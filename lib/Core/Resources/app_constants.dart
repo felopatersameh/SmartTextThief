@@ -5,10 +5,10 @@ class AppConstants {
   static const Duration animationSlow = Duration(milliseconds: 300);
 
   static const Duration doExamBackgroundGraceDuration =
-      Duration(minutes: 2);
+      Duration(minutes: 1);
 
-  static const int  minExamDurationMinutes = 5;
-  static const int maxDatePickerYearsAhead = 2;
+  static const int minExamDurationMinutes = 5;
+  static const int maxDatePickerYearsAhead = 1;
   static const int examIdPreviewLength = 4;
   static const int examLabelMaxLength = 8;
 

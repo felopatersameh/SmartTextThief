@@ -24,6 +24,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  bool _navigationStarted = false;
 
   @override
   void initState() {
@@ -57,20 +58,26 @@ class _SplashScreenState extends State<SplashScreen>
       await _updateProgress(0.2);
 
       if (token.isEmpty || !isLoggedIn) {
-        _navigateSafely(LoginRoute.push);
+        await _navigateWithSplashTransition(
+          (ctx) => LoginRoute.push(ctx, fromSplash: true),
+        );
         return;
       }
       if (role == UserType.non.value) {
-        _navigateSafely(ChooseRoleRoute.push);
+        await _navigateWithSplashTransition(
+          (ctx) => ChooseRoleRoute.push(ctx, fromSplash: true),
+        );
         return;
       }
-      _updateProgress(0.3);
+      await _updateProgress(0.3);
 
       if (!mounted) return;
       final user = await context.read<ProfileCubit>().init();
 
       if (user == UserModel.empty()) {
-        _navigateSafely(LoginRoute.push);
+        await _navigateWithSplashTransition(
+          (ctx) => LoginRoute.push(ctx, fromSplash: true),
+        );
         return;
       }
 
@@ -85,10 +92,24 @@ class _SplashScreenState extends State<SplashScreen>
 
       await _smoothProgressUpdate(0.7, 1.0, 2);
 
-      _navigateSafely(AppRouter.pushToMainScreen);
+      await _navigateWithSplashTransition(
+        (ctx) => AppRouter.pushToMainScreen(ctx, fromSplash: true),
+      );
     } catch (e) {
-      _navigateSafely(LoginRoute.push);
+      await _navigateWithSplashTransition(
+        (ctx) => LoginRoute.push(ctx, fromSplash: true),
+      );
     }
+  }
+
+  Future<void> _navigateWithSplashTransition(
+    void Function(BuildContext) action,
+  ) async {
+    if (!mounted || _navigationStarted) return;
+    _navigationStarted = true;
+    await Future.delayed(const Duration(milliseconds: 60));
+
+    _navigateSafely(action);
   }
 
   void _navigateSafely(void Function(BuildContext) action) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_text_thief/Config/animations/page_transition_animations.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/view_exam_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/name_routes.dart';
 import 'package:smart_text_thief/Core/Resources/resources.dart';
@@ -46,7 +47,8 @@ class ResultRoute {
         pageBuilder: (context, state) {
           final data = state.extra;
           final routeData = data as ViewExamRouteData;
-          return NoTransitionPage(
+          return PageTransitionAnimations.smooth(
+            state: state,
             child: StudentResultScreen(
               examModel: routeData.exam,
               idSubject: routeData.idSubject,
@@ -62,7 +64,8 @@ class ResultRoute {
         pageBuilder: (context, state) {
           final data = state.extra;
           final routeData = data as ViewExamRouteData;
-          return NoTransitionPage(
+          return PageTransitionAnimations.smooth(
+            state: state,
             child: TeacherResultScreen(
               examModel: routeData.exam,
               nameSubject: routeData.nameSubject,

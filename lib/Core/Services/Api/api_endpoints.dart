@@ -14,9 +14,10 @@ class ApiEndpoints {
 
   static String subjectUpdateStatus(String id) =>
       'v1/subject/$id/update_status';
+  static String subjectLeave(String id) => 'v1/subject/$id/leave';
   static String subjectRemove(String id) => 'v1/subject/$id/remove';
   static String subjectCreateExam(String id) => 'v1/subject/$id/create_exam';
-  static String subjectGetExams(String id) => 'v1/subject/$id/get_exams'; 
+  static String subjectGetExams(String id) => 'v1/subject/$id/get_exams';
   static String subjectGetAnalytics(String id) => 'v1/subject/$id/analytics';
   static String subjectStartExam(String id, String idExam) =>
       'v1/subject/$id/exam/$idExam/start_exam';

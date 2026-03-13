@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Config/animations/api_item_animations.dart';
+import 'package:smart_text_thief/Config/animations/static_animations.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/create_exam_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/dashboard_route_data.dart';
 import 'package:smart_text_thief/Config/Routes/DataScreens/do_exam_route_data.dart';
@@ -17,6 +21,8 @@ import 'package:smart_text_thief/Core/Resources/resources.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_endpoints.dart';
 import 'package:smart_text_thief/Core/Services/Api/api_service.dart';
 import 'package:smart_text_thief/Core/Services/Dialog/app_dialog_service.dart';
+import 'package:smart_text_thief/Core/Services/Notifications/notification_model.dart';
+import 'package:smart_text_thief/Core/Services/Notifications/notification_services.dart';
 import 'package:smart_text_thief/Core/Services/PDF/pdf_services.dart';
 import 'package:smart_text_thief/Features/Exams/shared/Models/exam_model.dart';
 import 'package:smart_text_thief/Core/Utils/Models/subject_model.dart';
@@ -44,10 +50,22 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
+  StreamSubscription<NotificationModel>? _subjectExamsSubscription;
+  bool _isRefreshingExams = false;
+  bool _hasQueuedRefresh = false;
+
   @override
   void initState() {
     super.initState();
     context.read<SubjectCubit>().openSubjectDetails(widget.subjectModel);
+    _startSubjectExamsListener();
+  }
+
+  @override
+  void dispose() {
+    _subjectExamsSubscription?.cancel();
+    _subjectExamsSubscription = null;
+    super.dispose();
   }
 
   @override
@@ -93,9 +111,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     final exam = exams[index];
                     return ExamCard(
                       exam: exam,
-                       inst:selected.isME ,
-                       againTest: () async =>
-                           _startExamAttempt(context, selected, exam),
+                      inst: selected.isME,
+                      againTest: () async =>
+                          _startExamAttempt(context, selected, exam),
                       pdf: () async {
                         if (!selected.isME) return;
                         final canAccessFiles = await FileAccessPermissionService
@@ -109,7 +127,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           );
                           return;
                         }
-                          if (!context.mounted) return;
+                        if (!context.mounted) return;
                         await showMessageSnackBar(context,
                             title: CreateExamStrings.creating,
                             type: MessageType.loading,
@@ -143,7 +161,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           idSubject: selected.subjectId,
                         );
                       },
-                    );
+                    ).animateApiItem(index: index);
                   },
                   childCount: exams.length,
                 ),
@@ -186,6 +204,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             title: 'Leaving',
                             type: MessageType.loading,
                             onLoading: () => _leaveSubject(context, selected)),
+                  ).staticReveal(
+                    delay: const Duration(milliseconds: 40),
+                    duration: const Duration(milliseconds: 450),
                   ),
                 ),
                 body,
@@ -201,7 +222,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     elevation: 6,
                     focusElevation: 8,
                     onPressed: () {
-                     CreateExamRoute.push(
+                      CreateExamRoute.push(
                         context,
                         data: CreateExamRouteData(subject: selected),
                       );
@@ -231,6 +252,58 @@ class _DetailsScreenState extends State<DetailsScreen> {
       return widget.subjectModel;
     }
     return selected;
+  }
+
+  void _startSubjectExamsListener() {
+    _subjectExamsSubscription?.cancel();
+    _subjectExamsSubscription = NotificationServices.notificationsStream.listen(
+      (notification) async {
+        if (!_isExamNotificationForCurrentSubject(notification)) return;
+        await _refreshSubjectExams();
+      },
+    );
+  }
+
+  bool _isExamNotificationForCurrentSubject(NotificationModel notification) {
+    final type = notification.type.trim();
+    final isExamType = type == 'createdExam' ||
+        type == 'examStarted' ||
+        type == 'examEnding' ||
+        type == 'examEnded';
+    final isExamEntity = notification.entityType.trim().toLowerCase() == 'exam';
+    if (!isExamType && !isExamEntity) return false;
+
+    final subjectId = widget.subjectModel.subjectId.trim();
+    final topicId = widget.subjectModel.topicID.trim();
+    final metaSubjectId = notification.metaSubjectId.trim();
+    final notificationTopicId = notification.topicId.trim();
+
+    final matchesSubjectId = subjectId.isNotEmpty && metaSubjectId == subjectId;
+    final matchesTopic = topicId.isNotEmpty && notificationTopicId == topicId;
+    return matchesSubjectId || matchesTopic;
+  }
+
+  Future<void> _refreshSubjectExams() async {
+    if (!mounted) return;
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+
+    if (_isRefreshingExams) {
+      _hasQueuedRefresh = true;
+      return;
+    }
+
+    _isRefreshingExams = true;
+    try {
+      await context
+          .read<SubjectCubit>()
+          .getExams(widget.subjectModel.subjectId);
+    } finally {
+      _isRefreshingExams = false;
+      if (_hasQueuedRefresh && mounted) {
+        _hasQueuedRefresh = false;
+        await _refreshSubjectExams();
+      }
+    }
   }
 
   Future<void> _toggleSubjectOpen(
@@ -332,7 +405,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       final response = await DioHelper.postData(
         path: ApiEndpoints.subjectStartExam(subject.subjectId, exam.id),
       );
-        
+
       final message = response.message.trim();
       final rawData = response.data;
       final data = rawData is Map<String, dynamic>

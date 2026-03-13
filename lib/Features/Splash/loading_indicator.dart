@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_text_thief/Config/animations/static_animations.dart';
 import '/Core/Resources/resources.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -28,7 +29,10 @@ class LoadingIndicator extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: AppIcons.splash,
-            ),
+            ).subtlePulse().floatingLoop().staticReveal(
+                  delay: const Duration(milliseconds: 80),
+                  duration: const Duration(milliseconds: 480),
+                ),
             SizedBox(height: 30.h),
             Text(
               AppStrings.loading,
@@ -37,6 +41,9 @@ class LoadingIndicator extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: AppColors.grey700,
               ),
+            ).staticReveal(
+              delay: const Duration(milliseconds: 160),
+              duration: const Duration(milliseconds: 420),
             ),
             SizedBox(height: 20.h),
             Container(
@@ -64,11 +71,17 @@ class LoadingIndicator extends StatelessWidget {
                   ),
                 ],
               ),
+            ).staticReveal(
+              delay: const Duration(milliseconds: 230),
+              duration: const Duration(milliseconds: 420),
             ),
             SizedBox(height: 10.h),
             Text(
               '${(value * 100).toInt()}%',
               style: TextStyle(fontSize: 14.sp, color: AppColors.grey600),
+            ).staticReveal(
+              delay: const Duration(milliseconds: 280),
+              duration: const Duration(milliseconds: 350),
             ),
           ],
         );
